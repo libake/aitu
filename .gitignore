@@ -9,6 +9,7 @@ lerna-debug.log*
 yarn.lock*
 package-lock*
 pnpm-lock*
+upload/*
 
 node_modules
 dist
