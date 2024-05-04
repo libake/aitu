@@ -1,0 +1,35 @@
+host: 127.0.0.1
+port: 8090
+debug: true
+appkey: 63de615a1e1c8708d9f1a4d5b8a1f9f3
+
+database:
+  type: postgres
+  deploy: 0 # 部署方式:0 集中式(单一服务器),1 分布式(主从服务器)
+  master:
+    host: 127.0.0.1
+    name: aitu
+    port: 5432
+    user: postgres
+    password: rMHmqsn0c
+  slave:
+    host: 127.0.0.1
+    name: aitu
+    port: 5432
+    user: postgres
+    password: rMHmqsn0c
+  charset: utf8
+  debug: true
+
+redis:
+  host: 127.0.0.1
+  port: 6379
+  password: redis,123@
+
+email:
+  user: service@haxima.com
+  password: CS5gfpMGu1ZnTiu9
+  host: "smtp.mxhichina.com:25"
+
+aliyun: # 通义万相
+  api-key: sk-16b63b7ef5f04cd2bd0856bdda66fb13
