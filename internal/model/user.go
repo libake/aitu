@@ -87,7 +87,7 @@ func (t *User) SignIn(account string) (info User, err error) {
 
 	has, err = db.NewPostgres().Omit("password").Where(query, args...).Get(&info)
 	if err != nil || !has {
-		err = status.Error(3010, "Is Empty")
+		err = errors.New("is empty")
 	}
 
 	return
@@ -127,7 +127,7 @@ func (t *User) List(req dto.Request) (list []User, total int64, err error) {
 		offset := (req.CurrPage - 1) * req.PageSize
 		err = db.Omit("password").Where(query, args...).Limit(req.PageSize, offset).Find(&list)
 	} else {
-		err = status.Error(3010, "Is Empty")
+		err = errors.New("is empty")
 	}
 	return
 }
@@ -142,7 +142,7 @@ func (t *User) Info() (info User, err error) {
 	args = append(args, t.ID)
 	has, err := db.NewPostgres().Omit("password").Where(query, args...).Get(&info)
 	if err != nil || !has {
-		err = errors.New("Is Empty")
+		err = errors.New("is empty")
 	}
 
 	return
@@ -153,7 +153,7 @@ func (t User) AccountExist() error {
 	user := new(User)
 	cnt, err := db.NewPostgres().Where("email=? OR mobile=?", t.Email, t.Mobile).Count(user)
 	if err != nil || cnt == 0 {
-		err = status.Error(4040, "Not Found")
+		err = errors.New("not found")
 	}
 	return err
 }

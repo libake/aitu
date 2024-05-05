@@ -1,6 +1,6 @@
 import styled from "styled-components";
 
-import Icon from "./Icon";
+import { Icon } from "@/common";
 
 const Container = styled.div`
     position: relative;

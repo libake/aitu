@@ -14,7 +14,6 @@ const Container = styled.div`
     overflow: hidden;
     background-color: #f9f9f9;
 
-
     .main {
         display: grid;
         justify-content: center;
@@ -31,7 +30,7 @@ const Container = styled.div`
 
 `;
 
-export function SignIn(props: any) {
+export function SignIn() {
     const [userForm] = Form.useForm();
     const navigate = useNavigate();
 
@@ -42,7 +41,10 @@ export function SignIn(props: any) {
         };
         let res = await srv.User.signIn(data);
         if (res.code == 1000) {
-            navigate('/');
+            localStorage.setItem('token', res.data);
+            setTimeout(() => {
+                navigate('/');
+            }, 1000);
         } else {
             message.error(res.desc);
         }

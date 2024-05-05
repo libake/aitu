@@ -31,7 +31,8 @@ func (t *User) SignIn(ctx *gin.Context) {
 			Password string `json:"password"`
 			Captcha  string `json:"captcha"`
 		}
-		token string
+		token  string
+		scheme string
 	)
 
 	err := ctx.BindJSON(&param)
@@ -56,9 +57,24 @@ func (t *User) SignIn(ctx *gin.Context) {
 		})
 		return
 	}
+	// 区分前后台用户
+	header := ctx.Request.Header
+	if v, ok := header["Scheme"]; ok {
+		scheme = v[0]
+	}
+
+	if scheme == "admin" && ret.ID > 10 {
+		ctx.JSON(http.StatusOK, gin.H{
+			"code": 4101,
+			"desc": "非后台用户",
+		})
+		return
+	}
+
 	token = uuid.NewString()
+	ret.UpdateAt = time.Now()
 	s, _ := json.Marshal(ret)
-	db.NewRedis().HSet("user", token, string(s))
+	db.NewRedis().HSet("token", token, string(s))
 
 	ctx.JSON(http.StatusOK, gin.H{
 		"code": 1000,
@@ -96,15 +112,12 @@ func (t *User) SignUp(ctx *gin.Context) {
 
 	// 发送短信验证码
 	if param.Captcha == "" {
-		rand.Seed(time.Now().UnixNano())
 		code := rand.Intn(10000)
 		db.NewRedis().Set(param.Mobile, code, 300*time.Second)
 		// TODO 接入短信接口
-		mCode := map[string]interface{}{"code": code}
-		// data, _ := json.Marshal(mCode)
 		ctx.JSON(http.StatusOK, gin.H{
 			"code": 1000,
-			"data": mCode,
+			"data": code,
 			"desc": "Success",
 		})
 		return
@@ -182,8 +195,7 @@ func (t *User) Active(ctx *gin.Context) {
 	}
 
 	// 校验token
-	var info string
-	info, err = db.NewRedis().Get(param.Token).Result()
+	info, err := db.NewRedis().Get(param.Token).Result()
 	if nil != err {
 		util.Fail(3030, "Token invalid", ctx)
 		return
@@ -336,7 +348,7 @@ func (t *User) Info(ctx *gin.Context) {
 	} else {
 		// 解析 token 取得 id
 		token := ctx.Request.Header.Get("Access-Token")
-		sToken, err := db.NewRedis().HGet("user", token).Result()
+		sToken, err := db.NewRedis().HGet("token", token).Result()
 		if err != nil {
 			ctx.JSON(http.StatusOK, gin.H{
 				"code": -1,
@@ -390,6 +402,23 @@ func (t *User) List(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, gin.H{
 		"code": 1000,
 		"data": data,
+		"desc": "Success",
+	})
+}
+
+func (u User) Logout(ctx *gin.Context) {
+	var (
+		token string
+	)
+
+	header := ctx.Request.Header
+	if v, ok := header["Access-Token"]; ok {
+		token = v[0]
+	}
+	db.NewRedis().HDel("token", token)
+
+	ctx.JSON(http.StatusOK, gin.H{
+		"code": 1000,
 		"desc": "Success",
 	})
 }

@@ -1,10 +1,10 @@
 import { useEffect, useState } from "react";
 import styled from "styled-components";
+import { message } from "antd";
 
 import { dao, srv } from "@/core";
+import { Icon } from "@/common";
 import { Preview } from './Preview';
-import Icon from "../creation/Icon";
-import { message } from "antd";
 
 const Container = styled.div`
     display: grid;
@@ -162,7 +162,8 @@ const Picture = styled.picture`
     }
 `
 const Column = styled.ul`
-    display: grid;
+    display: flex;
+    flex-direction: column;
     gap: 16px;
 
     .item {
@@ -173,9 +174,10 @@ const Column = styled.ul`
 export function List() {
     let [recommend, setRecommend] = useState({
         info: new dao.Recommend(),
-        list: new Array<dao.Recommend>(),
         total: 0,
         open: false,
+        column: 4,
+        list: new Array<Array<dao.Recommend>>(),
     });
 
     const getRecommend = async () => {
@@ -186,7 +188,14 @@ export function List() {
         let res = await srv.Aigc.recommend(data);
         if (res.code == 1000) {
             recommend.total = res.data.total;
-            recommend.list = res.data.data.works.filter((f: any) => f.type == 'WORK').map((m: any) => m.data);
+            let tmp: Array<dao.Recommend> = res.data.data.works.filter((f: any) => f.type == 'WORK').map((m: any) => m.data);
+            tmp.forEach((e, i) => {
+                if (i < recommend.column) {
+                    recommend.list[i] = [e];
+                } else {
+                    recommend.list[i%recommend.column].push(e);
+                }
+            });
             setRecommend({...recommend});
         } else {
             message.error(res.desc);
@@ -206,9 +215,9 @@ export function List() {
     }, []);
 
     let content = <>
-        {[1, 2, 3, 4].map(x =>
-            <Column key={x}>
-                {recommend.list.map(v =>
+        {recommend.list.map((x, y) =>
+            <Column key={y}>
+                {x.map(v =>
                     <li className="item" onClick={() => onPreview(v)} key={v.taskId}>
                         <Card>
                             <div className="card-body">

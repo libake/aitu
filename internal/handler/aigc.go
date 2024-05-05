@@ -18,13 +18,16 @@ type Aigc struct {
 func (t Aigc) Task(ctx *gin.Context) {
 	var (
 		param struct {
-			TaskID string `json:"taskId"`
+			TaskID string `form:"taskId"`
 		}
 	)
 
-	err := ctx.BindJSON(&param)
-	if nil != err {
-		util.Fail(3040, err.Error(), ctx)
+	err := ctx.BindQuery(&param)
+	if err != nil {
+		ctx.JSON(http.StatusOK, gin.H{
+			"code": -2,
+			"desc": err.Error(),
+		})
 		return
 	}
 	body, _ := json.Marshal(param)

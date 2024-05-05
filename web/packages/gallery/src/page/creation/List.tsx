@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { Panel } from './Panel';
 import { Icon } from "@/common";
 import { dao, srv } from "@/core";
+import { message } from "antd";
 
 
 const Container = styled.div`
@@ -117,31 +118,17 @@ export function List() {
     });
 
     const getTask = async () => {
-        task.list = [];
-        for (let i = 0; i < 5; i++) {
-            let tmp = {
-                id: i,
-                taskId: i.toString(),
-                taskInput: {
-                    prompt: '一个可爱的卡通女孩穿着短袖牵着狗，全身，黄色背景，以Keith Haring的风格涂鸦，清晰的插图，大胆的线条和纯色，简单的细节，极简主义',
-                },
-                taskType: 'text_to_image',
-                taskRate: 100,
-                taskResult: [
-                    {
-                        url: 'https://wanx.alicdn.com/wanx/1789492172506145/text_to_image/cf78135764f642969ca5f010cd524248_0.png?x-oss-process=image/watermark,image_aW1nL-awtOWNsDIwMjQwMjIyLnBuZw,t_80,g_se,x_30,y_30/format,webp',
-                    }, {
-                        url: 'https://wanx.alicdn.com/wanx/1789492172506145/text_to_image/cf78135764f642969ca5f010cd524248_0.png?x-oss-process=image/watermark,image_aW1nL-awtOWNsDIwMjQwMjIyLnBuZw,t_80,g_se,x_30,y_30/format,webp',
-                    }, {
-                        url: 'https://wanx.alicdn.com/wanx/1789492172506145/text_to_image/cf78135764f642969ca5f010cd524248_0.png?x-oss-process=image/watermark,image_aW1nL-awtOWNsDIwMjQwMjIyLnBuZw,t_80,g_se,x_30,y_30/format,webp',
-                    }, {
-                        url: 'https://wanx.alicdn.com/wanx/1789492172506145/text_to_image/cf78135764f642969ca5f010cd524248_0.png?x-oss-process=image/watermark,image_aW1nL-awtOWNsDIwMjQwMjIyLnBuZw,t_80,g_se,x_30,y_30/format,webp',
-                    }
-                ]
-            }
-            task.list.push(tmp);
+        let data = {
+            taskId: 'fbc778fe-19e9-40ef-a506-72b5023e8a84',
         }
-        let res = await srv.Task.info('fbc778fe-19e9-40ef-a506-72b5023e8a84');
+        let res = await srv.Aigc.task(data);
+        if (res.code == 1000) {
+            if (res.data.output.task_status != 'UNKNOWN') {
+                task.list = res.data;
+            }
+        } else {
+            message.error(res.desc);
+        }
         setTask({...task});
     }
 

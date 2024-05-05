@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Link, Outlet } from "react-router-dom";
+import { Link, Outlet, useNavigate } from "react-router-dom";
 import { Dropdown, message, Space } from "antd";
 
 import { dao, srv } from "@/core";
@@ -67,6 +67,7 @@ const Avatar = styled.div`
 `;
 
 export function Layout() {
+    const navigate = useNavigate();
     const [menu, setMenu] = useState({
         list: new Array<dao.Node>(),
     });
@@ -91,8 +92,12 @@ export function Layout() {
         setMenu({...menu});
     }
 
-    const logout = () => {
-        message.info('退出');
+    const logout = async () => {
+        await srv.User.logout();
+        localStorage.clear();
+        setTimeout(() => {
+            navigate('/auth/signIn');
+        }, 500)
     }
 
     useEffect(() => {
@@ -152,12 +157,6 @@ export function Layout() {
                                 }, {
                                     label: <Link to="/user/profile">基本信息</Link>,
                                     key: 1
-                                }, {
-                                    label: <Link to="/user/security">安全设置</Link>,
-                                    key: 2
-                                }, {
-                                    label: <Link to="/user/attest">实名认证</Link>,
-                                    key: 3
                                 }, {
                                     key: 1 - 2,
                                     type: 'divider',

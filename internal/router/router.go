@@ -24,7 +24,7 @@ func Router(addr string) error {
 		{
 			var handler handler.Aigc
 			aigc.POST("/text2image", handler.Text2image)
-			aigc.POST("/task", handler.Task)
+			aigc.GET("/task", handler.Task)
 			aigc.POST("/recommend", handler.Recommend)
 		}
 
@@ -33,6 +33,7 @@ func Router(addr string) error {
 			var handler handler.User
 			user.GET("/info", handler.Info)
 			user.POST("/list", handler.List)
+			user.GET("/logout", handler.Logout)
 		}
 
 		node := api.Group("/node", middleware.Token())

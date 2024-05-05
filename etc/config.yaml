@@ -1,7 +1,6 @@
 host: 127.0.0.1
 port: 8090
 debug: true
-appkey: 63de615a1e1c8708d9f1a4d5b8a1f9f3
 
 database:
   type: postgres

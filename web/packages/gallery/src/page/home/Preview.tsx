@@ -121,23 +121,26 @@ export function Preview(props: IProps) {
         } else {
             document.body.style.overflow = 'auto';
         }
-        console.log(props.data)
         Object.assign(info, props.data);
         setInfo({ ...info });
     }, [props]);
 
-    const close = (e: any) => {
+    const close = () => {
         props.onClose(false);
     }
 
     let [tool, setTool] = useState({
         imageZoom: 1,
+        display: 'block',
     });
 
     const onZoom = (step: number) => {
         tool.imageZoom += step;
         if (tool.imageZoom < 1) {
             tool.imageZoom = 1;
+            tool.display = 'block';
+        } else {
+            tool.display = 'none';
         }
         setTool({ ...tool });
     }
@@ -152,9 +155,9 @@ export function Preview(props: IProps) {
             <div className="preview-body" onClick={close}>
                 <div className="img-wrap" onClick={(e) => e.stopPropagation()}>
                     <picture>
-                        <img src={info.image.url} style={{ height: `${(tool.imageZoom) * 100}%` }} alt="" />
+                        <img src={info.image.url} style={{ maxWidth: `100%`, maxHeight: "100%" }} alt="" />
                     </picture>
-                    <div className="list">
+                    <div className="list" style={{display: tool.display}}>
                         <div className="list-item">
                             <label>创意作者</label>
                             <span>{info.userPhone}</span>
