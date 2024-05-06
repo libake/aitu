@@ -73,3 +73,28 @@ COMMENT ON COLUMN node.path IS '族谱';
 COMMENT ON COLUMN node.sort IS '排序';
 COMMENT ON COLUMN node.scope IS '范围';
 COMMENT ON COLUMN node.status IS '状态:1-启用,0-禁用';
+
+
+-- 任务 - task
+DROP TABLE IF EXISTS "task";
+
+CREATE TABLE "task" (
+  "id" bigserial not null PRIMARY KEY,
+  "model" varchar(256) not null default '',
+  "input" json not null default '{}',
+  "parameters" json not null default '{}',
+  "results" json not null default '[]',
+  "task_id" varchar(64) not null default '',
+  "task_status" varchar(32) not null default '',
+  "user_id" bigint not null default 0,
+  "update_at" timestamp not null default (now()),
+  "create_at" timestamp not null default (now())
+);
+COMMENT ON TABLE task IS '任务';
+COMMENT ON COLUMN task.model IS '模型:wanx-v1';
+COMMENT ON COLUMN task.input IS '输入信息';
+COMMENT ON COLUMN task.parameters IS '输入信息';
+COMMENT ON COLUMN task.results IS '生成结果';
+COMMENT ON COLUMN task.task_id IS '作业任务ID';
+COMMENT ON COLUMN task.task_status IS '状态:0-未知';
+COMMENT ON COLUMN task.user_id IS '归属用户';

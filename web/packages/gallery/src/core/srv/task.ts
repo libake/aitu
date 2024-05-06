@@ -12,4 +12,13 @@ export class Task {
         let url = '/v1/tasks/' + params;
         return http.get(url);
     }
+
+    /**
+     * 查询作品
+     * @param data 
+     */
+    static list(data: dto.Request): Promise<dto.Response> {
+        let url = `/task/list`;
+        return http.post(url, data);
+    }
 }

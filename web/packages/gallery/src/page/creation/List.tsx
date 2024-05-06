@@ -1,10 +1,10 @@
 import styled from "styled-components";
 import { useEffect, useState } from "react";
-
-import { Panel } from './Panel';
-import { Icon } from "@/common";
-import { dao, srv } from "@/core";
 import { message } from "antd";
+
+import { Icon } from "@/common";
+import { dao, dto, srv } from "@/core";
+import { Panel } from './Panel';
 
 
 const Container = styled.div`
@@ -119,13 +119,13 @@ export function List() {
 
     const getTask = async () => {
         let data = {
-            taskId: 'fbc778fe-19e9-40ef-a506-72b5023e8a84',
+            taskId: '3477ac33-618a-49cc-84a7-8fd0af7c3877'//'fbc778fe-19e9-40ef-a506-72b5023e8a84',
         }
         let res = await srv.Aigc.task(data);
         if (res.code == 1000) {
-            if (res.data.output.task_status != 'UNKNOWN') {
-                task.list = res.data;
-            }
+            // if (res.data.output.task_status != 'UNKNOWN') {
+            //     task.list = res.data.output.results;
+            // }
         } else {
             message.error(res.desc);
         }
@@ -139,12 +139,25 @@ export function List() {
                 prompt: '一只奔跑的猫',
             }
         }
-        let res = await srv.Task.text2image(data);
+        let res = await srv.Aigc.text2image(data);
         
     }
 
+    const getCreation = async () => {
+        let data = {
+            ...new dto.Request()
+        }
+        let res = await srv.Task.list(data);
+        if (res.code == 1000) {
+            task.list = res.data.list;
+        } else {
+            task.list = [];
+        }
+        setTask({...task});
+    }
+
     useEffect(() => {
-        getTask();
+        getCreation();
     }, []);
 
     return <Container>
@@ -172,7 +185,7 @@ export function List() {
                     </Head>
                     <Head style={{ height: "56px" }}>
                         <div className="text">
-                            <p>{v.taskInput.prompt}</p>
+                            <p>{v.input.prompt}</p>
                         </div>
                         <div className="tool">
                             <a href="">
@@ -187,7 +200,7 @@ export function List() {
                         </div>
                     </Head>
                     <Image>
-                        {v.taskResult.map((d, k) =>
+                        {v.results.map((d, k) =>
                             <div className="img-item" key={k}>
                                 <picture>
                                     <img src={d.url} alt="" />

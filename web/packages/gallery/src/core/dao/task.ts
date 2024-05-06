@@ -1,21 +1,21 @@
 export class Task {
     id: number;
     taskId: string;
-    taskInput: {
+    input: {
         styleType?: string;
         text?: string;
         prompt?: string;
     };
     taskType: string;
     taskRate: number;
-    taskResult: Array<{url: string}>;
+    results: Array<{url: string}>;
 
     constructor() {
         this.id = 0;
         this.taskId = '';
-        this.taskInput = {};
+        this.input = {};
         this.taskType = '';
         this.taskRate = 0;
-        this.taskResult = [];
+        this.results = [];
     }
 }

@@ -7,7 +7,7 @@ export class Aigc {
      * @param data 
      */
     static text2image(data: any): Promise<dto.Response> {
-        let url = '/v1/services/aigc/text2image/image-synthesis';
+        let url = 'aigc/text2image';
         return http.post(url, data);
     }
 

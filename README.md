@@ -27,7 +27,7 @@
 3054|查询失败||
 3060|redis读取异常||
 3061|在redis未找到该值||
-3070|token相关||
+3070|token:3070~3079||
 3071|token过期||
 3072|token不存在||
 3073|非法token||
@@ -36,12 +36,11 @@
 4010|非法参数|Invalid parameter|
 4011|非法的文件格式|Invalid file format|转换文件格式
 4012|文件超过限定大小|The file exceeds the specified size|压缩文件
-4013||                                     |
 4014|非法的邮箱|Invalid email|
 4015|非法的手机号|Invalid mobile|
 4016|帐号已存在|Account already exists|
 4017|无效验证码|Invalid captcha|
 4040|未找到/不存在|not found|
 4041|未找到逻辑对象||
-4100|用户||
+4100|用户:4100~4109||
 4101|非后台用户||
