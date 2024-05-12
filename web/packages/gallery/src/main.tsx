@@ -6,12 +6,18 @@ import zhCN from 'antd/locale/zh_CN';
 import routes from './router';
 import '@/style/index.less';
 
+let theme = {
+  token: {
+    colorPrimary: "#4bfef1"
+  }
+};
+
 const App = () => useRoutes(routes);
 
 const rootDom = document.getElementById('root') as HTMLElement;
 ReactDOM.createRoot(rootDom).render(
   <BrowserRouter>
-    <ConfigProvider locale={zhCN}>
+    <ConfigProvider locale={zhCN} theme={theme}>
       <App />
     </ConfigProvider>
   </BrowserRouter>

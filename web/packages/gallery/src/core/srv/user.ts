@@ -13,4 +13,9 @@ export class User {
         }
         return http.post(url, data);
     }
+
+    static signIn(data: {account: string, captcha: string}): Promise<dto.Response> {
+        let url = '/auth/signIn';
+        return http.post(url, data);
+    }
 }

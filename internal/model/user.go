@@ -71,11 +71,7 @@ func (t *User) Passwd() (err error) {
 }
 
 // 登录
-func (t *User) SignIn(account string) (info User, err error) {
-	var (
-		has bool
-	)
-
+func (t *User) SignIn(account string) error {
 	query := "password=?"
 	args := []interface{}{t.Password, account}
 	reg := regexp.MustCompile(`\w+([-+.]\w+)*@\w+([-.]\w+)*\.\w+([-.]\w+)*`)
@@ -85,12 +81,12 @@ func (t *User) SignIn(account string) (info User, err error) {
 		query += " AND mobile=?"
 	}
 
-	has, err = db.NewPostgres().Omit("password").Where(query, args...).Get(&info)
+	has, err := db.NewPostgres().Omit("password").Where(query, args...).Get(t)
 	if err != nil || !has {
 		err = errors.New("is empty")
 	}
 
-	return
+	return err
 }
 
 // 用户列表

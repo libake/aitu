@@ -43,10 +43,23 @@ func (t *Task) Create() (err error) {
 	return
 }
 
-// 更新用户
-func (t *Task) Update() (err error) {
-	_, err = db.NewPostgres().Update(t)
+// 删除任务
+func (t *Task) Delete(args []int64) (err error) {
+	has, err := db.NewPostgres().In("id", args).Delete(t)
+	if err != nil || has == 0 {
+		err = errors.New("删除失败")
+	}
+
 	return
+}
+
+// 更新任务
+func (t *Task) Update() error {
+	has, err := db.NewPostgres().Where("id=? OR task_id=?", t.ID, t.TaskID).Update(t)
+	if err != nil || has == 0 {
+		err = errors.New("update fail")
+	}
+	return err
 }
 
 // 任务列表
@@ -55,6 +68,11 @@ func (t *Task) List(req dto.Request) (list []Task, total int64, err error) {
 		query string
 		args  []interface{}
 	)
+
+	if t.UserID > 10 {
+		query = "user_id=?"
+		args = append(args, t.UserID)
+	}
 
 	for _, v := range req.QueryBy {
 		switch v.Col {
@@ -85,6 +103,7 @@ func (t *Task) List(req dto.Request) (list []Task, total int64, err error) {
 	return
 }
 
+// 任务详情
 func (t *Task) Info() (info Task, err error) {
 	var (
 		query string

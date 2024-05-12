@@ -45,25 +45,33 @@ func (t *User) SignIn(ctx *gin.Context) {
 	switch param.Mode {
 	case 1:
 		// TODO 短信接入后实现
-		db.NewRedis().Get(param.Captcha)
+		captcha, _ := db.NewRedis().Get(param.Account).Result()
+		if captcha == "" || param.Captcha != captcha {
+			ctx.JSON(http.StatusOK, gin.H{
+				"code": 3040,
+				"desc": "验证码不正确",
+			})
+			return
+		}
 	default:
 		user.Password = param.Password
+		err := user.SignIn(param.Account)
+		if err != nil {
+			ctx.JSON(http.StatusOK, gin.H{
+				"code": 3040,
+				"desc": "账号或密码不正确",
+			})
+			return
+		}
 	}
-	ret, err := user.SignIn(param.Account)
-	if err != nil {
-		ctx.JSON(http.StatusOK, gin.H{
-			"code": 3040,
-			"desc": "账号或密码不正确",
-		})
-		return
-	}
+
 	// 区分前后台用户
 	header := ctx.Request.Header
 	if v, ok := header["Scheme"]; ok {
 		scheme = v[0]
 	}
 
-	if scheme == "admin" && ret.ID > 10 {
+	if scheme == "admin" && user.ID > 10 {
 		ctx.JSON(http.StatusOK, gin.H{
 			"code": 4101,
 			"desc": "非后台用户",
@@ -72,8 +80,8 @@ func (t *User) SignIn(ctx *gin.Context) {
 	}
 
 	token = uuid.NewString()
-	ret.UpdateAt = time.Now()
-	s, _ := json.Marshal(ret)
+	user.UpdateAt = time.Now()
+	s, _ := json.Marshal(user)
 	db.NewRedis().HSet("token", token, string(s))
 
 	ctx.JSON(http.StatusOK, gin.H{

@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import styled from "styled-components";
-import { message } from "antd";
+import { Spin, message } from "antd";
 
 import { dao, srv } from "@/core";
 import { Icon } from "@/common";
@@ -178,9 +178,12 @@ export function List() {
         open: false,
         column: 4,
         list: new Array<Array<dao.Recommend>>(),
+        spinning: false,
     });
 
     const getRecommend = async () => {
+        recommend.spinning = true;
+        setRecommend({...recommend});
         let data = {
             lastId: 0,
             pageSize: 50,
@@ -196,10 +199,11 @@ export function List() {
                     recommend.list[i%recommend.column].push(e);
                 }
             });
-            setRecommend({...recommend});
         } else {
             message.error(res.desc);
         }
+        recommend.spinning = false;
+        setRecommend({...recommend});
     }
     
     const onPreview = (item?: dao.Recommend) => {
@@ -261,5 +265,6 @@ export function List() {
             {content}
         </Content>
         <Preview open={recommend.open} data={recommend.info} onClose={() => onPreview()}></Preview>
+        <Spin spinning={recommend.spinning} />
     </Container>
 }

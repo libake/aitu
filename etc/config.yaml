@@ -14,9 +14,9 @@ database:
   slave:
     host: 127.0.0.1
     name: aitu
-    port: 5432
-    user: postgres
-    password: rMHmqsn0c
+    port: 3306
+    user: root
+    password: mGB1f0xZ
   charset: utf8
   debug: true
 

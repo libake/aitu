@@ -1,6 +1,6 @@
 import styled from "styled-components";
 import { useEffect, useState } from "react";
-import { message } from "antd";
+import { Popconfirm, message } from "antd";
 
 import { Icon } from "@/common";
 import { dao, dto, srv } from "@/core";
@@ -114,14 +114,16 @@ const Image = styled.div`
 
 export function List() {
     let [task, setTask] = useState({
+        editable: false,
         list: new Array<dao.Task>(),
+        keys: new Array<number>(),
     });
 
-    const getTask = async () => {
+    const pollTask = async () => {
         let data = {
-            taskId: '3477ac33-618a-49cc-84a7-8fd0af7c3877'//'fbc778fe-19e9-40ef-a506-72b5023e8a84',
+            taskId: '9585086b-c8fb-478c-9530-000e34af36c7'//'fbc778fe-19e9-40ef-a506-72b5023e8a84',
         }
-        let res = await srv.Aigc.task(data);
+        let res = await srv.Task.info(data);
         if (res.code == 1000) {
             // if (res.data.output.task_status != 'UNKNOWN') {
             //     task.list = res.data.output.results;
@@ -132,54 +134,94 @@ export function List() {
         setTask({...task});
     }
 
-    const addTask = async () => {
+    const addTask = async (v: any) => {
         let data = {
             model: 'wanx-v1',
             input: {
                 prompt: '一只奔跑的猫',
             }
         }
-        let res = await srv.Aigc.text2image(data);
-        
+        console.log(v)
+        return
+        let res = await srv.Task.create(data);
+        if (res.code == 1000) {
+            setTimeout(() => {
+                pollTask();
+            }, 1000);
+        }
     }
 
-    const getCreation = async () => {
+    const getTask = async () => {
         let data = {
             ...new dto.Request()
         }
         let res = await srv.Task.list(data);
         if (res.code == 1000) {
-            task.list = res.data.list;
+            Object.assign(task.list, res.data.list);
         } else {
             task.list = [];
         }
         setTask({...task});
     }
 
+    const selTask = (evt: any, item: dao.Task) => {
+        let s = new Set(task.keys);
+        if (evt.target.checked) {
+            s.add(item.id);
+        } else {
+            s.delete(item.id);
+        }
+        task.keys = Array.from(s);
+        setTask({...task});
+    }
+
+    const delTask = async (item?: dao.Task) => {
+        if (!!item) {
+            task.keys = [item.id];
+            setTask({...task});
+        }
+        let data = {
+            id: task.keys
+        }
+        if (data.id.length == 0) {
+            message.warning('请至少选择一项操作');
+            return
+        }
+        let res = await srv.Task.delete(data);
+        if (res.code == 1000) {
+            message.success('删除成功');
+        } else {
+            message.error(res.desc);
+        }
+    }
+
     useEffect(() => {
-        getCreation();
+        getTask();
     }, []);
 
     return <Container>
         <div className="side">
-            <Panel submit={() => addTask()}></Panel>
+            <Panel submit={(e: any) => addTask(e)}></Panel>
         </div>
         <Content>
             <Title>
                 <span className="text">支持下载或收藏，可通过管理画作进行删除，欢迎对创作点赞点踩并提出建议，助力模型不断进化。</span>
                 <span className="tool">
-                    <i className="iconfont">&#xe697;</i>
-                    管理画作
+                    {task.editable ? <>
+                    <a onClick={() => setTask({...task, editable: false})}>取消</a>
+                    <a onClick={() => delTask()}>删除{task.keys.length}条生成记录</a>
+                    </> : <div onClick={() => setTask({...task, editable: true})}><Icon src="/icon/menu.svg" text="管理画作" /></div>}
                 </span>
             </Title>
             {task.list.map((v, i) =>
                 <History key={i}>
                     <Head>
                         <div className="text">
+                            {task.editable && <input onChange={(e) => selTask(e, v)} type="checkbox" />}
                             <div className="cell">
                                 <Icon src="/icon/menu.svg" text="图像风格迁移" />
                             </div>
-                            <time>2024-04-20 09:00:00</time>
+                            <time>{v.createAt}</time>
                         </div>
                         <div className="line"></div>
                     </Head>
@@ -188,19 +230,27 @@ export function List() {
                             <p>{v.input.prompt}</p>
                         </div>
                         <div className="tool">
-                            <a href="">
+                            <a>
                                 <Icon src={"/icon/reuse.svg"} text="复用创意" />
                             </a>
-                            <a href="">
+                            <a>
                                 <Icon src="/icon/update.svg" text="再次生成" />
                             </a>
-                            <a href="">
-                                <Icon src="/icon/reuse.svg" />
-                            </a>
+                            <Popconfirm
+                                title="确定要删除记录吗？"
+                                description="删除后的记录不可恢复"
+                                onConfirm={() => delTask(v)}
+                                okText="删除"
+                                cancelText="取消"
+                            >
+                                <>
+                                    <Icon src="/icon/menu.svg" />
+                                </>
+                            </Popconfirm>
                         </div>
                     </Head>
                     <Image>
-                        {v.results.map((d, k) =>
+                        {v.results && v.results.map((d, k) =>
                             <div className="img-item" key={k}>
                                 <picture>
                                     <img src={d.url} alt="" />

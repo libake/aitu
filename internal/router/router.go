@@ -28,9 +28,11 @@ func Router(addr string) error {
 			aigc.POST("/recommend", handler.Recommend)
 		}
 
-		task := api.Group("/task")
+		task := api.Group("/task", middleware.Token())
 		{
 			var handler handler.Task
+			task.POST("/create", handler.Create)
+			task.POST("/delete", handler.Delete)
 			task.GET("/info", handler.Info)
 			task.POST("/list", handler.List)
 		}
@@ -58,6 +60,12 @@ func Router(addr string) error {
 		{
 			var handler handler.File
 			file.POST("/upload", handler.Upload)
+		}
+
+		common := api.Group("/common")
+		{
+			var handler handler.Common
+			common.POST("/sendSms", handler.SendSms)
 		}
 
 	}

@@ -2,8 +2,10 @@ import { useEffect, useState } from "react";
 import styled from "styled-components";
 
 import { Upload } from "./Upload";
-import {Icon} from "@/common";
-import { TextArea } from "./TextArea";
+import { Icon } from "@/common";
+import { Divider } from "antd";
+import { SPELL } from "@/constant";
+// import { TextArea } from "./TextArea";
 
 const Container = styled.div`
     margin: 24px 0 24px 24px;
@@ -163,18 +165,103 @@ const Button = styled.button`
     color: #333;
     background-color: ${props => props.theme.primaryColor};
 `
+const TextArea = styled.div`
+    position: relative;
+    margin: 16px;
+    border: 1px dashed #2d3240;
+    border-radius: 8px;
+    color: #999;
+    background-color: #0f1319;
+
+    .main {
+        padding: 0 12px;
+
+        &::after {
+            position: absolute;
+            bottom: 1px;
+            left: 1px;
+            right: 1px;
+            content: "";
+            background-color: #0f1319;
+            z-index: -1;
+        }
+    }
+
+    textarea {
+        border: none;
+        width: 100%;
+        height: 100px;
+        outline: none;
+        background-color: transparent;
+    }
+
+    .tips {
+        display: flex;
+        justify-content: end;
+        align-items: center;
+        height: 30px;
+        padding: 6px 0;
+        font-size: 12px;
+    }
+
+    .collapse {
+        border-top: 1px solid #fff;
+
+        .info {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            height: 50px;
+            padding: 16px;
+            color: #fff;
+            font-size: 14px;
+            cursor: pointer;
+        }
+        
+        .list {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            grid-template-rows: repeat(2, auto);
+            gap: 16px;
+            padding: 16px;
+        }
+
+        .item {
+            background-color: #2d3240;
+            border-radius: 4px;
+            cursor: pointer;
+            border-radius: 4px;
+            box-sizing: border-box;
+            overflow: hidden;
+
+            &:hover {
+                color: #fff;
+            }
+
+            &.active {
+                border: 1px solid ${props => props.theme.primaryColor};
+            }
+            
+            img {
+                width: 100%;
+            }
+
+            p {
+                margin: 0;
+                text-align: center;
+                white-space: nowrap;
+                font-size: 12px;
+                font-weight: 400;
+            }
+        }
+    }
+`
 
 interface IProps {
     submit: Function;
 }
 
 export function Panel(props: IProps) {
-    let [collapse, setCollapse] = useState(false);
-
-    function onCollapse() {
-        setCollapse(!collapse);
-    }
-
     let [mode, setMode] = useState({
         info: {
             icon: '/icon/menu.svg',
@@ -199,28 +286,77 @@ export function Panel(props: IProps) {
                 value: 3,
                 btnText: '生成指定风格画作',
             }
-        ]
+        ],
+        spell: SPELL,
+        collapse: false,
     });
 
     let [req, setReq] = useState({
-        size: '1024*1024',
+        input: {
+            prompt: '',
+        },
+        parameters: {
+            size: '1024*1024',
+        }
     });
 
     const onSize = (s: string) => {
-        req.size = s;
-        setReq({...req});
+        req.parameters.size = s;
+        setReq({ ...req });
         console.log(req)
     }
 
-    let [body, setBody] = useState(<></>)
+    const onSpell = (idx: number) => {
+        mode.spell.styleList[idx].active = !mode.spell.styleList[idx].active;
+        setMode({ ...mode });
+    }
+
+    const setTextArea = (v: string) => {
+        req.input.prompt = v;
+        setReq({...req});
+    }
+
+    let [body, setBody] = useState(<></>);
 
     const onMode = (i: number) => {
         mode.info = mode.list[i];
         setMode({ ...mode });
-        switch(mode.info.value) {
+        switch (mode.info.value) {
             case 1:
                 body = <>
-                    <TextArea></TextArea>
+                    <TextArea>
+                        <div className="main">
+                            <textarea
+                                onChange={(e) => setTextArea(e.target.value)}
+                                defaultValue={req.input.prompt}
+                                placeholder="试试输入你心中的画面，尽量描述具体，可以尝试用一些风格修饰词辅助你的表达。"
+                            ></textarea>
+                            <div className="tips">
+                                <div className="limit">{req.input.prompt.length}/500</div>
+                                {req.input.prompt.length > 0 && <>
+                                    <Divider type="vertical" />
+                                    <Icon src="/icon/menu.svg"></Icon>
+                                </>
+                                }
+                            </div>
+                        </div>
+                        <div className="collapse">
+                            <div className="info">
+                                <div className="text">
+                                    <Icon src="/icon/menu.svg" text="咒语书"></Icon>
+                                </div>
+                                <Icon src="/icon/menu.svg"></Icon>
+                            </div>
+                            <div className="list">
+                                {mode.spell.styleList.map((v, i) =>
+                                    <div className={`item${v.active ? ' active' : ''}`} key={i} onClick={() => onSpell(i)}>
+                                        <img src={v.pic} alt="" />
+                                        <p>{v.name}</p>
+                                    </div>
+                                )}
+                            </div>
+                        </div>
+                    </TextArea>
                     <div className="demo">
                         <div className="demo-info">
                             <span>示例：</span>
@@ -230,17 +366,17 @@ export function Panel(props: IProps) {
                             <Icon src="/icon/menu.svg"></Icon>
                         </div>
                     </div>
-                    <Upload  tag={{text: '参考图', weak: true}}></Upload>
+                    <Upload tag={{ text: '参考图', weak: true }}></Upload>
                     <div className="size">
-                        <div className={`size-item${req.size == '1024*1024' ? ' active' : ''}`} onClick={() => onSize('1024*1024')}>
+                        <div className={`size-item${req.parameters.size == '1024*1024' ? ' active' : ''}`} onClick={() => onSize('1024*1024')}>
                             <span className="size-ratio s-1v1"></span>
                             <span>1&nbsp;&nbsp;:&nbsp;&nbsp;1</span>
                         </div>
-                        <div className={`size-item${req.size == '1280*720' ? ' active' : ''}`} onClick={() => onSize('1280*720')}>
+                        <div className={`size-item${req.parameters.size == '1280*720' ? ' active' : ''}`} onClick={() => onSize('1280*720')}>
                             <span className="size-ratio s-16v9"></span>
                             <span>16&nbsp;&nbsp;:&nbsp;&nbsp;9</span>
                         </div>
-                        <div className={`size-item${req.size == '720*1280' ? ' active' : ''}`} onClick={() => onSize('720*1280')}>
+                        <div className={`size-item${req.parameters.size == '720*1280' ? ' active' : ''}`} onClick={() => onSize('720*1280')}>
                             <span className="size-ratio s-9v16"></span>
                             <span>9&nbsp;&nbsp;:&nbsp;&nbsp;16</span>
                         </div>
@@ -262,9 +398,9 @@ export function Panel(props: IProps) {
                 break;
             case 3:
                 body = <>
-                    <Upload tag={{text: '原图', weak: false}}></Upload>
+                    <Upload tag={{ text: '原图', weak: false }}></Upload>
                     <Icon src="/icon/menu.svg"></Icon>
-                    <Upload tag={{text: '风格图', weak: false}}></Upload>
+                    <Upload tag={{ text: '风格图', weak: false }}></Upload>
                     <div className="tips">
                         <span>手边没有原图和风格图？直接试试</span>
                         <span>官方示例</span>
@@ -276,8 +412,8 @@ export function Panel(props: IProps) {
                 </>
                 break;
         }
-        setBody({...body});
-        setCollapse(false);
+        setBody({ ...body });
+        setMode({...mode, collapse: false});
     }
 
     const submit = () => {
@@ -286,17 +422,22 @@ export function Panel(props: IProps) {
 
     useEffect(() => {
         onMode(0);
+        onSize('1024*1024');
     }, []);
+
+    useEffect(() => {
+        props.submit(req);
+    }, [req]);
 
     return <Container>
         <Collapse>
-            <div className="info" onClick={onCollapse}>
+            <div className="info" onClick={() => setMode({...mode, collapse: !mode.collapse})}>
                 <div className="text">
                     <Icon src={mode.info.icon} text={mode.info.text} size="16px"></Icon>
                 </div>
                 <Icon src="/icon/menu.svg"></Icon>
             </div>
-            <div className="list" style={{ display: collapse ? 'block' : 'none' }}>
+            <div className="list" style={{ display: mode.collapse ? 'block' : 'none' }}>
                 {mode.list.map((v, i) =>
                     <div className={"item" + (v.value == mode.info.value ? " active" : "")} key={v.value} onClick={() => onMode(i)}>
                         <Icon src={v.icon} text={v.text}></Icon>

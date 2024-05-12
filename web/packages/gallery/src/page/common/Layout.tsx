@@ -1,10 +1,12 @@
 import { useEffect, useState } from "react";
 import { Link, NavLink, Outlet } from "react-router-dom";
 import styled, { ThemeProvider } from "styled-components";
-import { Dropdown, message, Popover, Space } from "antd";
+import { Dropdown, message, Popover, Space, Button, Form, Input, Checkbox } from "antd";
 
 import { dao, srv } from "@/core";
 import { Icon } from "@/common";
+import { Captcha } from "./Captcha";
+
 
 const Logo = styled.div`
     display: flex;
@@ -13,7 +15,6 @@ const Logo = styled.div`
     height: 52px;
     overflow: hidden;
 `;
-
 const Header = styled.header`
     display: flex;
     justify-content: space-between;
@@ -54,9 +55,9 @@ const Header = styled.header`
         }
     }
 `;
-
-const Nav = styled.nav`
+const NavLeft = styled.nav`
     display: flex;
+    align-items: center;
     gap: 32px;
 
     a {
@@ -71,7 +72,6 @@ const Nav = styled.nav`
         color: #fff;
     }
 `
-
 const Footer = styled.div`
     padding: 32px 0;
     color: #fff;
@@ -109,23 +109,68 @@ const Label = styled.label`
     display: flex;
     margin-bottom: 32px;
 `
+const NavRight = styled.ul`
+    display: flex;
+    align-items: center;
+    gap: 16px;
+`
+const Modal = styled.div`
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100vw;
+    height: 100vh;
+    position: fixed;
+    top: 0;
+    left: 0;
+    background-color: rgba(0,0,0,.9);
+    z-index: 1000;
 
-export function Layout() {
-
-    const content = <>
-        <div className="banner">
-            <div>
-                <p>剩余能量值</p>
-                <p>50</p>
-            </div>
-            <Icon src="/icon/menu.svg"></Icon>
-        </div>
-    </>
-
-    const logout = () => {
-        message.info('退出');
+    label {
+        color: #fff;
     }
 
+    input {
+        border: none;
+        background-color: #141822;
+        color: #fff;
+    }
+
+    .box {
+        padding: 16px;
+        border-radius: 20px;
+        background-color: #282c38;
+    }
+
+    .box-head {
+        display: flex;
+        justify-content: space-between;
+        height: 50px;
+    }
+
+    .box-body {
+        padding: 24px;
+    }
+
+    .link {
+        color: #fff;
+    }
+
+    .ant-form {
+        width: 360px;
+    }
+
+    .ant-input-affix-wrapper {
+        border: none;
+        background-color: #141822;
+    }
+
+    .ant-form-item-label >label {
+        color: #fff;
+    }
+`
+
+export function Layout() {
     // 能量值
     let [power, setPower] = useState({
         list: new Array(),
@@ -158,48 +203,132 @@ export function Layout() {
         ...theme.dark,
     }
 
+    const [user, setUser] = useState({
+        open: false,
+        info: new dao.User(),
+        smsTxt: '获取验证码',
+        smsDisable: false,
+    });
+    const [userForm] = Form.useForm();
+    let interval: NodeJS.Timer;
+
+    const sendSms = async () => {
+        let data = {
+            mobile: userForm.getFieldValue('account'),
+            scene: 1,
+        }
+        let res = await srv.Common.sendSms(data);
+        if (res.code == 1000) {
+            user.smsDisable = true;
+            setUser({...user});
+            let time = 60;
+            interval = setInterval(()=> {
+                time--;
+                if (time <= 0) {
+                    user.smsTxt = '获取验证码';
+                    clearInterval(interval);
+                    user.smsDisable = false;
+                } else {
+                    user.smsTxt = `${time}秒后重发`;
+                }
+                setUser({...user});
+            }, 1000);
+        } else {
+            message.error(res.desc);
+        }
+    }
+
+    const signIn = async () => {
+        clearInterval(interval);
+        let valid = await userForm.validateFields().catch(e => console.log(e));
+        if (!valid) {
+            return;
+        }
+        let data = {
+            ...userForm.getFieldsValue(),
+            mode: 1
+        };
+        let res = await srv.User.signIn(data);
+        if (res.code == 1000) {
+            localStorage.setItem('token', res.data);
+            onModal();
+        } else {
+            message.error(res.desc);
+        }
+    }
+
+    const onModal = () => {
+        user.open = !user.open;
+        setUser({ ...user });
+        clearInterval(interval);
+    }
+
+    const logout = () => {
+        message.info('退出');
+    }
+
+    useEffect(() => {
+        user.info.mobile = userForm.getFieldValue('account');
+        console.log(user)
+        setUser({...user});
+    }, []);
+
+    const content = false ? <>
+        <li>
+            <Popover className="money" content={<div className="banner">
+                <div>
+                    <p>剩余能量值</p>
+                    <p>50</p>
+                </div>
+                <Icon src="/icon/menu.svg"></Icon>
+            </div>} trigger="click">
+                <img className="icon" src="/icon/menu.svg" />
+                <span>50能量值</span>
+            </Popover>
+        </li>
+        <li>
+            <Dropdown menu={{
+                items: [
+                    {
+                        label: <Link to="/user/profile">我要反馈</Link>,
+                        key: 1
+                    }, {
+                        key: 1 - 2,
+                        type: 'divider',
+                    }, {
+                        key: 5,
+                        label: <a onClick={logout}>退出登录</a>
+                    }
+                ]
+            }}>
+                <a onClick={(e) => e.preventDefault()}>
+                    <Space>
+                        张三
+                        <i className="iconfont">&#xe66e;</i>
+                    </Space>
+                </a>
+            </Dropdown>
+        </li>
+    </> : <>
+        <Button ghost onClick={() => onModal()}>登录/注册</Button>
+    </>;
+
     return <ThemeProvider theme={currentTheme}>
         <Header>
-            <Nav>
-                <img src="" alt="喵闪AI" />
+            <NavLeft>
+                <Logo>
+                    <img src="" alt="喵闪AI" />
+                </Logo>
                 <NavLink to="/" end>探索发现</NavLink>
                 <NavLink to="/creation">创意作图</NavLink>
                 <NavLink to="/wordart">AI艺术字</NavLink>
-            </Nav>
-            <ul>
-                <li>
-                <Popover className="money" content={content} trigger="click">
-                    <img className="icon" src="/icon/menu.svg" />
-                    <span>50能量值</span>
-                </Popover>
-                </li>
+            </NavLeft>
+            <NavRight>
                 <li>
                     <Link className="iconfont" to="/news/notice">&#xe649;</Link>
                 </li>
-                <li>
-                    <Dropdown menu={{
-                        items: [
-                            {
-                                label: <Link to="/user/profile">我要反馈</Link>,
-                                key: 1
-                            }, {
-                                key: 1 - 2,
-                                type: 'divider',
-                            }, {
-                                key: 5,
-                                label: <a onClick={logout}>退出登录</a>
-                            }
-                        ]
-                    }}>
-                        <a onClick={(e) => e.preventDefault()}>
-                            <Space>
-                                张三
-                                <i className="iconfont">&#xe66e;</i>
-                            </Space>
-                        </a>
-                    </Dropdown>
-                </li>
-            </ul>
+                {content}
+            </NavRight>
         </Header>
         <Outlet />
         <Footer>
@@ -230,5 +359,40 @@ export function Layout() {
                 </div>
             </div>
         </Footer>
+        {/* 登录、注册 */}
+        {user.open && <Modal>
+            <div className="box">
+                <div className="box-head">
+                    &nbsp;
+                    <div className="close" onClick={() => onModal()}>
+                        <Icon src="/icon/menu.svg" />
+                    </div>
+                </div>
+                <div className="box-body">
+                    <Form form={userForm} size="large">
+                        <Form.Item name="account" label="手机号">
+                            <Input />
+                        </Form.Item>
+                        <Form.Item name="captcha" label="验证码">
+                            {/* <Input suffix={
+                                <button className="link" onClick={() => sendSms()} disabled={user.smsDisable}>
+                                    {user.smsTxt}
+                                </button>
+                            } /> */}
+                            <Captcha mobile={user.info.mobile}></Captcha>
+                        </Form.Item>
+                        <Form.Item>
+                            <Checkbox>登录即视为您已阅读并同意服务条款、隐私政策</Checkbox>
+                        </Form.Item>
+                        <Form.Item>
+                            <Button type="primary" onClick={() => signIn()} block={true}>
+                                登录
+                            </Button>
+                        </Form.Item>
+                    </Form>
+                </div>
+            </div>
+        </Modal>
+        }
     </ThemeProvider>
 }

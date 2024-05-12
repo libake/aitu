@@ -5,6 +5,7 @@ export const SPELL = {
             "name": "默认",
             "pic": "https://img.alicdn.com/imgextra/i4/O1CN01RzKicz1W0YWzYkWcK_!!6000000002726-2-tps-132-104.png",
             "styleType": "text_to_image",
+            "active": false,
             "orderNumber": 0
         },
         {
@@ -12,6 +13,7 @@ export const SPELL = {
             "name": "水彩",
             "pic": "https://img.alicdn.com/imgextra/i1/O1CN01M5D6fB1PVVzdwM375_!!6000000001846-2-tps-132-104.png",
             "styleType": "text_to_image",
+            "active": false,
             "orderNumber": 0
         },
         {
@@ -19,6 +21,7 @@ export const SPELL = {
             "name": "油画",
             "pic": "https://img.alicdn.com/imgextra/i4/O1CN01wuUOm31wLmtuwafhG_!!6000000006292-2-tps-132-104.png",
             "styleType": "text_to_image",
+            "active": false,
             "orderNumber": 0
         },
         {
@@ -26,6 +29,7 @@ export const SPELL = {
             "name": "中国画",
             "pic": "https://img.alicdn.com/imgextra/i3/O1CN01tN84xj1oI6nEhfmL1_!!6000000005201-2-tps-132-104.png",
             "styleType": "text_to_image",
+            "active": false,
             "orderNumber": 0
         },
         {
@@ -33,6 +37,7 @@ export const SPELL = {
             "name": "扁平插画",
             "pic": "https://img.alicdn.com/imgextra/i2/O1CN01XMadUe29wy3eouOgg_!!6000000008133-2-tps-132-104.png",
             "styleType": "text_to_image",
+            "active": false,
             "orderNumber": 0
         },
         {
@@ -40,6 +45,7 @@ export const SPELL = {
             "name": "二次元",
             "pic": "https://img.alicdn.com/imgextra/i4/O1CN01RIdXyT1Qoa62pyko6_!!6000000002023-2-tps-132-104.png",
             "styleType": "text_to_image",
+            "active": false,
             "orderNumber": 0
         },
         {
@@ -47,6 +53,7 @@ export const SPELL = {
             "name": "素描",
             "pic": "https://img.alicdn.com/imgextra/i1/O1CN017OBYOc1YWjaZbcRpu_!!6000000003067-2-tps-132-104.png",
             "styleType": "text_to_image",
+            "active": false,
             "orderNumber": 0
         },
         {
@@ -54,6 +61,7 @@ export const SPELL = {
             "name": "3D卡通",
             "pic": "https://img.alicdn.com/imgextra/i1/O1CN01W1aZZv1vqBZYXLLrn_!!6000000006223-2-tps-132-104.png",
             "styleType": "text_to_image",
+            "active": false,
             "orderNumber": 0
         }
     ],
