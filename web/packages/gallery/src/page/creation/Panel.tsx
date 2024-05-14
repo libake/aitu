@@ -303,7 +303,6 @@ export function Panel(props: IProps) {
     const onSize = (s: string) => {
         req.parameters.size = s;
         setReq({ ...req });
-        console.log(req)
     }
 
     const onSpell = (idx: number) => {
@@ -316,118 +315,19 @@ export function Panel(props: IProps) {
         setReq({...req});
     }
 
-    let [body, setBody] = useState(<></>);
-
     const onMode = (i: number) => {
         mode.info = mode.list[i];
-        setMode({ ...mode });
-        switch (mode.info.value) {
-            case 1:
-                body = <>
-                    <TextArea>
-                        <div className="main">
-                            <textarea
-                                onChange={(e) => setTextArea(e.target.value)}
-                                defaultValue={req.input.prompt}
-                                placeholder="试试输入你心中的画面，尽量描述具体，可以尝试用一些风格修饰词辅助你的表达。"
-                            ></textarea>
-                            <div className="tips">
-                                <div className="limit">{req.input.prompt.length}/500</div>
-                                {req.input.prompt.length > 0 && <>
-                                    <Divider type="vertical" />
-                                    <Icon src="/icon/menu.svg"></Icon>
-                                </>
-                                }
-                            </div>
-                        </div>
-                        <div className="collapse">
-                            <div className="info">
-                                <div className="text">
-                                    <Icon src="/icon/menu.svg" text="咒语书"></Icon>
-                                </div>
-                                <Icon src="/icon/menu.svg"></Icon>
-                            </div>
-                            <div className="list">
-                                {mode.spell.styleList.map((v, i) =>
-                                    <div className={`item${v.active ? ' active' : ''}`} key={i} onClick={() => onSpell(i)}>
-                                        <img src={v.pic} alt="" />
-                                        <p>{v.name}</p>
-                                    </div>
-                                )}
-                            </div>
-                        </div>
-                    </TextArea>
-                    <div className="demo">
-                        <div className="demo-info">
-                            <span>示例：</span>
-                            <span className="demo-word">大气，海盗船，满月航行，丙烯画</span>
-                        </div>
-                        <div className="demo-tool">
-                            <Icon src="/icon/menu.svg"></Icon>
-                        </div>
-                    </div>
-                    <Upload tag={{ text: '参考图', weak: true }}></Upload>
-                    <div className="size">
-                        <div className={`size-item${req.parameters.size == '1024*1024' ? ' active' : ''}`} onClick={() => onSize('1024*1024')}>
-                            <span className="size-ratio s-1v1"></span>
-                            <span>1&nbsp;&nbsp;:&nbsp;&nbsp;1</span>
-                        </div>
-                        <div className={`size-item${req.parameters.size == '1280*720' ? ' active' : ''}`} onClick={() => onSize('1280*720')}>
-                            <span className="size-ratio s-16v9"></span>
-                            <span>16&nbsp;&nbsp;:&nbsp;&nbsp;9</span>
-                        </div>
-                        <div className={`size-item${req.parameters.size == '720*1280' ? ' active' : ''}`} onClick={() => onSize('720*1280')}>
-                            <span className="size-ratio s-9v16"></span>
-                            <span>9&nbsp;&nbsp;:&nbsp;&nbsp;16</span>
-                        </div>
-                    </div>
-                </>
-                break;
-            case 2:
-                body = <>
-                    <Upload height={"324px"}></Upload>
-                    <div className="tips">
-                        <span>手边没有合适的图像？直接试试</span>
-                        <span>官方示例</span>
-                    </div>
-                    <div className="ratio">
-                        <span>图像比例{false ? '' : '- -'}</span>
-                        <Icon src="/icon/menu.svg"></Icon>
-                    </div>
-                </>
-                break;
-            case 3:
-                body = <>
-                    <Upload tag={{ text: '原图', weak: false }}></Upload>
-                    <Icon src="/icon/menu.svg"></Icon>
-                    <Upload tag={{ text: '风格图', weak: false }}></Upload>
-                    <div className="tips">
-                        <span>手边没有原图和风格图？直接试试</span>
-                        <span>官方示例</span>
-                    </div>
-                    <div className="ratio">
-                        <span>图像比例</span>
-                        <Icon src="/icon/menu.svg"></Icon>
-                    </div>
-                </>
-                break;
-        }
-        setBody({ ...body });
         setMode({...mode, collapse: false});
     }
 
     const submit = () => {
-        props.submit();
+        props.submit(req);
     }
 
     useEffect(() => {
         onMode(0);
         onSize('1024*1024');
     }, []);
-
-    useEffect(() => {
-        props.submit(req);
-    }, [req]);
 
     return <Container>
         <Collapse>
@@ -446,7 +346,92 @@ export function Panel(props: IProps) {
             </div>
         </Collapse>
         <div className="body">
-            {body}
+            {/* 文本生成图像 */}
+            {mode.info.value == 1 && <>
+                <TextArea>
+                    <div className="main">
+                        <textarea
+                            onChange={(e) => setTextArea(e.target.value)}
+                            defaultValue={req.input.prompt}
+                            placeholder="试试输入你心中的画面，尽量描述具体，可以尝试用一些风格修饰词辅助你的表达。"
+                        ></textarea>
+                        <div className="tips">
+                            <div className="limit">{req.input.prompt.length}/500</div>
+                            {req.input.prompt.length > 0 && <>
+                                <Divider type="vertical" />
+                                <Icon src="/icon/menu.svg"></Icon>
+                            </>
+                            }
+                        </div>
+                    </div>
+                    <div className="collapse">
+                        <div className="info">
+                            <div className="text">
+                                <Icon src="/icon/menu.svg" text="咒语书"></Icon>
+                            </div>
+                            <Icon src="/icon/menu.svg"></Icon>
+                        </div>
+                        <div className="list">
+                            {mode.spell.styleList.map((v, i) =>
+                                <div className={`item${v.active ? ' active' : ''}`} key={i} onClick={() => onSpell(i)}>
+                                    <img src={v.pic} alt="" />
+                                    <p>{v.name}</p>
+                                </div>
+                            )}
+                        </div>
+                    </div>
+                </TextArea>
+                <div className="demo">
+                    <div className="demo-info">
+                        <span>示例：</span>
+                        <span className="demo-word" onClick={(e) => setReq({...req, input: {...req.input, prompt: '大气，海盗船，满月航行，丙烯画'}})}>大气，海盗船，满月航行，丙烯画</span>
+                    </div>
+                    <div className="demo-tool">
+                        <Icon src="/icon/menu.svg"></Icon>
+                    </div>
+                </div>
+                <Upload tag={{ text: '参考图', weak: true }}></Upload>
+                <div className="size">
+                    <div className={`size-item${req.parameters.size == '1024*1024' ? ' active' : ''}`} onClick={() => onSize('1024*1024')}>
+                        <span className="size-ratio s-1v1"></span>
+                        <span>1&nbsp;&nbsp;:&nbsp;&nbsp;1</span>
+                    </div>
+                    <div className={`size-item${req.parameters.size == '1280*720' ? ' active' : ''}`} onClick={() => onSize('1280*720')}>
+                        <span className="size-ratio s-16v9"></span>
+                        <span>16&nbsp;&nbsp;:&nbsp;&nbsp;9</span>
+                    </div>
+                    <div className={`size-item${req.parameters.size == '720*1280' ? ' active' : ''}`} onClick={() => onSize('720*1280')}>
+                        <span className="size-ratio s-9v16"></span>
+                        <span>9&nbsp;&nbsp;:&nbsp;&nbsp;16</span>
+                    </div>
+                </div>
+            </>}
+            {/* 相似图像生成 */}
+            {mode.info.value == 2 && <>
+                <Upload height={"324px"}></Upload>
+                <div className="tips">
+                    <span>手边没有合适的图像？直接试试</span>
+                    <span>官方示例</span>
+                </div>
+                <div className="ratio">
+                    <span>图像比例{false ? '' : '- -'}</span>
+                    <Icon src="/icon/menu.svg"></Icon>
+                </div>
+            </>}
+            {/* 图像风格迁移 */}
+            {mode.info.value == 2 && <>
+                <Upload tag={{ text: '原图', weak: false }}></Upload>
+                <Icon src="/icon/menu.svg"></Icon>
+                <Upload tag={{ text: '风格图', weak: false }}></Upload>
+                <div className="tips">
+                    <span>手边没有原图和风格图？直接试试</span>
+                    <span>官方示例</span>
+                </div>
+                <div className="ratio">
+                    <span>图像比例</span>
+                    <Icon src="/icon/menu.svg"></Icon>
+                </div>
+            </>}
         </div>
         <div className="foot">
             <Button onClick={() => submit()}>{mode.info.btnText}</Button>

@@ -1,6 +1,7 @@
 import styled from "styled-components";
 
 import { Icon } from "@/common";
+import { useRef } from "react";
 
 const Container = styled.div`
     position: relative;
@@ -49,13 +50,37 @@ interface IProps {
 }
 
 export function Upload(props: IProps) {
-    return <Container>
+    let inputRef = useRef<HTMLInputElement>(null);
+
+    const onUpload = (e: MouseEvent) => {
+        e.stopPropagation();
+        if (inputRef.current) {
+            inputRef.current.click();
+        }
+    }
+
+    const change = (f: any) => {
+        const fileObj = f.target.files && f.target.files[0];
+        if (!fileObj) {
+            return;
+        }
+
+        console.log('fileObj is', fileObj);
+    }
+
+    return <Container onClick={() => onUpload}>
         {props.tag && <div className="tag">
             <div className="text">{props.tag.text}</div>
             {props.tag.weak && <div className="weak">(选填)</div>}
         </div>}
-        <input type="file" accept=".png,.jpg,.jpeg,.bmp" style={{ display: "none" }} />
-        <Content style={{height: props.height}}>
+        <input
+            ref={inputRef}
+            type="file"
+            accept=".png,.jpg,.jpeg,.bmp"
+            style={{ display: "none" }}
+            onChange={change}
+        />
+        <Content style={{ height: props.height }}>
             <Icon src="/icon/menu.svg"></Icon>
             <p>支持将右侧图像拖入或上传不超过10M的</p>
             <p>JPG、JPEG、PNG、BMP图片</p>

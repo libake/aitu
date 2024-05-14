@@ -114,6 +114,9 @@ const Image = styled.div`
 
 export function List() {
     let [task, setTask] = useState({
+        info: {
+            taskId: '',
+        },
         editable: false,
         list: new Array<dao.Task>(),
         keys: new Array<number>(),
@@ -121,15 +124,16 @@ export function List() {
 
     const pollTask = async () => {
         let data = {
-            taskId: '9585086b-c8fb-478c-9530-000e34af36c7'//'fbc778fe-19e9-40ef-a506-72b5023e8a84',
+            ...task.info,
         }
         let res = await srv.Task.info(data);
         if (res.code == 1000) {
-            // if (res.data.output.task_status != 'UNKNOWN') {
-            //     task.list = res.data.output.results;
-            // }
+            getTask();
         } else {
             message.error(res.desc);
+            setTimeout(() => {
+                pollTask();
+            }, 5000);
         }
         setTask({...task});
     }
@@ -137,17 +141,16 @@ export function List() {
     const addTask = async (v: any) => {
         let data = {
             model: 'wanx-v1',
-            input: {
-                prompt: '一只奔跑的猫',
-            }
+            ...v,
         }
-        console.log(v)
-        return
         let res = await srv.Task.create(data);
         if (res.code == 1000) {
             setTimeout(() => {
+                task.info.taskId = res.data.output.task_id;
                 pollTask();
             }, 1000);
+        } else {
+            message.error(res.desc);
         }
     }
 
@@ -190,6 +193,7 @@ export function List() {
         let res = await srv.Task.delete(data);
         if (res.code == 1000) {
             message.success('删除成功');
+            getTask();
         } else {
             message.error(res.desc);
         }
