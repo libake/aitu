@@ -206,10 +206,10 @@ export function Preview(props: IProps) {
             <div className="preview-foot">
                 <div className="tool">
                     <a onClick={(e) => { e.stopPropagation(); onZoom(1); }}>
-                        <Icon src="/icon/menu.svg"></Icon>
+                        <Icon src="/icon/zoom-out.svg"></Icon>
                     </a>
                     <a onClick={() => onZoom(-1)}>
-                        <Icon src="/icon/reuse.svg"></Icon>
+                        <Icon src="/icon/zoom-in.svg"></Icon>
                     </a>
                     <a onClick={() => onZoom(0)}>
                         <Icon src="/icon/update.svg"></Icon>
@@ -217,27 +217,27 @@ export function Preview(props: IProps) {
                 </div>
                 <div className="tool">
                     <a onClick={(e) => { e.stopPropagation(); onZoom(1); }}>
-                        <Icon src="/icon/menu.svg"></Icon>
+                        <Icon src="/icon/good.svg"></Icon>
                     </a>
                     <a onClick={() => onZoom(-1)}>
-                        <Icon src="/icon/reuse.svg"></Icon>
+                        <Icon src="/icon/bad.svg"></Icon>
                     </a>
                 </div>
                 <div className="tool">
                     <a onClick={(e) => { e.stopPropagation(); onZoom(1); }}>
-                        <Icon src="/icon/menu.svg"></Icon>
+                        <Icon src="/icon/hd.svg"></Icon>
                     </a>
                     <a onClick={() => onZoom(-1)}>
                         <Icon src="/icon/reuse.svg"></Icon>
                     </a>
                     <a onClick={() => onZoom(0)}>
-                        <Icon src="/icon/update.svg"></Icon>
+                        <Icon src="/icon/picture.svg"></Icon>
                     </a>
                     <a onClick={() => onZoom(0)}>
-                        <Icon src="/icon/update.svg"></Icon>
+                        <Icon src="/icon/download.svg"></Icon>
                     </a>
                     <a onClick={() => onZoom(0)}>
-                        <Icon src="/icon/update.svg"></Icon>
+                        <Icon src="/icon/favorite.svg"></Icon>
                     </a>
                 </div>
             </div>

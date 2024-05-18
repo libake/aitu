@@ -2,10 +2,18 @@ export class Task {
     id: number;
     taskId: string;
     input: {
-        styleType?: string;
-        text?: string;
         prompt?: string;
+        negative_prompt?: string;
+        ref_img?: string;
     };
+    parameters?: {
+        style?: string;
+        size?: string;
+        n?: number;
+        seed?: number;
+        ref_strength?: number;
+        ref_mode?: string;
+    }
     taskType: string;
     taskRate: number;
     results: Array<{url: string}>;

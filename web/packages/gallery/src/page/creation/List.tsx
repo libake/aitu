@@ -222,7 +222,7 @@ export function List() {
                     {task.editable ? <>
                     <a onClick={() => setTask({...task, editable: false})}>取消</a>
                     <a onClick={() => delTask()}>删除{task.keys.length}条生成记录</a>
-                    </> : <div onClick={() => setTask({...task, editable: true})}><Icon src="/icon/menu.svg" text="管理画作" /></div>}
+                    </> : <div onClick={() => setTask({...task, editable: true})}><Icon src="/icon/modular.svg" text="管理画作" /></div>}
                 </span>
             </Title>
             {task.list.map((v, i) =>
@@ -246,7 +246,7 @@ export function List() {
                                 <Icon src={"/icon/reuse.svg"} text="复用创意" />
                             </a>
                             <a>
-                                <Icon src="/icon/update.svg" text="再次生成" />
+                                <Icon src="/icon/refresh.svg" text="再次生成" />
                             </a>
                             <Popconfirm
                                 title="确定要删除记录吗？"
@@ -256,7 +256,7 @@ export function List() {
                                 cancelText="取消"
                             >
                                 <>
-                                    <Icon src="/icon/menu.svg" />
+                                    <Icon src="/icon/ashbin.svg" />
                                 </>
                             </Popconfirm>
                         </div>

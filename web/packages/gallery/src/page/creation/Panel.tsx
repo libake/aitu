@@ -341,7 +341,7 @@ export function Panel(props: IProps) {
                 <div className="text">
                     <Icon src={mode.info.icon} text={mode.info.text} size="16px"></Icon>
                 </div>
-                <Icon src="/icon/menu.svg"></Icon>
+                <Icon src={mode.collapse ? "/icon/arrow-up-bold.svg" : "/icon/arrow-down-bold.svg"}></Icon>
             </div>
             <div className="list" style={{ display: mode.collapse ? 'block' : 'none' }}>
                 {mode.list.map((v, i) =>
