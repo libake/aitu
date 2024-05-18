@@ -210,36 +210,8 @@ export function Layout() {
         smsDisable: false,
     });
     const [userForm] = Form.useForm();
-    let interval: NodeJS.Timer;
-
-    const sendSms = async () => {
-        let data = {
-            mobile: userForm.getFieldValue('account'),
-            scene: 1,
-        }
-        let res = await srv.Common.sendSms(data);
-        if (res.code == 1000) {
-            user.smsDisable = true;
-            setUser({...user});
-            let time = 60;
-            interval = setInterval(()=> {
-                time--;
-                if (time <= 0) {
-                    user.smsTxt = '获取验证码';
-                    clearInterval(interval);
-                    user.smsDisable = false;
-                } else {
-                    user.smsTxt = `${time}秒后重发`;
-                }
-                setUser({...user});
-            }, 1000);
-        } else {
-            message.error(res.desc);
-        }
-    }
 
     const signIn = async () => {
-        clearInterval(interval);
         let valid = await userForm.validateFields().catch(e => console.log(e));
         if (!valid) {
             return;
@@ -260,18 +232,11 @@ export function Layout() {
     const onModal = () => {
         user.open = !user.open;
         setUser({ ...user });
-        clearInterval(interval);
     }
 
     const logout = () => {
         message.info('退出');
     }
-
-    useEffect(() => {
-        user.info.mobile = userForm.getFieldValue('account');
-        console.log(user)
-        setUser({...user});
-    }, []);
 
     const content = false ? <>
         <li>

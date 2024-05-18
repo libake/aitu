@@ -52,7 +52,7 @@ interface IProps {
 export function Upload(props: IProps) {
     let inputRef = useRef<HTMLInputElement>(null);
 
-    const onUpload = (e: MouseEvent) => {
+    const onUpload = (e: React.MouseEvent) => {
         e.stopPropagation();
         if (inputRef.current) {
             inputRef.current.click();
@@ -68,7 +68,7 @@ export function Upload(props: IProps) {
         console.log('fileObj is', fileObj);
     }
 
-    return <Container onClick={() => onUpload}>
+    return <Container onClick={(e) => onUpload(e)}>
         {props.tag && <div className="tag">
             <div className="text">{props.tag.text}</div>
             {props.tag.weak && <div className="weak">(选填)</div>}
@@ -76,7 +76,7 @@ export function Upload(props: IProps) {
         <input
             ref={inputRef}
             type="file"
-            accept=".png,.jpg,.jpeg,.bmp"
+            // accept=".png,.jpg,.jpeg,.bmp"
             style={{ display: "none" }}
             onChange={change}
         />

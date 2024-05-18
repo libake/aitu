@@ -8,7 +8,7 @@ export class Task {
     };
     taskType: string;
     taskRate: number;
-    results?: Array<{url: string}>;
+    results: Array<{url: string}>;
     createAt?: string;
     updateAt?: string;
 
@@ -18,5 +18,6 @@ export class Task {
         this.input = {};
         this.taskType = '';
         this.taskRate = 0;
+        this.results = new Array();
     }
 }

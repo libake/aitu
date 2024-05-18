@@ -5,7 +5,6 @@ import { Upload } from "./Upload";
 import { Icon } from "@/common";
 import { Divider } from "antd";
 import { SPELL } from "@/constant";
-// import { TextArea } from "./TextArea";
 
 const Container = styled.div`
     margin: 24px 0 24px 24px;
@@ -289,6 +288,7 @@ export function Panel(props: IProps) {
         ],
         spell: SPELL,
         collapse: false,
+        selectKeys: new Array<string>(),
     });
 
     let [req, setReq] = useState({
@@ -306,7 +306,14 @@ export function Panel(props: IProps) {
     }
 
     const onSpell = (idx: number) => {
+        let tmp = new Set(mode.selectKeys);
         mode.spell.styleList[idx].active = !mode.spell.styleList[idx].active;
+        if (mode.spell.styleList[idx].active) {
+            tmp.add(mode.spell.styleList[idx].name);
+        } else {
+            tmp.delete(mode.spell.styleList[idx].name);
+        }
+        mode.selectKeys = Array.from(tmp);
         setMode({ ...mode });
     }
 
@@ -326,7 +333,6 @@ export function Panel(props: IProps) {
 
     useEffect(() => {
         onMode(0);
-        onSize('1024*1024');
     }, []);
 
     return <Container>
@@ -352,7 +358,7 @@ export function Panel(props: IProps) {
                     <div className="main">
                         <textarea
                             onChange={(e) => setTextArea(e.target.value)}
-                            defaultValue={req.input.prompt}
+                            defaultValue={req.input.prompt + mode.selectKeys.join(',')}
                             placeholder="试试输入你心中的画面，尽量描述具体，可以尝试用一些风格修饰词辅助你的表达。"
                         ></textarea>
                         <div className="tips">
@@ -419,7 +425,7 @@ export function Panel(props: IProps) {
                 </div>
             </>}
             {/* 图像风格迁移 */}
-            {mode.info.value == 2 && <>
+            {mode.info.value == 3 && <>
                 <Upload tag={{ text: '原图', weak: false }}></Upload>
                 <Icon src="/icon/menu.svg"></Icon>
                 <Upload tag={{ text: '风格图', weak: false }}></Upload>

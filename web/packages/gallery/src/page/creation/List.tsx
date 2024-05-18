@@ -5,6 +5,7 @@ import { Popconfirm, message } from "antd";
 import { Icon } from "@/common";
 import { dao, dto, srv } from "@/core";
 import { Panel } from './Panel';
+import { Preview } from "./Preview";
 
 
 const Container = styled.div`
@@ -114,12 +115,11 @@ const Image = styled.div`
 
 export function List() {
     let [task, setTask] = useState({
-        info: {
-            taskId: '',
-        },
+        info: new dao.Task(),
         editable: false,
         list: new Array<dao.Task>(),
         keys: new Array<number>(),
+        open: false,
     });
 
     const pollTask = async () => {
@@ -199,6 +199,14 @@ export function List() {
         }
     }
 
+    const onPreview = (item?: any) => {
+        task.open = !task.open;
+        if (!!item) {
+            Object.assign(task.info, item);
+        }
+        setTask({...task});
+    }
+
     useEffect(() => {
         getTask();
     }, []);
@@ -255,7 +263,7 @@ export function List() {
                     </Head>
                     <Image>
                         {v.results && v.results.map((d, k) =>
-                            <div className="img-item" key={k}>
+                            <div className="img-item" key={k} onClick={() => onPreview(v)}>
                                 <picture>
                                     <img src={d.url} alt="" />
                                 </picture>
@@ -266,5 +274,6 @@ export function List() {
                 </History>
             )}
         </Content>
+        <Preview open={task.open} data={task.info} onClose={() => onPreview()}></Preview>
     </Container>
 }
