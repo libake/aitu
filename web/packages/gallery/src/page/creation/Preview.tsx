@@ -38,7 +38,7 @@ const Container = styled.div`
         display: flex;
         justify-content: center;
         align-items: center;
-        
+        height: 70vh;
     }
 
     picture {
@@ -94,6 +94,7 @@ const Container = styled.div`
 
             a {
                 display: block;
+                cursor: pointer;
             }
         }
 
@@ -224,21 +225,31 @@ export function Preview(props: IProps) {
                     </a>
                 </div>
                 <div className="tool">
+                    <Tooltip title="高清放大">
                     <a onClick={(e) => { e.stopPropagation(); onZoom(1); }}>
                         <Icon src="/icon/hd.svg"></Icon>
                     </a>
-                    <a onClick={() => onZoom(-1)}>
-                        <Icon src="/icon/reuse.svg"></Icon>
-                    </a>
-                    <a onClick={() => onZoom(0)}>
-                        <Icon src="/icon/picture.svg"></Icon>
-                    </a>
-                    <a onClick={() => onZoom(0)}>
-                        <Icon src="/icon/download.svg"></Icon>
-                    </a>
-                    <a onClick={() => onZoom(0)}>
-                        <Icon src="/icon/favorite.svg"></Icon>
-                    </a>
+                    </Tooltip>
+                    <Tooltip title="局部重绘">
+                        <a onClick={() => onZoom(-1)}>
+                            <Icon src="/icon/reuse.svg"></Icon>
+                        </a>
+                    </Tooltip>
+                    <Tooltip title="生成相似图">
+                        <a onClick={() => onZoom(0)}>
+                            <Icon src="/icon/picture.svg"></Icon>
+                        </a>
+                    </Tooltip>
+                    <Tooltip title="下载AI生成结果">
+                        <a onClick={() => onZoom(0)}>
+                            <Icon src="/icon/download.svg"></Icon>
+                        </a>
+                    </Tooltip>
+                    <Tooltip title="收藏">
+                        <a onClick={() => onZoom(0)}>
+                            <Icon src="/icon/favorite.svg"></Icon>
+                        </a>
+                    </Tooltip>
                 </div>
             </div>
         </Container>,

@@ -87,6 +87,7 @@ const Head = styled.div`
 `
 const History = styled.div`
     margin-bottom: 16px;
+    overflow-y: auto;
     
 `
 const Image = styled.div`
@@ -130,7 +131,6 @@ export function List() {
         if (res.code == 1000) {
             getTask();
         } else {
-            message.error(res.desc);
             setTimeout(() => {
                 pollTask();
             }, 5000);

@@ -5,6 +5,7 @@ import { Upload } from "./Upload";
 import { Icon } from "@/common";
 import { Divider } from "antd";
 import { SPELL } from "@/constant";
+import { TextArea } from "../common/Textarea";
 
 const Container = styled.div`
     margin: 24px 0 24px 24px;
@@ -107,6 +108,13 @@ const Container = styled.div`
             gap: 8px;
             padding: 0 16px;
         }
+
+        .icon {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 100%;
+        }
     }
 
     .foot {
@@ -164,7 +172,7 @@ const Button = styled.button`
     color: #333;
     background-color: ${props => props.theme.primaryColor};
 `
-const TextArea = styled.div`
+const TextImage = styled.div`
     position: relative;
     margin: 16px;
     border: 1px dashed #2d3240;
@@ -354,18 +362,24 @@ export function Panel(props: IProps) {
         <div className="body">
             {/* 文本生成图像 */}
             {mode.info.value == 1 && <>
-                <TextArea>
+                <TextImage>
                     <div className="main">
-                        <textarea
+                        {/* <textarea
                             onChange={(e) => setTextArea(e.target.value)}
                             defaultValue={req.input.prompt + mode.selectKeys.join(',')}
                             placeholder="试试输入你心中的画面，尽量描述具体，可以尝试用一些风格修饰词辅助你的表达。"
-                        ></textarea>
+                        ></textarea> */}
+                        <TextArea
+                            name="prompt"
+                            value={req.input.prompt}
+                            onChange={(v: string) => setReq({...req, input: {...req.input, prompt: v}})}
+                            placeholder="试试输入你心中的画面，尽量描述具体，可以尝试用一些风格修饰词辅助你的表达。"
+                        ></TextArea>
                         <div className="tips">
                             <div className="limit">{req.input.prompt.length}/500</div>
                             {req.input.prompt.length > 0 && <>
                                 <Divider type="vertical" />
-                                <Icon src="/icon/menu.svg"></Icon>
+                                <Icon src="/icon/error.svg"></Icon>
                             </>
                             }
                         </div>
@@ -386,7 +400,7 @@ export function Panel(props: IProps) {
                             )}
                         </div>
                     </div>
-                </TextArea>
+                </TextImage>
                 <div className="demo">
                     <div className="demo-info">
                         <span>示例：</span>
@@ -427,7 +441,7 @@ export function Panel(props: IProps) {
             {/* 图像风格迁移 */}
             {mode.info.value == 3 && <>
                 <Upload tag={{ text: '原图', weak: false }}></Upload>
-                <Icon src="/icon/menu.svg"></Icon>
+                <Icon className="icon" src="/icon/qiehuan.svg"></Icon>
                 <Upload tag={{ text: '风格图', weak: false }}></Upload>
                 <div className="tips">
                     <span>手边没有原图和风格图？直接试试</span>

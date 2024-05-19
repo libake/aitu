@@ -15,11 +15,20 @@ type Props = {
     src: string;
     size?: number | string;
     text?: string;
+    onClick?: Function;
+    className?: string;
 }
 
 export function Icon(props: Props) {
 
-    return <Container>
+    const handlerClick = (e: any) => {
+        if (!props.onClick) {
+            return;
+        }
+        props.onClick(e);
+    }
+
+    return <Container className={props.className} onClick={(e) => handlerClick(e)}>
         <Img src={props.src} style={{width: props.size || "16px", height: props.size || "16px"}} />
         {props.text && <span style={{marginLeft: "8px"}}>{props.text}</span>}
     </Container>

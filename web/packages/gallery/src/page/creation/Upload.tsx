@@ -81,7 +81,7 @@ export function Upload(props: IProps) {
             onChange={change}
         />
         <Content style={{ height: props.height }}>
-            <Icon src="/icon/upload.svg"></Icon>
+            <Icon src="/icon/upload.svg" size="24px"></Icon>
             <p>支持将右侧图像拖入或上传不超过10M的</p>
             <p>JPG、JPEG、PNG、BMP图片</p>
         </Content>
