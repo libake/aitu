@@ -96,7 +96,7 @@ func (t *Task) List(req dto.Request) (list []Task, total int64, err error) {
 	if total > 0 {
 		// 分页数据
 		offset := (req.CurrPage - 1) * req.PageSize
-		err = db.Where(query, args...).Limit(req.PageSize, offset).Find(&list)
+		err = db.Where(query, args...).OrderBy("update_at DESC").Limit(req.PageSize, offset).Find(&list)
 	} else {
 		err = errors.New("is empty")
 	}

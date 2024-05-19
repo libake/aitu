@@ -8,20 +8,61 @@ import { SPELL } from "@/constant";
 import { TextArea } from "../common/Textarea";
 
 const Container = styled.div`
+    display: grid;
+    grid-template-rows: 50px 1fr 90px;
     margin: 24px 0 24px 24px;
     min-height: 300px;
+    max-height: calc(100vh - 100px);
     border-radius: 20px;
     background-color: #202532;
     box-sizing: border-box;
     overflow: hidden;
     font-size: 12px;
 
-    .icon {
-        width: 1em;
-        height: 1em;
-        vertical-align: -0.15em;
-        fill: currentColor;
-        overflow: hidden;
+    .side-head {
+        color: #fff;
+        position: relative;
+        background-color: rgba(0, 0, 0, .3);
+        font-size: 14px;
+        z-index: 100;
+        
+        .info {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            height: 50px;
+            padding: 16px;
+            color: #fff;
+            font-size: 14px;
+            background-color: #2d3240;
+            cursor: pointer;
+        }
+
+        .list {
+            padding: 16px;
+            position: absolute;
+            top: 50px;
+            left: 0;
+            right: 0;
+            background-color: #282c38;
+        }
+
+        .item {
+            display: flex;
+            align-items: center;
+            height: 66px;
+            padding: 16px;
+            border-radius: 8px;
+            cursor: pointer;
+
+            &:hover {
+                background-color: rgba(0, 0, 0, .3);
+            }
+
+            &.active {
+                background-color: rgba(0, 0, 0, .3);
+            }
+        }
     }
 
     .demo {
@@ -92,8 +133,22 @@ const Container = styled.div`
         }
     }
 
-    .body {
+    .side-body {
         color: #fff;
+        overflow-y: auto;
+
+        ::-webkit-scrollbar {
+            width: 6px;
+            background-color: transparent;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background-color: #3b3e4f;
+        }
+
+        ::-webkit-scrollbar-track-piece {
+            background-color: #1c2029;
+        }
 
         .tips {
             display: flex;
@@ -117,55 +172,10 @@ const Container = styled.div`
         }
     }
 
-    .foot {
+    .side-foot {
         padding: 24px;
     }
 `;
-const Collapse = styled.div`
-    color: #fff;
-    position: relative;
-    background-color: rgba(0, 0, 0, .3);
-    font-size: 14px;
-    z-index: 100;
-    
-    .info {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        height: 50px;
-        padding: 16px;
-        color: #fff;
-        font-size: 14px;
-        background-color: #2d3240;
-        cursor: pointer;
-    }
-
-    .list {
-        padding: 16px;
-        position: absolute;
-        top: 50px;
-        left: 0;
-        right: 0;
-        background-color: #282c38;
-    }
-
-    .item {
-        display: flex;
-        align-items: center;
-        height: 66px;
-        padding: 16px;
-        border-radius: 8px;
-        cursor: pointer;
-
-        &:hover {
-            background-color: rgba(0, 0, 0, .3);
-        }
-
-        &.active {
-            background-color: rgba(0, 0, 0, .3);
-        }
-    }
-`
 const Button = styled.button`
     width: 100%;
     border-radius: 24px;
@@ -266,6 +276,7 @@ const TextImage = styled.div`
 
 interface IProps {
     submit: Function;
+    className: string;
 }
 
 export function Panel(props: IProps) {
@@ -327,12 +338,12 @@ export function Panel(props: IProps) {
 
     const setTextArea = (v: string) => {
         req.input.prompt = v;
-        setReq({...req});
+        setReq({ ...req });
     }
 
     const onMode = (i: number) => {
         mode.info = mode.list[i];
-        setMode({...mode, collapse: false});
+        setMode({ ...mode, collapse: false });
     }
 
     const submit = () => {
@@ -343,9 +354,9 @@ export function Panel(props: IProps) {
         onMode(0);
     }, []);
 
-    return <Container>
-        <Collapse>
-            <div className="info" onClick={() => setMode({...mode, collapse: !mode.collapse})}>
+    return <Container className={props.className}>
+        <div className="side-head">
+            <div className="info" onClick={() => setMode({ ...mode, collapse: !mode.collapse })}>
                 <div className="text">
                     <Icon src={mode.info.icon} text={mode.info.text} size="16px"></Icon>
                 </div>
@@ -358,8 +369,8 @@ export function Panel(props: IProps) {
                     </div>
                 )}
             </div>
-        </Collapse>
-        <div className="body">
+        </div>
+        <div className="side-body">
             {/* 文本生成图像 */}
             {mode.info.value == 1 && <>
                 <TextImage>
@@ -372,7 +383,7 @@ export function Panel(props: IProps) {
                         <TextArea
                             name="prompt"
                             value={req.input.prompt}
-                            onChange={(v: string) => setReq({...req, input: {...req.input, prompt: v}})}
+                            onChange={(v: string) => setReq({ ...req, input: { ...req.input, prompt: v } })}
                             placeholder="试试输入你心中的画面，尽量描述具体，可以尝试用一些风格修饰词辅助你的表达。"
                         ></TextArea>
                         <div className="tips">
@@ -404,7 +415,7 @@ export function Panel(props: IProps) {
                 <div className="demo">
                     <div className="demo-info">
                         <span>示例：</span>
-                        <span className="demo-word" onClick={(e) => setReq({...req, input: {...req.input, prompt: '大气，海盗船，满月航行，丙烯画'}})}>大气，海盗船，满月航行，丙烯画</span>
+                        <span className="demo-word" onClick={(e) => setReq({ ...req, input: { ...req.input, prompt: '大气，海盗船，满月航行，丙烯画' } })}>大气，海盗船，满月航行，丙烯画</span>
                     </div>
                     <div className="demo-tool">
                         <Icon src="/icon/menu.svg"></Icon>
@@ -453,7 +464,7 @@ export function Panel(props: IProps) {
                 </div>
             </>}
         </div>
-        <div className="foot">
+        <div className="side-foot">
             <Button onClick={() => submit()}>{mode.info.btnText}</Button>
         </div>
     </Container>

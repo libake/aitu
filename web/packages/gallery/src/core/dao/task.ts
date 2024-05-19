@@ -17,6 +17,7 @@ export class Task {
     taskType: string;
     taskRate: number;
     results: Array<{url: string}>;
+    taskStatus: string;
     createAt?: string;
     updateAt?: string;
 
@@ -27,5 +28,6 @@ export class Task {
         this.taskType = '';
         this.taskRate = 0;
         this.results = new Array();
+        this.taskStatus = '';
     }
 }

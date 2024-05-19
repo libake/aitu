@@ -154,7 +154,7 @@ func (t *Task) Info(ctx *gin.Context) {
 	req, err := http.NewRequest(http.MethodGet, url, bytes.NewBuffer(body))
 	if err != nil {
 		ctx.JSON(http.StatusOK, gin.H{
-			"code": -2,
+			"code": 2051,
 			"desc": "创建请求失败",
 		})
 		return
@@ -165,7 +165,7 @@ func (t *Task) Info(ctx *gin.Context) {
 	res, err := cli.Do(req)
 	if err != nil {
 		ctx.JSON(http.StatusOK, gin.H{
-			"code": -2,
+			"code": 2052,
 			"desc": "发送请求失败",
 		})
 		return
@@ -175,7 +175,7 @@ func (t *Task) Info(ctx *gin.Context) {
 	resBody, err := io.ReadAll(res.Body)
 	if err != nil {
 		ctx.JSON(http.StatusOK, gin.H{
-			"code": -1,
+			"code": 2053,
 			"desc": "读取响应失败",
 		})
 		return
@@ -184,7 +184,7 @@ func (t *Task) Info(ctx *gin.Context) {
 	json.Unmarshal(resBody, &t)
 	if t.Output.TaskStatus != "SUCCEEDED" {
 		ctx.JSON(http.StatusOK, gin.H{
-			"code": -1,
+			"code": 2050,
 			"desc": "未知任务",
 		})
 		return
@@ -196,7 +196,7 @@ func (t *Task) Info(ctx *gin.Context) {
 	err = task.Update()
 	if err != nil {
 		ctx.JSON(http.StatusOK, gin.H{
-			"code": -1,
+			"code": 3052,
 			"desc": err.Error(),
 		})
 		return
@@ -204,7 +204,7 @@ func (t *Task) Info(ctx *gin.Context) {
 
 	ctx.JSON(http.StatusOK, gin.H{
 		"code": 1000,
-		"data": t.Output,
+		"data": task,
 		"desc": "Success",
 	})
 }
