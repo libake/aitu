@@ -1,7 +1,7 @@
 import { RouteObject, Outlet } from 'react-router-dom';
 
 import {
-    common,
+    Layout,
     home,
     creation,
     wordart,
@@ -11,7 +11,7 @@ import {
 const routes: RouteObject[] = [
     {
         path: '/',
-        element: <common.Layout />,
+        element: <Layout />,
         children: [{
             path: '',
             element: <home.List />,

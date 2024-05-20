@@ -1,4 +1,4 @@
-export * as common from './common';
+export * from './Layout';
 export * as home from './home';
 export * as creation from './creation';
 export * as wordart from './wordart';

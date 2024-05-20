@@ -1,7 +1,8 @@
 import styled from "styled-components";
 
 import { Icon } from "@/common";
-import { useRef } from "react";
+import { useRef, useState } from "react";
+import { srv } from "@/core";
 
 const Container = styled.div`
     position: relative;
@@ -20,24 +21,29 @@ const Container = styled.div`
         border-bottom-right-radius: 8px;
         background-color: ${props => props.theme.primaryColor};
     }
-`
-const Content = styled.div`
-    display: grid;
-    grid-template-rows: repeat(3, 28px);
-    align-content: center;
-    justify-items: center;
-    align-items: center;
-    margin: 16px;
-    padding: 24px 0;
-    border: 1px dashed #2d3240;
-    border-radius: 8px;
-    color: #999;
-    font-size: 12px;
-    background-color: #0f1319;
 
-    p {
-        margin: 0;
-        text-align: center;
+    .box {
+        position: relative;
+    }
+
+    .box-body {
+        display: grid;
+        grid-template-rows: repeat(3, 28px);
+        align-content: center;
+        justify-items: center;
+        align-items: center;
+        margin: 16px;
+        padding: 24px 0;
+        border: 1px dashed #2d3240;
+        border-radius: 8px;
+        color: #999;
+        font-size: 12px;
+        background-color: #0f1319;
+
+        p {
+            margin: 0;
+            text-align: center;
+        }
     }
 `
 
@@ -59,12 +65,19 @@ export function Upload(props: IProps) {
         }
     }
 
-    const change = (f: any) => {
+    const [file, setFile] = useState();
+
+    const change = async (f: any) => {
         const fileObj = f.target.files && f.target.files[0];
         if (!fileObj) {
             return;
         }
 
+        let formData = new FormData();
+        formData.append('file', fileObj);
+        // let res = await srv.Common.upload(formData);
+
+        setFile(fileObj);
         console.log('fileObj is', fileObj);
     }
 
@@ -80,10 +93,13 @@ export function Upload(props: IProps) {
             style={{ display: "none" }}
             onChange={change}
         />
-        <Content style={{ height: props.height }}>
-            <Icon src="/icon/upload.svg" size="24px"></Icon>
-            <p>支持将右侧图像拖入或上传不超过10M的</p>
-            <p>JPG、JPEG、PNG、BMP图片</p>
-        </Content>
+        <div className="box" style={{ height: props.height }}>
+            {/* <img src={file?.name} alt="" /> */}
+            <div className="box-body">
+                <Icon src="/icon/upload.svg" size="24px" />
+                <p>支持将右侧图像拖入或上传不超过10M的</p>
+                <p>JPG、JPEG、PNG、BMP图片</p>
+            </div>
+        </div>
     </Container>
 }

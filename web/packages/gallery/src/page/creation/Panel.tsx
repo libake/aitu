@@ -2,10 +2,9 @@ import { useEffect, useState } from "react";
 import styled from "styled-components";
 
 import { Upload } from "./Upload";
-import { Icon } from "@/common";
-import { Divider } from "antd";
+import { Icon, TextArea } from "@/common";
 import { SPELL } from "@/constant";
-import { TextArea } from "../common/Textarea";
+import { dao, srv } from "@/core";
 
 const Container = styled.div`
     display: grid;
@@ -190,7 +189,8 @@ const TextImage = styled.div`
     color: #999;
     background-color: #0f1319;
 
-    .main {
+    .input-group {
+        position: relative;
         padding: 0 12px;
 
         &::after {
@@ -202,46 +202,30 @@ const TextImage = styled.div`
             background-color: #0f1319;
             z-index: -1;
         }
-    }
 
-    textarea {
-        border: none;
-        width: 100%;
-        height: 100px;
-        outline: none;
-        background-color: transparent;
-    }
+        textarea {
+            border: none;
+            width: 100%;
+            height: 110px;
+            outline: none;
+            background-color: transparent;
+        }
 
-    .tips {
-        display: flex;
-        justify-content: end;
-        align-items: center;
-        height: 30px;
-        padding: 6px 0;
-        font-size: 12px;
-    }
-
-    .collapse {
-        border-top: 1px solid #fff;
-
-        .info {
+        .suffix {
+            position: absolute;
+            right: 0;
+            bottom: 0;
             display: flex;
-            justify-content: space-between;
+            justify-content: end;
             align-items: center;
-            height: 50px;
-            padding: 16px;
-            color: #fff;
-            font-size: 14px;
-            cursor: pointer;
+            height: 30px;
+            padding: 8px;
+            font-size: 12px;
         }
-        
-        .list {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            grid-template-rows: repeat(2, auto);
-            gap: 16px;
-            padding: 16px;
-        }
+    }
+
+    .box {
+        border-top: 1px solid #252934;
 
         .item {
             background-color: #2d3240;
@@ -250,13 +234,14 @@ const TextImage = styled.div`
             border-radius: 4px;
             box-sizing: border-box;
             overflow: hidden;
+            border: 1px solid transparent;
 
             &:hover {
                 color: #fff;
             }
 
             &.active {
-                border: 1px solid ${props => props.theme.primaryColor};
+                border-color: ${props => props.theme.primaryColor};
             }
             
             img {
@@ -272,6 +257,25 @@ const TextImage = styled.div`
             }
         }
     }
+
+    .box-head {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        height: 50px;
+        padding: 16px;
+        color: #fff;
+        font-size: 14px;
+        cursor: pointer;
+    }
+    
+    .box-body {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        grid-template-rows: repeat(2, auto);
+        gap: 16px;
+        padding: 16px;
+    }
 `
 
 interface IProps {
@@ -280,16 +284,24 @@ interface IProps {
 }
 
 export function Panel(props: IProps) {
+    let [req, setReq] = useState({
+        input: {
+            prompt: '',
+        },
+        parameters: {
+            size: '1024*1024',
+        }
+    });
     let [mode, setMode] = useState({
         info: {
-            icon: '/icon/menu.svg',
+            icon: '/icon/text.svg',
             text: '文本生成图像',
             value: 1,
             btnText: '生成创意画作',
         },
         list: [
             {
-                icon: '/icon/menu.svg',
+                icon: '/icon/text.svg',
                 text: '文本生成图像',
                 value: 1,
                 btnText: '生成创意画作',
@@ -305,18 +317,9 @@ export function Panel(props: IProps) {
                 btnText: '生成指定风格画作',
             }
         ],
-        spell: SPELL,
+        style: SPELL,
         collapse: false,
-        selectKeys: new Array<string>(),
-    });
-
-    let [req, setReq] = useState({
-        input: {
-            prompt: '',
-        },
-        parameters: {
-            size: '1024*1024',
-        }
+        selectKeys: new Set<string>(),
     });
 
     const onSize = (s: string) => {
@@ -324,21 +327,36 @@ export function Panel(props: IProps) {
         setReq({ ...req });
     }
 
-    const onSpell = (idx: number) => {
-        let tmp = new Set(mode.selectKeys);
-        mode.spell.styleList[idx].active = !mode.spell.styleList[idx].active;
-        if (mode.spell.styleList[idx].active) {
-            tmp.add(mode.spell.styleList[idx].name);
-        } else {
-            tmp.delete(mode.spell.styleList[idx].name);
+    const [style, setStyle] = useState({
+        list: new Array<dao.Style>(),
+        collapse: true,
+        selectKeys: new Set<string>(),
+    });
+
+    const getStyle = async () => {
+        let data = {
+            currPage: 1,
+            pageSize: 10
         }
-        mode.selectKeys = Array.from(tmp);
-        setMode({ ...mode });
+        let res = await srv.Style.list(data);
+        if (res.code == 1000) {
+            style.list = res.data;
+        } else {
+            style.list = [];
+        }
+        setStyle({...style});
     }
 
-    const setTextArea = (v: string) => {
-        req.input.prompt = v;
-        setReq({ ...req });
+    // 咒语书
+    const onStyle = (idx: number) => {
+        if (style.selectKeys.has(style.list[idx].name)) {
+            style.selectKeys.delete(style.list[idx].name);
+        } else {
+            style.selectKeys.add(style.list[idx].name);
+        }
+        setStyle({ ...style });
+        req.input.prompt = Array.from(style.selectKeys).join(',');
+        setReq({...req});
     }
 
     const onMode = (i: number) => {
@@ -351,6 +369,7 @@ export function Panel(props: IProps) {
     }
 
     useEffect(() => {
+        getStyle();
         onMode(0);
     }, []);
 
@@ -358,14 +377,14 @@ export function Panel(props: IProps) {
         <div className="side-head">
             <div className="info" onClick={() => setMode({ ...mode, collapse: !mode.collapse })}>
                 <div className="text">
-                    <Icon src={mode.info.icon} text={mode.info.text} size="16px"></Icon>
+                    <Icon src={mode.info.icon} text={mode.info.text} size="16px" />
                 </div>
-                <Icon src={mode.collapse ? "/icon/arrow-up-bold.svg" : "/icon/arrow-down-bold.svg"}></Icon>
+                <Icon src={mode.collapse ? "/icon/arrow-up-bold.svg" : "/icon/arrow-down-bold.svg"} />
             </div>
             <div className="list" style={{ display: mode.collapse ? 'block' : 'none' }}>
                 {mode.list.map((v, i) =>
                     <div className={"item" + (v.value == mode.info.value ? " active" : "")} key={v.value} onClick={() => onMode(i)}>
-                        <Icon src={v.icon} text={v.text}></Icon>
+                        <Icon src={v.icon} text={v.text} />
                     </div>
                 )}
             </div>
@@ -374,38 +393,23 @@ export function Panel(props: IProps) {
             {/* 文本生成图像 */}
             {mode.info.value == 1 && <>
                 <TextImage>
-                    <div className="main">
-                        {/* <textarea
-                            onChange={(e) => setTextArea(e.target.value)}
-                            defaultValue={req.input.prompt + mode.selectKeys.join(',')}
-                            placeholder="试试输入你心中的画面，尽量描述具体，可以尝试用一些风格修饰词辅助你的表达。"
-                        ></textarea> */}
-                        <TextArea
-                            name="prompt"
-                            value={req.input.prompt}
-                            onChange={(v: string) => setReq({ ...req, input: { ...req.input, prompt: v } })}
-                            placeholder="试试输入你心中的画面，尽量描述具体，可以尝试用一些风格修饰词辅助你的表达。"
-                        ></TextArea>
-                        <div className="tips">
-                            <div className="limit">{req.input.prompt.length}/500</div>
-                            {req.input.prompt.length > 0 && <>
-                                <Divider type="vertical" />
-                                <Icon src="/icon/error.svg"></Icon>
-                            </>
-                            }
-                        </div>
-                    </div>
-                    <div className="collapse">
-                        <div className="info">
+                    <TextArea
+                        name="prompt"
+                        value={req.input.prompt}
+                        onChange={(v: string) => setReq({ ...req, input: { ...req.input, prompt: v } })}
+                        placeholder="试试输入你心中的画面，尽量描述具体，可以尝试用一些风格修饰词辅助你的表达。"
+                    ></TextArea>
+                    <div className="box">
+                        <div className="box-head" onClick={() => setStyle({...style, collapse: !style.collapse})}>
                             <div className="text">
-                                <Icon src="/icon/menu.svg" text="咒语书"></Icon>
+                                <Icon src="/icon/book.svg" text="咒语书" />
                             </div>
-                            <Icon src="/icon/menu.svg"></Icon>
+                            <Icon src="/icon/arrow-up-bold.svg" size="12px" />
                         </div>
-                        <div className="list">
-                            {mode.spell.styleList.map((v, i) =>
-                                <div className={`item${v.active ? ' active' : ''}`} key={i} onClick={() => onSpell(i)}>
-                                    <img src={v.pic} alt="" />
+                        <div className="box-body" style={{display: style.collapse ? 'grid' : 'none'}}>
+                            {style.list.map((v, i) =>
+                                <div className={`item${style.selectKeys.has(v.name) ? ' active' : ''}`} key={i} onClick={() => onStyle(i)}>
+                                    <img src={v.cover} alt="" />
                                     <p>{v.name}</p>
                                 </div>
                             )}
@@ -418,22 +422,22 @@ export function Panel(props: IProps) {
                         <span className="demo-word" onClick={(e) => setReq({ ...req, input: { ...req.input, prompt: '大气，海盗船，满月航行，丙烯画' } })}>大气，海盗船，满月航行，丙烯画</span>
                     </div>
                     <div className="demo-tool">
-                        <Icon src="/icon/menu.svg"></Icon>
+                        <Icon src="/icon/refresh.svg" />
                     </div>
                 </div>
                 <Upload tag={{ text: '参考图', weak: true }}></Upload>
                 <div className="size">
                     <div className={`size-item${req.parameters.size == '1024*1024' ? ' active' : ''}`} onClick={() => onSize('1024*1024')}>
                         <span className="size-ratio s-1v1"></span>
-                        <span>1&nbsp;&nbsp;:&nbsp;&nbsp;1</span>
+                        <span>1&nbsp;:&nbsp;1</span>
                     </div>
                     <div className={`size-item${req.parameters.size == '1280*720' ? ' active' : ''}`} onClick={() => onSize('1280*720')}>
                         <span className="size-ratio s-16v9"></span>
-                        <span>16&nbsp;&nbsp;:&nbsp;&nbsp;9</span>
+                        <span>16&nbsp;:&nbsp;9</span>
                     </div>
                     <div className={`size-item${req.parameters.size == '720*1280' ? ' active' : ''}`} onClick={() => onSize('720*1280')}>
                         <span className="size-ratio s-9v16"></span>
-                        <span>9&nbsp;&nbsp;:&nbsp;&nbsp;16</span>
+                        <span>9&nbsp;:&nbsp;16</span>
                     </div>
                 </div>
             </>}
@@ -446,13 +450,13 @@ export function Panel(props: IProps) {
                 </div>
                 <div className="ratio">
                     <span>图像比例{false ? '' : '- -'}</span>
-                    <Icon src="/icon/menu.svg"></Icon>
+                    <Icon src="/icon/menu.svg" />
                 </div>
             </>}
             {/* 图像风格迁移 */}
             {mode.info.value == 3 && <>
                 <Upload tag={{ text: '原图', weak: false }}></Upload>
-                <Icon className="icon" src="/icon/qiehuan.svg"></Icon>
+                <Icon className="icon" src="/icon/qiehuan.svg" />
                 <Upload tag={{ text: '风格图', weak: false }}></Upload>
                 <div className="tips">
                     <span>手边没有原图和风格图？直接试试</span>
@@ -460,7 +464,7 @@ export function Panel(props: IProps) {
                 </div>
                 <div className="ratio">
                     <span>图像比例</span>
-                    <Icon src="/icon/menu.svg"></Icon>
+                    <Icon src="/icon/menu.svg" />
                 </div>
             </>}
         </div>

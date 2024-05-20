@@ -12,4 +12,14 @@ export class Common {
         let url = '/common/sendSms';
         return http.post(url, data);
     }
+
+    /**
+     * 文件上传
+     * @param data 
+     * @returns 
+     */
+    static upload(data: {}): Promise<dto.Response> {
+        let url = 'http://localhost:8090/api/style/update';
+        return http.post(url, data);
+    }
 }
