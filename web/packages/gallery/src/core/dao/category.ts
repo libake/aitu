@@ -1,13 +1,13 @@
 export class Category {
     id: number;
-    categoryCode: string;
-    categoryName: string;
+    code: string;
+    name: string;
     type: string;
 
     constructor() {
         this.id = 0;
-        this.categoryCode = '';
-        this.categoryName = '';
+        this.code = '';
+        this.name = '';
         this.type = '';
     }
 }

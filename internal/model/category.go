@@ -78,7 +78,7 @@ func (t *Category) Delete() error {
 }
 
 // 分类列表
-func (t *Category) List(req dto.Request) (list []Category, err error) {
+func (t *Category) List(req dto.Request) (list []Category, total int64, err error) {
 	var (
 		query string
 		args  []interface{}
@@ -99,8 +99,18 @@ func (t *Category) List(req dto.Request) (list []Category, err error) {
 	}
 	query = strings.TrimLeft(query, " AND")
 
-	err = db.NewPostgres().Where(query, args...).OrderBy("sort").Find(&list)
-	if len(list) == 0 {
+	db := db.NewPostgres()
+	// 统计条数
+	user := new(Task)
+	total, err = db.Where(query, args...).Count(user)
+	if err != nil {
+		return
+	}
+	if total > 0 {
+		// 分页数据
+		offset := (req.CurrPage - 1) * req.PageSize
+		err = db.Where(query, args...).OrderBy("sort").Limit(req.PageSize, offset).Find(&list)
+	} else {
 		err = errors.New("is empty")
 	}
 	return

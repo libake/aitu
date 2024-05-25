@@ -65,7 +65,6 @@ const Head = styled.div`
 
     .text {
         display: flex;
-        flex: 1;
         align-items: center;
         gap: 8px;
 

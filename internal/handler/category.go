@@ -114,7 +114,7 @@ func (t *Category) List(ctx *gin.Context) {
 		return
 	}
 
-	ret, err := category.List(param)
+	ret, cnt, err := category.List(param)
 	if err != nil {
 		ctx.JSON(http.StatusOK, gin.H{
 			"code": 3010,
@@ -123,9 +123,13 @@ func (t *Category) List(ctx *gin.Context) {
 		return
 	}
 
+	data := make(map[string]interface{})
+	data["list"] = ret
+	data["total"] = cnt
+
 	ctx.JSON(http.StatusOK, gin.H{
 		"code": 1000,
-		"data": ret,
+		"data": data,
 		"desc": "Success",
 	})
 }

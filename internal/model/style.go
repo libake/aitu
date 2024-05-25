@@ -11,15 +11,17 @@ import (
 
 // 风格
 type Style struct {
-	ID       int64     `xorm:"pk autoincr id" json:"id"`
-	Code     string    `xorm:"code varchar(64)" json:"code" validate:"required"`
-	Name     string    `xorm:"name varchar(64)" json:"name" validate:"required"`
-	Cover    string    `xorm:"cover varchar(64)" json:"cover"`
-	Type     string    `xorm:"type varchar(64)" json:"type"`
-	Sort     int8      `xorm:"sort int" json:"sort"`
-	Status   int8      `xorm:"status int" json:"status"`
-	UpdateAt time.Time `xorm:"update_at datetime" json:"updateAt"`
-	CreateAt time.Time `xorm:"create_at datetime" json:"createAt"`
+	ID         int64     `xorm:"pk autoincr id" json:"id"`
+	Code       string    `xorm:"code varchar(64)" json:"code" validate:"required"`
+	Name       string    `xorm:"name varchar(64)" json:"name" validate:"required"`
+	Cover      string    `xorm:"cover varchar(64)" json:"cover"`
+	Type       string    `xorm:"type varchar(64)" json:"type"`
+	Hot        int8      `xorm:"hot int" json:"hot"`
+	CategoryID int64     `xorm:"category_id int" json:"categoryId"`
+	Sort       int8      `xorm:"sort int" json:"sort"`
+	Status     int8      `xorm:"status int" json:"status"`
+	UpdateAt   time.Time `xorm:"update_at datetime" json:"updateAt"`
+	CreateAt   time.Time `xorm:"create_at datetime" json:"createAt"`
 }
 
 // 设定表名
@@ -79,7 +81,7 @@ func (t *Style) Delete() error {
 }
 
 // 分类列表
-func (t *Style) List(req dto.Request) (list []Style, err error) {
+func (t *Style) List(req dto.Request) (list []Style, total int64, err error) {
 	var (
 		query string
 		args  []interface{}
@@ -96,12 +98,28 @@ func (t *Style) List(req dto.Request) (list []Style, err error) {
 		case "code":
 			query += " AND code=?"
 			args = append(args, v.Val)
+		case "hot":
+			query += " AND hot=?"
+			args = append(args, v.Val)
+		case "categoryId":
+			query += " AND category_id=?"
+			args = append(args, v.Val)
 		}
 	}
 	query = strings.TrimLeft(query, " AND")
 
-	err = db.NewPostgres().Where(query, args...).OrderBy("sort").Find(&list)
-	if len(list) == 0 {
+	db := db.NewPostgres()
+	// 统计条数
+	user := new(Style)
+	total, err = db.Where(query, args...).Count(user)
+	if err != nil {
+		return
+	}
+	if total > 0 {
+		// 分页数据
+		offset := (req.CurrPage - 1) * req.PageSize
+		err = db.Where(query, args...).OrderBy("sort").Limit(req.PageSize, offset).Find(&list)
+	} else {
 		err = errors.New("is empty")
 	}
 	return

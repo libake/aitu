@@ -115,7 +115,7 @@ func (t *Style) List(ctx *gin.Context) {
 		return
 	}
 
-	ret, err := style.List(param)
+	ret, cnt, err := style.List(param)
 	if err != nil {
 		ctx.JSON(http.StatusOK, gin.H{
 			"code": 3010,
@@ -123,10 +123,13 @@ func (t *Style) List(ctx *gin.Context) {
 		})
 		return
 	}
+	data := make(map[string]interface{})
+	data["list"] = ret
+	data["total"] = cnt
 
 	ctx.JSON(http.StatusOK, gin.H{
 		"code": 1000,
-		"data": ret,
+		"data": data,
 		"desc": "Success",
 	})
 }
