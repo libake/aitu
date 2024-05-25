@@ -20,8 +20,10 @@ const Container = styled.div`
     textarea {
         border: none;
         width: 100%;
-        height: 110px;
+        padding: 8px 0;
         outline: none;
+        font-size: 14px;
+        color: #fff;
         background-color: transparent;
     }
 
@@ -37,7 +39,7 @@ const Container = styled.div`
         padding: 8px;
         font-size: 12px;
 
-        .icon {
+        .clear {
             cursor: pointer;
         }
     }
@@ -83,7 +85,7 @@ export function TextArea(props: IProps) {
         ></textarea>
         <div className="suffix">
             <span className="limit">{value.length}/500</span>
-            {value.length > 0 && <Icon className="icon" src="/icon/error.svg" onClick={() => clear()} />}
+            {value.length > 0 && <Icon className="clear" src="/icon/error.svg" onClick={() => clear()} />}
         </div>
     </Container>
 }

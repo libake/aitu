@@ -10,8 +10,9 @@ import { Preview } from "./Preview";
 
 const Container = styled.div`
     display: grid;
-    margin: 52px 0 0;
     grid-template-columns: 1fr;
+    margin: 52px 0 0;
+    min-height: calc(100vh - 388px);
     background-color: ${props => props.theme.backgroundColor};
 
     .side {
@@ -100,15 +101,14 @@ const Image = styled.div`
     display: grid;
     grid-template-columns: repeat(4, 1fr);
     gap: 16px;
-    width: 100%;
 
     img {
         width: 100%;
     }
 
     .img-item {
-        border-radius: 8px;
         position: relative;
+        border-radius: 8px;
         overflow: hidden;
         border: 3px solid transparent;
         cursor: pointer;
@@ -116,6 +116,11 @@ const Image = styled.div`
         &:hover {
 
             border-color: ${props => props.theme.primaryColor}
+        }
+
+        .tool {
+            position: absolute;
+            bottom: 0;
         }
     }
 `
@@ -202,7 +207,7 @@ export function List() {
         }
         let res = await srv.Task.list(data);
         if (res.code == 1000) {
-            Object.assign(task.list, res.data.list);
+            task.list = res.data.list;
         } else {
             task.list = [];
         }
@@ -262,7 +267,9 @@ export function List() {
                     {task.editable ? <>
                         <a onClick={() => setTask({ ...task, editable: false })}>取消</a>
                         <a onClick={() => delTask()}>删除{task.keys.length}条生成记录</a>
-                    </> : <div onClick={() => setTask({ ...task, editable: true })}><Icon src="/icon/modular.svg" text="管理画作" /></div>}
+                    </> : <div onClick={() => setTask({ ...task, editable: true })}>
+                        <Icon src="/icon/modular.svg" text="管理画作" />
+                        </div>}
                 </span>
             </Title>
             {task.info.taskStatus == 'PENDING' && <History>
@@ -346,9 +353,9 @@ export function List() {
                     <Image>
                         {v.results && v.results.map((d, k) =>
                             <div className="img-item" key={k} onClick={() => onPreview(v)}>
-                                <picture>
+                                {/* <picture> */}
                                     <img src={d.url} alt="" />
-                                </picture>
+                                {/* </picture> */}
                                 <div className="tool"></div>
                             </div>
                         )}

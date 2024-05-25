@@ -3,7 +3,6 @@ import styled from "styled-components";
 
 import { Upload } from "./Upload";
 import { Icon, TextArea } from "@/common";
-import { SPELL } from "@/constant";
 import { dao, srv } from "@/core";
 
 const Container = styled.div`
@@ -31,6 +30,7 @@ const Container = styled.div`
             align-items: center;
             height: 50px;
             padding: 16px;
+            box-sizing: border-box;
             color: #fff;
             font-size: 14px;
             background-color: #2d3240;
@@ -189,41 +189,6 @@ const TextImage = styled.div`
     color: #999;
     background-color: #0f1319;
 
-    .input-group {
-        position: relative;
-        padding: 0 12px;
-
-        &::after {
-            position: absolute;
-            bottom: 1px;
-            left: 1px;
-            right: 1px;
-            content: "";
-            background-color: #0f1319;
-            z-index: -1;
-        }
-
-        textarea {
-            border: none;
-            width: 100%;
-            height: 110px;
-            outline: none;
-            background-color: transparent;
-        }
-
-        .suffix {
-            position: absolute;
-            right: 0;
-            bottom: 0;
-            display: flex;
-            justify-content: end;
-            align-items: center;
-            height: 30px;
-            padding: 8px;
-            font-size: 12px;
-        }
-    }
-
     .box {
         border-top: 1px solid #252934;
 
@@ -317,9 +282,7 @@ export function Panel(props: IProps) {
                 btnText: '生成指定风格画作',
             }
         ],
-        style: SPELL,
         collapse: false,
-        selectKeys: new Set<string>(),
     });
 
     const onSize = (s: string) => {
@@ -349,6 +312,9 @@ export function Panel(props: IProps) {
 
     // 咒语书
     const onStyle = (idx: number) => {
+        if (!!req.input.prompt) {
+            style.selectKeys = new Set(req.input.prompt.split(','));
+        }
         if (style.selectKeys.has(style.list[idx].name)) {
             style.selectKeys.delete(style.list[idx].name);
         } else {
@@ -396,6 +362,7 @@ export function Panel(props: IProps) {
                     <TextArea
                         name="prompt"
                         value={req.input.prompt}
+                        rows={5}
                         onChange={(v: string) => setReq({ ...req, input: { ...req.input, prompt: v } })}
                         placeholder="试试输入你心中的画面，尽量描述具体，可以尝试用一些风格修饰词辅助你的表达。"
                     ></TextArea>
@@ -425,7 +392,7 @@ export function Panel(props: IProps) {
                         <Icon src="/icon/refresh.svg" />
                     </div>
                 </div>
-                <Upload tag={{ text: '参考图', weak: true }}></Upload>
+                <Upload tag={{ text: '参考图', weak: true }} height="182px"></Upload>
                 <div className="size">
                     <div className={`size-item${req.parameters.size == '1024*1024' ? ' active' : ''}`} onClick={() => onSize('1024*1024')}>
                         <span className="size-ratio s-1v1"></span>
@@ -455,9 +422,9 @@ export function Panel(props: IProps) {
             </>}
             {/* 图像风格迁移 */}
             {mode.info.value == 3 && <>
-                <Upload tag={{ text: '原图', weak: false }}></Upload>
+                <Upload tag={{ text: '原图', weak: false }} height="182px"></Upload>
                 <Icon className="icon" src="/icon/qiehuan.svg" />
-                <Upload tag={{ text: '风格图', weak: false }}></Upload>
+                <Upload tag={{ text: '风格图', weak: false }} height="182px"></Upload>
                 <div className="tips">
                     <span>手边没有原图和风格图？直接试试</span>
                     <span>官方示例</span>

@@ -19,7 +19,10 @@ export class Common {
      * @returns 
      */
     static upload(data: {}): Promise<dto.Response> {
-        let url = 'http://localhost:8090/api/style/update';
+        let url = '/file/upload';
         return http.post(url, data);
+
+        // let url = 'https://test.miao333.com/api/upload/upload_file';
+        // return fetch(url, {method: "POST", body: data});
     }
 }

@@ -3,7 +3,9 @@ package handler
 import (
 	"fmt"
 	"mime/multipart"
+	"os"
 	"path"
+	"time"
 
 	"aitu.cn/util"
 	"github.com/gin-gonic/gin"
@@ -52,12 +54,17 @@ func (t *File) single(ctx *gin.Context) (dst string, err error) {
 		err = status.Error(4012, "Invalid file format")
 		return
 	}
-	dst = path.Join("./upload", f.Filename)
+	now := time.Now()
+	ymd := fmt.Sprintf("%d/%d/%d/", now.Year(), now.Month(), now.Day())
+	fp := "../upload/" + ymd
+	os.Mkdir(fp, os.ModePerm)
+	dst = path.Join(fp, f.Filename)
 	err = ctx.SaveUploadedFile(f, dst)
 	if err != nil {
 		err = status.Error(4013, "Save File Fail")
 	}
-	dst = "/" + dst
+	dst = "/upload/" + ymd + f.Filename
+
 	return
 }
 

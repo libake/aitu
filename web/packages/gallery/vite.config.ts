@@ -44,7 +44,6 @@ export default ((env: ConfigEnv): UserConfig => {
       proxy: {
         '/api': {
           target: 'http://localhost:8090',
-          // target: 'https://wanxiang.aliyun.com/wanx',
           changeOrigin: true,
           ws: true
         }

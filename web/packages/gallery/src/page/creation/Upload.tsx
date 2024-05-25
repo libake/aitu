@@ -14,16 +14,47 @@ const Container = styled.div`
         position: absolute;
         top: 0;
         left: 16px;
-        padding: 0 8px;
+        padding: 0 4px;
         color: #333;
-        font-size: 12px;
-        border-top-left-radius: 8px;
-        border-bottom-right-radius: 8px;
+        font-size: 10px;
+        border-radius: 8px 0;
         background-color: ${props => props.theme.primaryColor};
     }
 
     .box {
+        display: flex;
+        margin: 16px;
+        border: 1px dashed #2d3240;
+        border-radius: 8px;
+        color: #999;
+        font-size: 12px;
+        background-color: #0f1319;
+    }
+
+    .box-view {
         position: relative;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        flex: 1;
+
+        img {
+            max-width: 100%;
+            max-height: 100%;
+        }
+
+        .drop {
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 28px;
+            height: 28px;
+            border-radius: 4px;
+            background-color: #2d3240;
+        }
     }
 
     .box-body {
@@ -32,13 +63,7 @@ const Container = styled.div`
         align-content: center;
         justify-items: center;
         align-items: center;
-        margin: 16px;
-        padding: 24px 0;
-        border: 1px dashed #2d3240;
-        border-radius: 8px;
-        color: #999;
-        font-size: 12px;
-        background-color: #0f1319;
+        width: 100%;
 
         p {
             margin: 0;
@@ -65,7 +90,7 @@ export function Upload(props: IProps) {
         }
     }
 
-    const [file, setFile] = useState();
+    const [file, setFile] = useState('');
 
     const change = async (f: any) => {
         const fileObj = f.target.files && f.target.files[0];
@@ -75,13 +100,17 @@ export function Upload(props: IProps) {
 
         let formData = new FormData();
         formData.append('file', fileObj);
-        // let res = await srv.Common.upload(formData);
-
-        setFile(fileObj);
-        console.log('fileObj is', fileObj);
+        let res = await srv.Common.upload(formData);
+        if (res.code == 1000) {
+            setFile(res.data);
+        }
     }
 
-    return <Container onClick={(e) => onUpload(e)}>
+    const onDrop = () => {
+        setFile('');
+    }
+
+    return <Container>
         {props.tag && <div className="tag">
             <div className="text">{props.tag.text}</div>
             {props.tag.weak && <div className="weak">(选填)</div>}
@@ -94,12 +123,17 @@ export function Upload(props: IProps) {
             onChange={change}
         />
         <div className="box" style={{ height: props.height }}>
-            {/* <img src={file?.name} alt="" /> */}
-            <div className="box-body">
+            {file ? <div className="box-view">
+                <img src={file} alt="" />
+                <div className="drop" onClick={(e) => {e.stopPropagation; onDrop()}}>
+                    <Icon src="/icon/ashbin.svg" />
+                </div>
+            </div> : <div className="box-body" onClick={(e) => onUpload(e)}>
                 <Icon src="/icon/upload.svg" size="24px" />
                 <p>支持将右侧图像拖入或上传不超过10M的</p>
                 <p>JPG、JPEG、PNG、BMP图片</p>
             </div>
+            }
         </div>
     </Container>
 }
