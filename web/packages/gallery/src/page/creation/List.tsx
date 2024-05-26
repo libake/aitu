@@ -51,7 +51,7 @@ const Title = styled.div`
 
     }
 `
-const Head = styled.div`
+const Time = styled.div`
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -77,13 +77,6 @@ const Head = styled.div`
         }
     }
 
-    .tool {
-        display: flex;
-        align-items: center;
-        gap: 8px;
-
-    }
-
     .line {
         height: 1px;
         flex: 1;
@@ -91,36 +84,83 @@ const Head = styled.div`
         background-color: #878aab;
     }
 `
+const Head = styled(Time)`
+    .text {
+        flex: 1;
+    }
+
+    .tool {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+`
 const History = styled.div`
     margin-bottom: 16px;
     overflow-y: auto;
     
 `
-const Image = styled.div`
+const Column = styled.div`
     display: grid;
     grid-template-columns: repeat(4, 1fr);
     gap: 16px;
+`
+const Image = styled.div`
+    position: relative;
+    border-radius: 8px;
+    overflow: hidden;
+    border: 3px solid transparent;
+    cursor: pointer;
+    
+    &:hover {
+        border-color: ${props => props.theme.primaryColor};
+
+        .mark {
+            opacity: 1;
+        }
+
+        .tool {
+            opacity: 1;
+        }
+    }
 
     img {
         width: 100%;
     }
 
-    .img-item {
-        position: relative;
-        border-radius: 8px;
-        overflow: hidden;
-        border: 3px solid transparent;
-        cursor: pointer;
+    .mark {
+        align-items: center;
+        background-image: linear-gradient(180deg, transparent, #000);
+        bottom: 0;
+        color: var(--wanx-wh);
+        display: flex;
+        justify-content: center;
+        left: 0;
+        pointer-events: none;
+        position: absolute;
+        right: 0;
+        top: 0;
+        opacity: 0;
+        z-index: 98;
+    }
 
-        &:hover {
+    .tool {
+        position: absolute;
+        bottom: 0;
+        display: flex;
+        justify-content: space-between;
+        width: 100%;
+        padding: 16px;
+        box-sizing: border-box;
+        opacity: 0;
+        z-index: 100;
+    }
 
-            border-color: ${props => props.theme.primaryColor}
-        }
-
-        .tool {
-            position: absolute;
-            bottom: 0;
-        }
+    .tool-group {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 16px;
     }
 `
 const Progress = styled.div`
@@ -153,9 +193,14 @@ const Progress = styled.div`
 export function List() {
     let [task, setTask] = useState({
         info: new dao.Task(),
+        current: 0,
         editable: false,
         list: new Array<dao.Task>(),
         keys: new Array<number>(),
+        preview: {
+            open: false,
+            current: 0,
+        },
         open: false,
         percent: 0,
     });
@@ -171,7 +216,7 @@ export function List() {
             getTask();
         } else {
             if (task.percent < 100) {
-                task.percent += Math.floor(Math.random() * 10) + 1;
+                task.percent += Math.floor(Math.random() * 20) + 1;
             }
             setTask({ ...task });
             setTimeout(() => {
@@ -192,7 +237,7 @@ export function List() {
                 Object.assign(task.info, res.data.output);
                 task.info.taskId = res.data.output.task_id;
                 task.info.taskStatus = res.data.output.task_status;
-                setTask({...task});
+                setTask({ ...task });
                 pollTask();
             }, 1000);
         } else {
@@ -245,9 +290,10 @@ export function List() {
         }
     }
 
-    const onPreview = (item?: any) => {
-        task.open = !task.open;
+    const onPreview = (item?: dao.Task, idx?: number) => {
+        task.preview.open = !task.preview.open;
         if (!!item) {
+            task.preview.current = idx || 0;
             Object.assign(task.info, item);
         }
         setTask({ ...task });
@@ -268,7 +314,7 @@ export function List() {
                         <a onClick={() => delTask()}>删除{task.keys.length}条生成记录</a>
                     </> : <div onClick={() => setTask({ ...task, editable: true })}>
                         <Icon src="/icon/modular.svg" text="管理画作" />
-                        </div>}
+                    </div>}
                 </span>
             </Title>
             {task.info.taskStatus == 'PENDING' && <History>
@@ -315,16 +361,16 @@ export function List() {
             </History>}
             {task.list.map((v, i) =>
                 <History key={i}>
-                    <Head>
+                    <Time>
                         <div className="text">
                             {task.editable && <input onChange={(e) => selTask(e, v)} type="checkbox" />}
                             <div className="cell">
-                                <Icon src="/icon/menu.svg" text="图像风格迁移" />
+                                <Icon src="/icon/menu.svg" text="文本生成图像" />
                             </div>
                             <time>{v.createAt}</time>
                         </div>
                         <div className="line"></div>
-                    </Head>
+                    </Time>
                     <Head style={{ height: "56px" }}>
                         <div className="text">
                             <p>{v.input.prompt}</p>
@@ -349,19 +395,29 @@ export function List() {
                             </Popconfirm>
                         </div>
                     </Head>
-                    <Image>
+                    <Column>
                         {v.results && v.results.map((d, k) =>
-                            <div className="img-item" key={k} onClick={() => onPreview(v)}>
-                                {/* <picture> */}
+                            <Image key={k} onClick={() => onPreview(v, k)}>
+                                <picture>
                                     <img src={d.url} alt="" />
-                                {/* </picture> */}
-                                <div className="tool"></div>
-                            </div>
+                                </picture>
+                                <div className="tool" onClick={(e) => {e.stopPropagation();}}>
+                                    <div className="tool-group">
+                                        <Icon src="/icon/good.svg" />
+                                        <Icon src="/icon/bad.svg" />
+                                    </div>
+                                    <div className="tool-group">
+                                        <Icon src="/icon/download.svg" />
+                                        <Icon src="/icon/favorite.svg" />
+                                    </div>
+                                </div>
+                                <div className="mark"></div>
+                            </Image>
                         )}
-                    </Image>
+                    </Column>
                 </History>
             )}
         </Content>
-        <Preview open={task.open} data={task.info} onClose={() => onPreview()}></Preview>
+        <Preview open={task.preview.open} current={task.preview.current} data={task.info} onClose={() => onPreview()}></Preview>
     </Container>
 }

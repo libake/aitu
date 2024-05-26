@@ -12,7 +12,7 @@ const Container = styled.div`
     left: 0;
     width: 100vw;
     height: 100vh;
-    background-color: rgba(10, 10, 10, 0.92);
+    background-color: rgba(10, 10, 10, 0.96);
     z-index: 100;
     overflow: hidden;
 
@@ -47,6 +47,7 @@ const Container = styled.div`
             max-width: 60vw;
             max-height: 70vh;
             border-radius: 12px;
+            transition: all 0.3s;
         }
     }
 
@@ -86,7 +87,6 @@ const Container = styled.div`
             justify-content: center;
             align-items: center;
             gap: 24px;
-            height: 40px;
             padding: 10px 16px;
             border-radius: 60px;
             color: #fff;
@@ -114,30 +114,45 @@ interface IProps {
     open: boolean;
     onClose: Function;
     data: dao.Task;
+    current: number;
 }
 
 export function Preview(props: IProps) {
     let [info, setInfo] = useState({
         ...new dao.Task(),
-        current: {
-            url: '',
-            idx: 0,
-        }
+        results: new Array<{url: string, active: boolean}>(),
     });
 
     const onFlip = (step: number) => {
         if (!info.results) {
             return;
         }
-        info.current.idx += step;
-        if (info.current.idx < 0) {
-            info.current.idx = 0;
+        if (step < 0 && info.results[0].active) {
+            return;
         }
-        if (info.current.idx > (info.results.length - 1)) {
-            info.current.idx = info.results.length - 1;
+        if (step > 0 && info.results[info.results.length - 1].active) {
+            return;
         }
-        info.current.url = info.results[info.current.idx].url;
+        let idx = 0;
+        info.results.forEach((e, i) => {
+            if (e.active) {
+                idx = i + step;
+                e.active = false;
+            }
+        });
+        info.results[idx].active = true;
         setInfo({ ...info });
+    }
+
+    // 下载
+    const onDownload = () => {
+        let link = document.createElement('a');
+        info.results.map(e => {
+            if (e.active) {
+                link.href = e.url;
+            }
+        });
+        link.click();
     }
 
     useEffect(() => {
@@ -148,10 +163,11 @@ export function Preview(props: IProps) {
         }
         Object.assign(info, props.data);
         if (info.results && info.results.length > 0) {
-            info.current = {
-                url: info.results[0].url,
-                idx: 0
-            }
+            info.results = info.results.map(e => {
+                e.active = false;
+                return e;
+            });
+            info.results[props.current].active = true;
         }
         setInfo({ ...info });
     }, [props]);
@@ -160,20 +176,17 @@ export function Preview(props: IProps) {
         props.onClose(false);
     }
 
-    let [tool, setTool] = useState({
-        imageZoom: 1,
-        display: 'block',
-    });
+    let [zoom, setZoom] = useState(1);
 
     const onZoom = (step: number) => {
-        tool.imageZoom += step;
-        if (tool.imageZoom < 1) {
-            tool.imageZoom = 1;
-            tool.display = 'block';
-        } else {
-            tool.display = 'none';
+        zoom += step;
+        if (zoom < 1) {
+            zoom = 1;
         }
-        setTool({ ...tool });
+        if (zoom > 8) {
+            zoom = 8;
+        }
+        setZoom(zoom);
     }
 
     return props.open ? ReactDOM.createPortal(
@@ -185,19 +198,19 @@ export function Preview(props: IProps) {
             </div>
             <div className="preview-body">
                 <picture>
-                    <img src={info.current.url} alt="" />
+                    {info.results.map(m => m.active && <img src={m.url} key={m.url} style={{transform: `scale(${zoom})`}} />)}
                 </picture>
                 <div className="flip">
                     <div
                         className="prev"
-                        style={{cursor: info.current.idx == 0 ? 'not-allowed' : 'pointer'}}
+                        style={{cursor: info.results[0]?.active ? 'not-allowed' : 'pointer'}}
                         onClick={(e) => { e.stopPropagation(); onFlip(-1) }}
                     >
                         <Icon src="/icon/prev.svg" />
                     </div>
                     <div
                         className="next"
-                        style={{cursor: info.current.idx == (info.results?.length - 1) ? 'not-allowed' : 'pointer'}}
+                        style={{cursor: info.results[info.results.length - 1]?.active ? 'not-allowed' : 'pointer'}}
                         onClick={(e) => { e.stopPropagation(); onFlip(1) }}
                     >
                         <Icon src="/icon/next.svg" />
@@ -212,7 +225,7 @@ export function Preview(props: IProps) {
                     <a onClick={() => onZoom(-1)}>
                         <Icon src="/icon/zoom-in.svg"></Icon>
                     </a>
-                    <a onClick={() => onZoom(0)}>
+                    <a onClick={() => setZoom(1)}>
                         <Icon src="/icon/update.svg"></Icon>
                     </a>
                 </div>
@@ -241,7 +254,7 @@ export function Preview(props: IProps) {
                         </a>
                     </Tooltip>
                     <Tooltip title="下载AI生成结果">
-                        <a onClick={() => onZoom(0)}>
+                        <a onClick={() => onDownload()}>
                             <Icon src="/icon/download.svg"></Icon>
                         </a>
                     </Tooltip>
