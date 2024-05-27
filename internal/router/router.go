@@ -20,14 +20,6 @@ func Router(addr string) error {
 			auth.GET("/active", handler.Active)
 		}
 
-		aigc := api.Group("/aigc")
-		{
-			var handler handler.Aigc
-			aigc.POST("/text2image", handler.Text2image)
-			aigc.GET("/task", handler.Task)
-			aigc.POST("/recommend", handler.Recommend)
-		}
-
 		category := api.Group("/category", middleware.Token())
 		{
 			var handler handler.Category
@@ -50,6 +42,7 @@ func Router(addr string) error {
 		{
 			var handler handler.Task
 			task.POST("/create", handler.Create)
+			task.POST("/wordArt", handler.WordArt)
 			task.POST("/delete", handler.Delete)
 			task.GET("/info", handler.Info)
 			task.POST("/list", handler.List)

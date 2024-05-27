@@ -131,6 +131,7 @@ CREATE TABLE "task" (
   "results" json not null default '[]',
   "task_id" varchar(64) not null default '',
   "task_status" varchar(32) not null default '',
+  "task_type" varchar(128) not null default '',
   "user_id" bigint not null default 0,
   "update_at" timestamp not null default (now()),
   "create_at" timestamp not null default (now())
@@ -141,5 +142,6 @@ COMMENT ON COLUMN task.input IS '输入信息';
 COMMENT ON COLUMN task.parameters IS '输入信息';
 COMMENT ON COLUMN task.results IS '生成结果';
 COMMENT ON COLUMN task.task_id IS '作业任务ID';
-COMMENT ON COLUMN task.task_status IS '状态:0-未知';
+COMMENT ON COLUMN task.task_status IS '状态';
+COMMENT ON COLUMN task.task_type IS '类型';
 COMMENT ON COLUMN task.user_id IS '归属用户';

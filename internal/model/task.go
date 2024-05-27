@@ -19,6 +19,7 @@ type Task struct {
 	Results    []map[string]string `xorm:"results json notnull default []" json:"results,omitempty"`
 	TaskID     string              `xorm:"task_id varchar(64)" json:"taskId"`
 	TaskStatus string              `xorm:"task_status varchar(32)" json:"taskStatus"`
+	TaskType   string              `xorm:"task_type varchar(128)" json:"taskType"`
 	UserID     int64               `xorm:"user_id int default 0" json:"userId"`
 	UpdateAt   time.Time           `xorm:"update_at timestamp" json:"updateAt"`
 	CreateAt   time.Time           `xorm:"create_at timestamp" json:"createAt"`
@@ -81,6 +82,9 @@ func (t *Task) List(req dto.Request) (list []Task, total int64, err error) {
 			args = append(args, v.Val.(string)+"%")
 		case "taskStatus":
 			query += " AND task_status=?"
+			args = append(args, v.Val)
+		case "taskType":
+			query += " AND task_type IN (?)"
 			args = append(args, v.Val)
 		}
 	}

@@ -247,7 +247,10 @@ export function List() {
 
     const getTask = async () => {
         let data = {
-            ...new dto.Request()
+            ...new dto.Request(),
+            queryBy: [
+                {col: 'taskType', val: 'word_art_image'}
+            ],
         }
         let res = await srv.Task.list(data);
         if (res.code == 1000) {

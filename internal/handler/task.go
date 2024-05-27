@@ -99,6 +99,78 @@ func (t *Task) Create(ctx *gin.Context) {
 	})
 }
 
+// 艺术字
+func (t *Task) WordArt(ctx *gin.Context) {
+	var (
+		task model.Task
+	)
+
+	err := ctx.BindJSON(&task)
+	if nil != err {
+		util.Fail(3040, err.Error(), ctx)
+		return
+	}
+	body, _ := json.Marshal(task)
+
+	req, err := http.NewRequest(http.MethodPost, "https://dashscope.aliyuncs.com/api/v1/services/aigc/wordart/texture", bytes.NewBuffer(body))
+	if err != nil {
+		ctx.JSON(http.StatusOK, gin.H{
+			"code": -2,
+			"desc": "创建请求失败",
+		})
+		return
+	}
+	req.Header.Set("Content-Type", "application/json")
+	req.Header.Set("Authorization", viper.GetString("aliyun.api-key"))
+	req.Header.Set("X-DashScope-Async", "enable")
+
+	cli := &http.Client{Timeout: 5 * time.Second}
+	res, err := cli.Do(req)
+	if err != nil {
+		ctx.JSON(http.StatusOK, gin.H{
+			"code": -2,
+			"desc": "发送请求失败",
+		})
+		return
+	}
+	defer res.Body.Close()
+
+	resBody, err := io.ReadAll(res.Body)
+	if err != nil {
+		ctx.JSON(http.StatusOK, gin.H{
+			"code": -1,
+			"desc": "读取响应失败",
+		})
+		return
+	}
+
+	err = json.Unmarshal(resBody, &t)
+	if err != nil {
+		ctx.JSON(http.StatusOK, gin.H{
+			"code": -1,
+			"desc": "参数解析失败",
+		})
+		return
+	}
+	task.TaskID = t.Output.TaskID
+	task.TaskStatus = t.Output.TaskStatus
+	task.UserID = 1
+	err = task.Create()
+	if err != nil {
+		ctx.JSON(http.StatusOK, gin.H{
+			"code": -1,
+			"desc": err.Error(),
+		})
+		return
+	}
+
+	ctx.JSON(http.StatusOK, gin.H{
+		"code": 1000,
+		"data": t,
+		"desc": "Success",
+	})
+}
+
 func (t *Task) Delete(ctx *gin.Context) {
 	var (
 		param struct {
