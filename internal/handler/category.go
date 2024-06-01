@@ -126,6 +126,9 @@ func (t *Category) List(ctx *gin.Context) {
 	data := make(map[string]interface{})
 	data["list"] = ret
 	data["total"] = cnt
+	if param.Tree {
+		data["list"] = category.NewTree(ret, 0, 0)
+	}
 
 	ctx.JSON(http.StatusOK, gin.H{
 		"code": 1000,

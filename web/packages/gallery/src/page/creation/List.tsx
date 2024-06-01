@@ -249,7 +249,7 @@ export function List() {
         let data = {
             ...new dto.Request(),
             queryBy: [
-                {col: 'taskType', val: 'word_art_image'}
+                {col: 'taskType', val: 'text_to_image'}
             ],
         }
         let res = await srv.Task.list(data);

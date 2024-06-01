@@ -39,6 +39,15 @@ const Container = styled.div`
         padding: 8px;
         font-size: 12px;
 
+        .limit {
+            color: rgba(135,138,171,.5);
+        }
+
+        .loaded {
+            color: #fff;
+            font-weight: 600;
+        }
+
         .clear {
             cursor: pointer;
         }
@@ -51,6 +60,8 @@ interface IProps {
     name?: string;
     rows?: number;
     cols?: number;
+    limit?: number;
+    className?: string;
     placeholder?: string;
 }
 
@@ -59,6 +70,9 @@ export function TextArea(props: IProps) {
 
     const handlerChange = (evt: any) => {
         value = evt.target.value;
+        if (props.limit && value.length > props.limit) {
+            return;
+        }
         setValue(value);
         if (!props.onChange) {
             return;
@@ -74,7 +88,7 @@ export function TextArea(props: IProps) {
         setValue('');
     }
 
-    return <Container className="input-group">
+    return <Container className={props.className}>
         <textarea
             name={props.name}
             onChange={(e) => handlerChange(e)}
@@ -84,7 +98,10 @@ export function TextArea(props: IProps) {
             placeholder={props.placeholder}
         ></textarea>
         <div className="suffix">
-            <span className="limit">{value.length}/500</span>
+            {props.limit && <div className="limit">
+                <span className="loaded">{value.length}</span>
+                <span>/{props.limit}</span>
+            </div>}
             {value.length > 0 && <Icon className="clear" src="/icon/error.svg" onClick={() => clear()} />}
         </div>
     </Container>

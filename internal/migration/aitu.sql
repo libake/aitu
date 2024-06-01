@@ -80,20 +80,32 @@ DROP TABLE IF EXISTS "category";
 
 CREATE TABLE "category" (
   "id" bigserial not null PRIMARY KEY,
-  "code" varchar(64) not null UNIQUE,
+  "code" varchar(64) not null default '',
   "name" varchar(64) not null default '',
-  "type" varchar(64) not null default '',
+  "icon" text not null default '',
+  "inner_image" text not null default '',
+  "outer_image" text not null default '',
+  "prompt" json not null default '[]',
   "sort" smallint not null default 0,
+  "scene" varchar(64) not null default '',
   "status" smallint not null default 1,
+  "platform" varchar(32) not null default 'web',
+  "parent_id" bigint not null default 0,
   "update_at" timestamp not null default (now()),
   "create_at" timestamp not null default (now())
 );
 COMMENT ON TABLE category IS '分类';
 COMMENT ON COLUMN category.code IS '编码';
 COMMENT ON COLUMN category.name IS '名称';
-COMMENT ON COLUMN category.type IS '类型';
+COMMENT ON COLUMN category.icon IS '图标';
+COMMENT ON COLUMN category.inner_image IS '内部:模板使用';
+COMMENT ON COLUMN category.outer_image IS '外部:封面或展示使用';
+COMMENT ON COLUMN category.prompt IS '提示语';
 COMMENT ON COLUMN category.sort IS '排序';
+COMMENT ON COLUMN category.platform IS '平台';
+COMMENT ON COLUMN category.scene IS '场景:text_to_image,word_art';
 COMMENT ON COLUMN category.status IS '状态:0-禁用,1-启用';
+COMMENT ON COLUMN category.parent_id IS '父id';
 
 
 -- 风格 - style

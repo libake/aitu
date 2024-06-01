@@ -38,4 +38,13 @@ export class Task {
         let url = `/task/list`;
         return http.post(url, data);
     }
+
+    /**
+     * 创建艺术字
+     * @param data 
+     */
+    static wordArt(data: any): Promise<dto.Response> {
+        let url = `/task/wordArt`;
+        return http.post(url, data);
+    }
 }

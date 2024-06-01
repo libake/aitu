@@ -12,17 +12,17 @@ import (
 
 // 任务
 type Task struct {
-	ID         int64               `xorm:"id pk autoincr" json:"id"`
-	Model      string              `xorm:"model varchar(64)" json:"model"`
-	Input      map[string]string   `xorm:"input json notnull" json:"input"`
-	Parameters map[string]string   `xorm:"parameters json notnull default {}" json:"parameters,omitempty"`
-	Results    []map[string]string `xorm:"results json notnull default []" json:"results,omitempty"`
-	TaskID     string              `xorm:"task_id varchar(64)" json:"taskId"`
-	TaskStatus string              `xorm:"task_status varchar(32)" json:"taskStatus"`
-	TaskType   string              `xorm:"task_type varchar(128)" json:"taskType"`
-	UserID     int64               `xorm:"user_id int default 0" json:"userId"`
-	UpdateAt   time.Time           `xorm:"update_at timestamp" json:"updateAt"`
-	CreateAt   time.Time           `xorm:"create_at timestamp" json:"createAt"`
+	ID         int64                  `xorm:"id pk autoincr" json:"id"`
+	Model      string                 `xorm:"model varchar(64)" json:"model"`
+	Input      map[string]interface{} `xorm:"input json notnull" json:"input"`
+	Parameters map[string]interface{} `xorm:"parameters json notnull default {}" json:"parameters,omitempty"`
+	Results    []map[string]string    `xorm:"results json notnull default []" json:"results,omitempty"`
+	TaskID     string                 `xorm:"task_id varchar(64)" json:"taskId"`
+	TaskStatus string                 `xorm:"task_status varchar(32)" json:"taskStatus"`
+	TaskType   string                 `xorm:"task_type varchar(128)" json:"taskType"`
+	UserID     int64                  `xorm:"user_id int default 0" json:"userId"`
+	UpdateAt   time.Time              `xorm:"update_at timestamp" json:"updateAt"`
+	CreateAt   time.Time              `xorm:"create_at timestamp" json:"createAt"`
 }
 
 // 设定表名

@@ -228,10 +228,11 @@ export function List() {
 
     const addTask = async (v: any) => {
         let data = {
-            model: 'wanx-v1',
+            model: 'wordart-texture',
             ...v,
+            taskType: 'word_art_image',
         }
-        let res = await srv.Task.create(data);
+        let res = await srv.Task.wordArt(data);
         if (res.code == 1000) {
             setTimeout(() => {
                 Object.assign(task.info, res.data.output);
@@ -247,7 +248,10 @@ export function List() {
 
     const getTask = async () => {
         let data = {
-            ...new dto.Request()
+            ...new dto.Request(),
+            queryBy: [
+                {col: 'taskType', val: 'word_art_image'}
+            ]
         }
         let res = await srv.Task.list(data);
         if (res.code == 1000) {
@@ -364,9 +368,6 @@ export function List() {
                     <Time>
                         <div className="text">
                             {task.editable && <input onChange={(e) => selTask(e, v)} type="checkbox" />}
-                            <div className="cell">
-                                <Icon src="/icon/menu.svg" text="文本生成图像" />
-                            </div>
                             <time>{v.createAt}</time>
                         </div>
                         <div className="line"></div>

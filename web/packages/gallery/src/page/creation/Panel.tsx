@@ -365,7 +365,8 @@ export function Panel(props: IProps) {
         },
         parameters: {
             size: '1024*1024',
-        }
+        },
+        taskType: 'text_to_image',
     });
     let [mode, setMode] = useState({
         info: {
