@@ -12,4 +12,9 @@ export class Task {
         let url = '/v1/tasks/' + params;
         return http.get(url);
     }
+
+    static list(data: dto.Request): Promise<dto.Response> {
+        let url = '/task/list';
+        return http.post(url, data);
+    }
 }

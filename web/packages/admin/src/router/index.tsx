@@ -3,8 +3,10 @@ import { RouteObject, Outlet } from 'react-router-dom';
 import {
     Layout,
     auth,
+    category,
     home,
     node,
+    task,
     user,
     NotFound
 } from '@/page';
@@ -26,6 +28,24 @@ const routes: RouteObject[] = [
         children: [{
             path: '',
             element: <home.Home />
+        }, {
+            path: 'task',
+            element: <Outlet />,
+            children: [
+                {
+                    path: '',
+                    element: <task.List />
+                },
+            ]
+        }, {
+            path: 'category',
+            element: <Outlet />,
+            children: [
+                {
+                    path: '',
+                    element: <category.List />
+                },
+            ]
         }, {
             path: 'node',
             element: <Outlet />,

@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link, Outlet, useNavigate } from "react-router-dom";
-import { Dropdown, message, Space } from "antd";
+import { Dropdown, Space } from "antd";
 
 import { dao, srv } from "@/core";
 import styled from "styled-components";
@@ -11,14 +11,12 @@ const Container = styled.div`
     background-color: #f9f9f9;
 
     .side {
-        min-width: 260px;
         min-height: 100vh;
         color: #858585;
         background-color: #333;
     }
 
     .main {
-        flex: 1;
         background-color: #f0f0f0;
     }
 
@@ -55,6 +53,37 @@ const Header = styled.header`
 const Menu = styled.ul`
     min-height: calc(100vh - 52px);
     margin-bottom: 0;
+
+    .menu-item {
+        line-height: 50px;
+
+        a {
+            display: grid;
+            grid-template-columns: 20px auto 20px;
+            padding: 0 1rem;
+            color: #f0f0f0;
+
+            &:hover {
+                background-color: #222;
+            }
+
+            span {
+                margin-left: 8px;
+            }
+        }
+
+        .active {
+            background-color: #222;
+        }
+    }
+
+    .sub-menu {
+        background-color: #222;
+
+        a {
+            grid-template-columns: auto;
+        }
+    }
 `;
 const Avatar = styled.div`
     min-width: 160px;
@@ -106,7 +135,7 @@ export function Layout() {
 
     return <Container>
         <div className="side">
-            <Logo>logo</Logo>
+            <Logo>喵闪AI</Logo>
             <Menu>
                 {menu.list.map((e: dao.Node) => {
                     if (e.leaf) {

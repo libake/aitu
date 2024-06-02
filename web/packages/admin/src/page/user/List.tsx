@@ -13,9 +13,6 @@ const Container = styled.div`
 `;
 
 const columns = [{
-    title: '昵称',
-    dataIndex: 'nickname',
-}, {
     title: '手机号',
     dataIndex: 'mobile',
 }, {
@@ -38,11 +35,8 @@ const columns = [{
         return dayjs(v).format('YYYY-MM-DD');
     }
 }, {
-    title: '最后登录时间',
-    dataIndex: 'lastTime',
-    render: (v: string) => {
-        return dayjs(v).format('YYYY-MM-DD HH:mm:ss');
-    }
+    title: '昵称',
+    dataIndex: 'nickname',
 }, {
     title: '状态',
     dataIndex: 'status',
@@ -58,20 +52,17 @@ const columns = [{
         return badge;
     }
 }, {
+    title: '最后登录时间',
+    dataIndex: 'lastTime',
+    render: (v: string) => {
+        return dayjs(v).format('YYYY-MM-DD HH:mm:ss');
+    }
+}, {
     title: '注册时间',
     dataIndex: 'createAt',
     render: (v: string) => {
         return dayjs(v).format('YYYY-MM-DD HH:mm:ss');
     }
-}, {
-    title: '操作',
-    dataIndex: 'action',
-    width: '80px',
-    render: () => <Space>
-        <Link to={`/article/edit/1`}>
-            <i className="iconfont">&#xe640;</i>
-        </Link>
-    </Space>
 }];
 
 

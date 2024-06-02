@@ -227,7 +227,6 @@ export function List() {
                         <Button type="primary" onClick={setNode}>确定</Button>
                     </Space>
                 }
-                footerStyle={{ display: "flex", justifyContent: "center" }}
             >
                 <Form form={nodeForm} layout="vertical">
                     <Form.Item
@@ -245,7 +244,7 @@ export function List() {
                             { label: '接口', value: 4 },
                         ]} />
                     </Form.Item>
-                    <Form.Item name="meta" label="元数据" rules={[{ required: true, message: '请输入元数据!' }]}>
+                    <Form.Item name="meta" label="元数据" rules={[{ required: false, message: '请输入元数据!' }]}>
                         <Input />
                     </Form.Item>
                     <Form.Item
@@ -255,9 +254,7 @@ export function List() {
                     >
                         <Select options={[
                             { label: '管理后台-网页', value: 'adm-web' },
-                            // { label: '管理后台-移动', value: 'adm-app' },
                             { label: '喵闪智能-网页', value: 'gly-web' },
-                            // { label: '喵闪智能-移动', value: 'gly-app' },
                         ]} />
                     </Form.Item>
                     <Form.Item name="icon" label="图标">

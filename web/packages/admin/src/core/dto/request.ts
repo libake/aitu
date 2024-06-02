@@ -14,6 +14,7 @@ export class Request {
     orderBy?: OrderBy[];
     queryBy?: QueryBy[];
     omit?: string;
+    tree?: boolean;
 
     constructor(pagination?: { currPage: number, pageSize: number }) {
         if (!!pagination) {
