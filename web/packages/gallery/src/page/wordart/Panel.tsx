@@ -271,12 +271,12 @@ interface IProps {
 export function Panel(props: IProps) {
     let [req, setReq] = useState({
         input: {
-            prompt: '湖光山色',
+            prompt: '',
             text: {
                 text_content: '',
-                output_image_ratio: '9:16',
+                output_image_ratio: '',
             },
-            texture_style: 'waterfall',
+            texture_style: '',
         },
         parameters: {
             n: 4,
@@ -364,7 +364,7 @@ export function Panel(props: IProps) {
             <h3>文字风格</h3>
             <div className="cell" onClick={() => setCategory({...category, open: true})}>
                 <div className="cell-body">
-                    <img src="https://img.alicdn.com/imgextra/i2/O1CN01djqgIH1qr2HfWiZtz_!!6000000005548-2-tps-136-136.png" />
+                    <img src="/word-136.png" />
                 </div>
                 <div className="cell-text">
                     <label htmlFor="">{req.input.prompt ? category.info.name : '请选择文字风格'}</label>
