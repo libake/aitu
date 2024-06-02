@@ -46,7 +46,7 @@ func (t *Node) Create(node Node) error {
 // 更新节点
 func (t *Node) Update(node Node) error {
 	node.UpdateAt = time.Now()
-	row, err := db.NewPostgres().UseBool("enable").Where("id=?", node.ID).Update(&node)
+	row, err := db.NewPostgres().UseBool("enable").Cols("meta", "icon").Where("id=?", node.ID).Update(&node)
 	if nil != err || row == 0 {
 		err = errors.New("update fail")
 	}

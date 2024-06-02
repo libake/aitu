@@ -1,15 +1,14 @@
-import { useEffect, useState } from "react";
-import styled from "styled-components";
-
-import { dao } from "@/core";
-
-const Container = styled.div`
-    
-`
+import { useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 
 export function Home() {
+    const navigate = useNavigate();
 
-    return <Container>
-        home
-    </Container>
+    useEffect(() => {
+        navigate("/task");
+    }, []);
+
+    return <>
+        
+    </>
 }
