@@ -24,9 +24,11 @@ http.interceptors.request.use(
 http.interceptors.response.use(
   (response) => {
     const res = response.data;
-    // if (403 == res.status || 401 == res.status) {
-      
-    // }
+    switch(res.code) {
+      case 3073:
+        localStorage.clear();
+        break;
+    }
     return Promise.resolve(res);
   },
   (error) => {

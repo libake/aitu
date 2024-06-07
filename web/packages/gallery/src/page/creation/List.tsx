@@ -1,28 +1,31 @@
 import styled from "styled-components";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useContext } from "react";
 import { Popconfirm, Spin, message } from "antd";
 
 import { Icon } from "@/common";
 import { dao, dto, srv } from "@/core";
 import { Panel } from './Panel';
 import { Preview } from "./Preview";
+import { UserContext } from "@/context";
+import { useNavigate } from "react-router-dom";
 
 
 const Container = styled.div`
     display: grid;
     grid-template-columns: 1fr;
     margin: 52px 0 0;
-    min-height: calc(100vh - 388px);
+    min-height: calc(100vh - 52px);
     background-color: ${props => props.theme.backgroundColor};
 
     .side {
         position: fixed;
         width: 360px;
     }
+
+    .main {
+        margin: 0 36px 0 420px;
+    }
 `;
-const Content = styled.div`
-    margin: 0 36px 0 420px;
-`
 const Title = styled.div`
     display: flex;
     justify-content: space-between;
@@ -301,14 +304,21 @@ export function List() {
         }
         setTask({ ...task });
     }
+    const userContext = useContext(UserContext);
+    const navigate = useNavigate();
 
     useEffect(() => {
-        getTask();
-    }, []);
+        if (userContext.state.id > 0) {
+            getTask();
+        } else {
+            navigate('/');
+        }
+    }, [userContext]);
 
     return <Container>
+        {userContext.state.id > 0 && <>
         <Panel className="side" submit={(e: any) => addTask(e)}></Panel>
-        <Content>
+        <div className="main">
             <Title>
                 <span className="text">支持下载或收藏，可通过管理画作进行删除，欢迎对创作点赞点踩并提出建议，助力模型不断进化。</span>
                 <span className="tool">
@@ -420,7 +430,8 @@ export function List() {
                     </Column>
                 </History>
             )}
-        </Content>
+        </div>
         <Preview open={task.preview.open} current={task.preview.current} data={task.info} onClose={() => onPreview()}></Preview>
+        </>}
     </Container>
 }

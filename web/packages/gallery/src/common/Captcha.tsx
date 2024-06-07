@@ -12,15 +12,13 @@ export function Captcha(props: IProps) {
     let [sms, setSms] = useState({
         text: '获取验证码',
         disable: false,
-        mobile: props.mobile,
     });
     let interval: NodeJS.Timer;
-
 
     const sendSms = async () => {
         let data = {
             mobile: props.mobile,
-            scene: 1,
+            scene: props.scene || 1,
         }
         let res = await srv.Common.sendSms(data);
         if (res.code == 1000) {
@@ -44,9 +42,8 @@ export function Captcha(props: IProps) {
     }
 
     useEffect(() => {
-        sms.mobile = props.mobile;
-        setSms({...sms});
-    }, []);
+        
+    }, [props]);
 
     return <Input suffix={
         <button className="link" onClick={() => sendSms()} disabled={sms.disable}>

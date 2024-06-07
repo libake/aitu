@@ -44,7 +44,6 @@ func (t *User) SignIn(ctx *gin.Context) {
 	// 0-密码登录，1-验证码登录
 	switch param.Mode {
 	case 1:
-		// TODO 短信接入后实现
 		captcha, _ := db.NewRedis().Get(param.Account).Result()
 		if captcha == "" || param.Captcha != captcha {
 			ctx.JSON(http.StatusOK, gin.H{
