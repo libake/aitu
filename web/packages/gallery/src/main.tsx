@@ -7,21 +7,21 @@ import routes from './router';
 import '@/style/index.less';
 import { UserProvider } from './context/UserContext';
 
-let theme = {
-  token: {
-    colorPrimary: "#4bfef1"
-  }
-};
+// let theme = {
+//   token: {
+//     colorPrimary: "#4bfef1"
+//   }
+// };
 
 const App = () => useRoutes(routes);
 
 const rootDom = document.getElementById('root') as HTMLElement;
 ReactDOM.createRoot(rootDom).render(
   <BrowserRouter>
-    <ConfigProvider locale={zhCN} theme={theme}>
+    {/* <ConfigProvider locale={zhCN} theme={theme}> */}
       <UserProvider>
       <App />
       </UserProvider>
-    </ConfigProvider>
+    {/* </ConfigProvider> */}
   </BrowserRouter>
 );

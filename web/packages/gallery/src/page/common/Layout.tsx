@@ -1,9 +1,9 @@
-import { useContext, useEffect, useState } from "react";
+import { useContext, useState } from "react";
 import { Link, NavLink, Outlet } from "react-router-dom";
 import styled, { ThemeProvider } from "styled-components";
-import { Dropdown, message, Popover, Button, Form, Input, Checkbox } from "antd";
+import { Dropdown, message, Popover, Button } from "antd";
 
-import { dao, srv } from "@/core";
+import { srv } from "@/core";
 import { Icon, Captcha } from "@/common";
 import { UserContext } from "@/context/UserContext";
 
@@ -144,41 +144,27 @@ const Modal = styled.div`
     }
 
     .box-body {
+        display: grid;
+        grid-template-rows: auto;
+        gap: 16px;
         padding: 24px;
+        min-width: 360px;
     }
 
-    .link {
-        color: #fff;
-    }
-
-    .ant-form {
-        width: 360px;
-    }
-
-    .ant-input-affix-wrapper {
-        border: none;
-        background-color: #141822;
-    }
-
-    .ant-form-item-label >label {
-        color: #fff;
+    .form-item {
+        
+        input {
+            width: 100%;
+            min-height: 34px;
+            padding: 4px 8px;
+            box-sizing: border-box;
+            outline: none;
+            border-radius: 4px;
+        }
     }
 `
 
 export function Layout() {
-    // 能量值
-    let [power, setPower] = useState({
-        list: new Array(),
-    });
-
-    const getPower = () => {
-
-    }
-
-    useEffect(() => {
-        getPower();
-    }, []);
-
     const theme = {
         dark: {
             primaryColor: "#4bfef1", // 主色
@@ -200,24 +186,24 @@ export function Layout() {
 
     const [user, setUser] = useState({
         open: false,
-        info: new dao.User(),
+        info: {
+            account: '',
+            mode: 1,
+            captcha: '',
+        }
     });
-    const [userForm] = Form.useForm();
     const userContext = useContext(UserContext);
 
     const signIn = async () => {
-        let valid = await userForm.validateFields().catch(e => console.log(e));
-        if (!valid) {
-            return;
-        }
         let data = {
-            ...userForm.getFieldsValue(),
-            mode: 1,
-            captcha: '4444',
+            ...user.info,
         };
         let res = await srv.User.signIn(data);
         if (res.code == 1000) {
-            localStorage.setItem('token', res.data);
+            userContext.dispatch({
+                type: 'login',
+                payload: res.data,
+            });
             onModal();
         } else {
             message.error(res.desc);
@@ -229,6 +215,10 @@ export function Layout() {
         setUser({ ...user });
     }
 
+    const handleChange = (val: any, name: string) => {
+        setUser({...user, info: {...user.info, [name]: val.target.value}});
+    }
+
     const logout = async () => {
         let res = await srv.User.logout();
         if (res.code == 1000) {
@@ -237,37 +227,6 @@ export function Layout() {
             });
         }
     }
-
-    const content = userContext.state.id > 0 ? <>
-        <li>
-            <Popover className="money" trigger="click">
-                <Icon src="/icon/power.svg" />
-                <span>20能量值</span>
-            </Popover>
-        </li>
-        <li>
-            <Dropdown menu={{
-                items: [
-                    {
-                        label: <Link to="/user/profile">我要反馈</Link>,
-                        key: 1
-                    }, {
-                        key: 1 - 2,
-                        type: 'divider',
-                    }, {
-                        key: 5,
-                        label: <a onClick={logout}>退出登录</a>
-                    }
-                ]
-            }}>
-                <a onClick={(e) => e.preventDefault()}>
-                    <Icon src="/icon/user.svg" />
-                </a>
-            </Dropdown>
-        </li>
-    </> : <>
-        <Button ghost onClick={() => onModal()}>登录/注册</Button>
-    </>;
 
     return <ThemeProvider theme={currentTheme}>
         <Header>
@@ -280,10 +239,34 @@ export function Layout() {
                 <NavLink to="/wordart">AI艺术字</NavLink>
             </NavLeft>
             <NavRight>
-                {/* <li>
-                    <Link className="iconfont" to="/news/notice">&#xe649;</Link>
-                </li> */}
-                {content}
+                {userContext.state.id > 0 ? <>
+                    <li>
+                        <Popover className="money" trigger="click">
+                            <Icon src="/icon/power.svg" />
+                            <span>20能量值</span>
+                        </Popover>
+                    </li>
+                    <li>
+                        <Dropdown menu={{
+                            items: [
+                                {
+                                    label: <Link to="/user/profile">我要反馈</Link>,
+                                    key: '1'
+                                }, {
+                                    key: '1 - 2',
+                                    type: 'divider',
+                                }, {
+                                    key: '2',
+                                    label: <a onClick={logout}>退出登录</a>
+                                }
+                            ]
+                        }}>
+                            <a onClick={(e) => e.preventDefault()}>
+                                <Icon src="/icon/user.svg" />
+                            </a>
+                        </Dropdown>
+                    </li>
+                </> : <Button ghost onClick={() => onModal()}>登录/注册</Button>}
             </NavRight>
         </Header>
         <Outlet />
@@ -324,24 +307,17 @@ export function Layout() {
                         <Icon src="/icon/close-bold.svg" />
                     </div>
                 </div>
-                <div className="box-body">
-                    <Form form={userForm} size="large">
-                        <Form.Item name="account" label="手机号">
-                            <Input />
-                        </Form.Item>
-                        <Form.Item name="captcha" label="验证码">
-                            <Captcha mobile="13510186620"></Captcha>
-                        </Form.Item>
-                        <Form.Item>
-                            <Checkbox>登录即视为您已阅读并同意服务条款、隐私政策</Checkbox>
-                        </Form.Item>
-                        <Form.Item>
-                            <Button type="primary" onClick={() => signIn()} block={true}>
-                                登录
-                            </Button>
-                        </Form.Item>
-                    </Form>
-                </div>
+                <form className="box-body">
+                    <div className="form-item">
+                        <input value={user.info.account} onChange={(v) => handleChange(v, 'account')} />
+                    </div>
+                    <div className="form-item">
+                        <Captcha value={user.info.captcha} mobile={user.info.account} onChange={(v: React.ChangeEvent<HTMLInputElement>) => handleChange(v, 'captcha')} />
+                    </div>
+                    <div className="form-item">
+                        <Button type="primary" onClick={() => signIn()} block={true}>登录</Button>
+                    </div>
+                </form>
             </div>
         </Modal>
         }

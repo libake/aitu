@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"math/rand"
 	"net/http"
+	"regexp"
 	"time"
 
 	db "aitu.cn/internal/database"
@@ -52,9 +53,23 @@ func (t *User) SignIn(ctx *gin.Context) {
 			})
 			return
 		}
+		reg := regexp.MustCompile(`\w+([-+.]\w+)*@\w+([-.]\w+)*\.\w+([-.]\w+)*`)
+		if reg.MatchString(param.Account) {
+			user.Email = param.Account
+		} else {
+			user.Mobile = param.Account
+		}
+		err := user.Info()
+		if err != nil {
+			ctx.JSON(http.StatusOK, gin.H{
+				"code": 3040,
+				"desc": "账号不存在",
+			})
+			return
+		}
 	default:
 		user.Password = param.Password
-		err := user.SignIn(param.Account)
+		err := user.Info()
 		if err != nil {
 			ctx.JSON(http.StatusOK, gin.H{
 				"code": 3040,
@@ -83,9 +98,13 @@ func (t *User) SignIn(ctx *gin.Context) {
 	s, _ := json.Marshal(user)
 	db.NewRedis().HSet("token", token, string(s))
 
+	data := make(map[string]interface{})
+	data["info"] = user
+	data["token"] = token
+
 	ctx.JSON(http.StatusOK, gin.H{
 		"code": 1000,
-		"data": token,
+		"data": data,
 		"desc": "Success",
 	})
 }
@@ -352,6 +371,11 @@ func (t *User) Info(ctx *gin.Context) {
 	if req.ID > 0 {
 		// 指定用户
 		user.ID = req.ID
+		err = user.Info()
+		if err != nil {
+			util.Fail(3010, err.Error(), ctx)
+			return
+		}
 	} else {
 		// 解析 token 取得 id
 		token := ctx.Request.Header.Get("Access-Token")
@@ -365,15 +389,10 @@ func (t *User) Info(ctx *gin.Context) {
 		}
 		json.Unmarshal([]byte(sToken), &user)
 	}
-	ret, err := user.Info()
-	if err != nil {
-		util.Fail(3010, err.Error(), ctx)
-		return
-	}
 
 	ctx.JSON(http.StatusOK, gin.H{
 		"code": 1000,
-		"data": ret,
+		"data": user,
 		"desc": "Success",
 	})
 }

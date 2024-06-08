@@ -128,15 +128,30 @@ func (t *User) List(req dto.Request) (list []User, total int64, err error) {
 	return
 }
 
-func (t *User) Info() (info User, err error) {
+func (t *User) Info() (err error) {
 	var (
 		query string
 		args  []interface{}
 	)
 
-	query = "id=?"
-	args = append(args, t.ID)
-	has, err := db.NewPostgres().Omit("password").Where(query, args...).Get(&info)
+	if t.ID > 0 {
+		query = "id=?"
+		args = append(args, t.ID)
+	}
+	if t.Mobile != "" {
+		query = "mobile=?"
+		args = append(args, t.Mobile)
+	}
+	if t.Email != "" {
+		query = "email=?"
+		args = append(args, t.Email)
+	}
+	if t.Password != "" {
+		query += " AND password=?"
+		args = append(args, t.Password)
+	}
+
+	has, err := db.NewPostgres().Omit("password").Where(query, args...).Get(t)
 	if err != nil || !has {
 		err = errors.New("is empty")
 	}

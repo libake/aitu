@@ -274,7 +274,7 @@ export function Panel(props: IProps) {
             prompt: '',
             text: {
                 text_content: '',
-                output_image_ratio: '',
+                output_image_ratio: '1:1',
             },
             texture_style: '',
         },
@@ -388,8 +388,8 @@ export function Panel(props: IProps) {
             </div>
             <h3>图片背景</h3>
             <div className="radio">
-                <a className={`radio-item${req.parameters.alpha_channel ? '' : ' active'}`}>生成背影</a>
-                <a className={`radio-item${req.parameters.alpha_channel ? ' active' : ''}`}>透明背景</a>
+                <a className={`radio-item${req.parameters.alpha_channel ? '' : ' active'}`} onClick={() => setReq({...req, parameters: {...req.parameters, alpha_channel: false}})}>生成背影</a>
+                <a className={`radio-item${req.parameters.alpha_channel ? ' active' : ''}`} onClick={() => setReq({...req, parameters: {...req.parameters, alpha_channel: true}})}>透明背景</a>
             </div>
         </div>
         <div className="side-foot">
@@ -416,7 +416,7 @@ export function Panel(props: IProps) {
                     {category.info.children.map((v, i) =>
                         <Card className={v.active ? 'active' : ''} key={i} onClick={() => onCategory(v, v.id)}>
                             <picture className="card-body">
-                                <img src={v.innerImage} alt="" />
+                                <img src={v.innerImage} alt={v.name} />
                             </picture>
                             <div className="card-foot">{v.name}</div>
                         </Card>
@@ -438,7 +438,10 @@ export function Panel(props: IProps) {
                         placeholder="试试输入你心中的文字创意，输入自定义风格时已选择的风格模版将失效"
                     ></TextArea>
                     <div className="cell">
-                        <div className="cell-text">示例:{category.info.prompt && category.info.prompt[0]}</div>
+                        <div className="cell-text">
+                            <label>示例：</label>
+                            <span>{category.info.prompt && category.info.prompt[0]}</span>
+                        </div>
                         <Icon className="cell-icon" src="/icon/update.svg" />
                     </div>
                 </div>

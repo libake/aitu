@@ -7,15 +7,19 @@ export const UserContext = createContext({
     dispatch: (obj: any) => {}
 });
 
-function reducer(state: dao.User, action: {type: string, payload: dao.User}) {
+function reducer(state: dao.User, action: {type: string, payload: any}) {
     switch(action.type) {
         case 'login': 
+            localStorage.setItem('token', action.payload.token);
+            state = action.payload.info;
+            return state;
+        case 'setUser': 
             return action.payload;
         case 'logout': 
             localStorage.clear();
             return new dao.User();
         default: 
-            throw Error('Unknow action: ');
+            throw Error('Unknow action: ' + action.type);
     }
 }
 
@@ -26,7 +30,7 @@ export function UserProvider(props: { children: ReactNode}) {
         let res = await srv.User.info();
         if (res.code == 1000) {
             dispatch({
-                type: 'login',
+                type: 'setUser',
                 payload: res.data,
             });
         }

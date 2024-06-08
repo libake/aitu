@@ -1,4 +1,4 @@
-import axios, { AxiosRequestHeaders } from "axios";
+import axios from "axios";
 
 export const http = axios.create({
   baseURL: "/api",

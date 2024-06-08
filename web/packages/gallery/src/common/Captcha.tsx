@@ -1,11 +1,40 @@
-import { Input, message } from "antd";
+import { message } from "antd";
+import { useEffect, useState } from "react";
+import styled from "styled-components";
 
 import { srv } from "@/core";
-import { useEffect, useState } from "react";
+
+const Container = styled.div`
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-radius: 4px;
+    background-color: #14171f;
+
+    input {
+        flex: 1;
+        min-height: 34px;
+        padding: 4px 8px;
+        box-sizing: border-box;
+        outline: none;
+        background-color: transparent;
+    }
+
+    .suffix {
+        margin-right: 8px;
+        padding: 0;
+        color: var(--wanx-wh);
+        background-color: transparent;
+    }
+`
 
 interface IProps {
     mobile: string;
     scene?: number;
+    value: string;
+
+    className?: string;
+    onChange: Function;
 }
 
 export function Captcha(props: IProps) {
@@ -41,13 +70,10 @@ export function Captcha(props: IProps) {
         }
     }
 
-    useEffect(() => {
-        
-    }, [props]);
-
-    return <Input suffix={
-        <button className="link" onClick={() => sendSms()} disabled={sms.disable}>
+    return <Container className={props.className}>
+        <input type="text" onChange={(v) => {props.onChange(v)}} />
+        <button className="suffix" type="button" onClick={() => sendSms()} disabled={sms.disable}>
             {sms.text}
         </button>
-    } />
+    </Container>
 }
