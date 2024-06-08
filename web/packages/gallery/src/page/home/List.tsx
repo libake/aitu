@@ -22,6 +22,11 @@ const Title = styled.div`
 
     .logo {
         margin-bottom: 20px;
+        height: 48px;
+
+        img {
+            height: 100%;
+        }
     }
 
     .slogan {
@@ -253,7 +258,7 @@ export function List() {
     return <Container>
         <Title>
             <div className="logo">
-                logo
+                <img src="/logo-text.png" alt="喵闪AI" />
             </div>
             <p className="slogan">一个让创作更轻松的AI智能化平台</p>
             <div className="btn">

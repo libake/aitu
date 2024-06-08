@@ -312,3 +312,60 @@ func (t *Task) List(ctx *gin.Context) {
 		"desc": "Success",
 	})
 }
+
+// 首页推荐
+func (t Task) Recommend(ctx *gin.Context) {
+	var (
+		param struct {
+			LastId   int64 `json:"lastId"`
+			PageSize int64 `json:"pageSize"`
+		}
+	)
+
+	err := ctx.BindJSON(&param)
+	if nil != err {
+		util.Fail(3040, err.Error(), ctx)
+		return
+	}
+	body, _ := json.Marshal(param)
+
+	url := `https://wanxiang.aliyun.com/wanx/api/square/recommend`
+	req, err := http.NewRequest(http.MethodPost, url, bytes.NewBuffer(body))
+	if err != nil {
+		ctx.JSON(http.StatusOK, gin.H{
+			"code": -2,
+			"desc": "创建请求失败",
+		})
+		return
+	}
+	req.Header.Set("Content-Type", "application/json")
+
+	cli := &http.Client{Timeout: 5 * time.Second}
+	res, err := cli.Do(req)
+	if err != nil {
+		ctx.JSON(http.StatusOK, gin.H{
+			"code": -2,
+			"desc": "发送请求失败",
+		})
+		return
+	}
+	defer res.Body.Close()
+
+	resBody, err := io.ReadAll(res.Body)
+	if err != nil {
+		ctx.JSON(http.StatusOK, gin.H{
+			"code": -1,
+			"desc": "读取响应失败",
+		})
+		return
+	}
+
+	ret := make(map[string]interface{})
+	json.Unmarshal(resBody, &ret)
+
+	ctx.JSON(http.StatusOK, gin.H{
+		"code": 1000,
+		"data": ret,
+		"desc": "Success",
+	})
+}

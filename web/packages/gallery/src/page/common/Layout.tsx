@@ -273,7 +273,7 @@ export function Layout() {
         <Header>
             <NavLeft>
                 <a className="logo">
-                    <img src="/logo.png" alt="喵闪AI" />
+                    <img src="/logo-text.png" alt="喵闪AI" />
                 </a>
                 <NavLink to="/" end>探索发现</NavLink>
                 <NavLink to="/creation">创意作图</NavLink>

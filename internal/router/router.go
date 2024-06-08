@@ -38,6 +38,12 @@ func Router(addr string) error {
 			style.POST("/list", handler.List)
 		}
 
+		aigc := api.Group("/aigc")
+		{
+			var handler handler.Task
+			aigc.POST("/recommend", handler.Recommend)
+		}
+
 		task := api.Group("/task", middleware.Token())
 		{
 			var handler handler.Task
