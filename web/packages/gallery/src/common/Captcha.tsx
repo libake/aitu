@@ -24,7 +24,7 @@ const Container = styled.div`
         width: auto;
         margin-right: 8px;
         padding: 0;
-        color: var(--wanx-wh);
+        color: var(--text-color);
         background-color: transparent;
     }
 `

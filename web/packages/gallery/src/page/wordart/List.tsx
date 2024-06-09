@@ -12,8 +12,8 @@ const Container = styled.div`
     display: grid;
     grid-template-columns: 1fr;
     margin: 52px 0 0;
-    min-height: calc(100vh - 388px);
-    background-color: ${props => props.theme.backgroundColor};
+    min-height: calc(100vh - 52px);
+    background-color: var(--background-color);
 
     .side {
         position: fixed;
@@ -132,7 +132,7 @@ const Image = styled.div`
         align-items: center;
         background-image: linear-gradient(180deg, transparent, #000);
         bottom: 0;
-        color: var(--wanx-wh);
+        color: var(--text-color);
         display: flex;
         justify-content: center;
         left: 0;

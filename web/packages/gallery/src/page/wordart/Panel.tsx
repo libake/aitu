@@ -147,7 +147,7 @@ const Popup = styled.div`
         background-color: #282c38;
 
         .text {
-            color: var(--wanx-wh);
+            color: var(--text-color);
         }
 
         .tool {
@@ -167,13 +167,13 @@ const Popup = styled.div`
             justify-content: center;
             align-items: center;
             padding: 4px 16px;
-            color: var(--wanx-wh);
+            color: var(--text-color);
             background-color: #282c38;
         }
 
         .active {
             border-radius: 4px;
-            color: var(--wanx-wh-01);
+            color: var(--heading-text-color);
             background-color: ${props => props.theme.primaryColor};
         }
     }
@@ -209,7 +209,7 @@ const Popup = styled.div`
 
         .cell {
             padding: 16px 0;
-            color: var(--wanx-wh);
+            color: var(--text-color);
         }
     }
 
@@ -225,11 +225,11 @@ const Popup = styled.div`
         align-items: center;
         height: 34px;
         border-radius: 20px;
-        color: var(--wanx-wh);
+        color: var(--text-color);
     }
 
     .btn-default {
-        border: 1px solid var(--wanx-wh);
+        border: 1px solid var(--text-color);
         background-color: transparent;
     }
 
@@ -240,7 +240,7 @@ const Popup = styled.div`
 const Card = styled.div`
     display: grid;
     grid-template-rows: 1fr 24px;
-    color: var(--wanx-wh);
+    color: var(--text-color);
     font-size: 10px;
     background-color: #2d3240;
     border-radius: 10px;

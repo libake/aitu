@@ -135,7 +135,7 @@ const Image = styled.div`
         align-items: center;
         background-image: linear-gradient(180deg, transparent, #000);
         bottom: 0;
-        color: var(--wanx-wh);
+        color: var(--text-color);
         display: flex;
         justify-content: center;
         left: 0;

@@ -262,7 +262,7 @@ const Popup = styled.div`
         background-color: #282c38;
 
         .text {
-            color: var(--wanx-wh);
+            color: var(--text-color);
         }
 
         .tool {
@@ -285,11 +285,11 @@ const Popup = styled.div`
             align-items: center;
             height: 50px;
             position: relative;
-            color: var(--wanx-wh-05);
+            color: var(--text-color-secondary);
         }
 
         .active {
-            color: var(--wanx-wh);
+            color: var(--text-color);
 
             &::after {
                 position: absolute;
@@ -324,7 +324,7 @@ const Card = styled.div`
     border: 1px solid transparent;
 
     &:hover {
-        color: var(--wanx-wh);
+        color: var(--text-color);
     }
 
     &.active {
@@ -347,7 +347,7 @@ const Card = styled.div`
         white-space: nowrap;
         font-size: 12px;
         font-weight: 400;
-        color: var(--wanx-wh-05);
+        color: var(--text-color-secondary);
     }
 `
 

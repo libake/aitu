@@ -20,7 +20,7 @@ const Header = styled.header`
     top: 0;
     z-index: 100;
     color: #fff;
-    background-color: var(--backgroundColor);
+    background-color: var(--background-color);
 
     a {
         color: #838589;
@@ -133,7 +133,7 @@ const Modal = styled.div`
 
     button {
         width: 100%;
-        background-color: var(--primaryColor);
+        background-color: var(--primary-color);
     }
 
     .box {
