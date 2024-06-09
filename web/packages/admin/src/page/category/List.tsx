@@ -263,8 +263,9 @@ export function List() {
                         rules={[{ required: true, message: '请选择场景!' }]}
                     >
                         <Select options={[
-                            { label: '文本生成图像', value: 'text_to_image' },
-                            { label: '艺术字生成', value: 'word_art_image' },
+                            { label: '咒语书', value: 'spell-book' },
+                            { label: '创意模板', value: 'creative-style' },
+                            { label: '文字风格', value: 'word-style' },
                         ]} />
                     </Form.Item>
                     <Form.Item name="prompt" label="提示语">

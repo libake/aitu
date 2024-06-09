@@ -101,6 +101,66 @@ func (t *Category) Update(ctx *gin.Context) {
 	})
 }
 
+// 修改排序
+func (t *Category) SetSort(ctx *gin.Context) {
+	var (
+		category model.Category
+	)
+
+	err := ctx.BindJSON(&category)
+	if err != nil {
+		ctx.JSON(http.StatusOK, gin.H{
+			"code": 3040,
+			"desc": err.Error(),
+		})
+		return
+	}
+
+	err = category.SetSort()
+	if err != nil {
+		ctx.JSON(http.StatusOK, gin.H{
+			"code": 3040,
+			"desc": err.Error(),
+		})
+		return
+	}
+
+	ctx.JSON(http.StatusOK, gin.H{
+		"code": 1000,
+		"desc": "Success",
+	})
+}
+
+// 修改状态
+func (t *Category) SetStatus(ctx *gin.Context) {
+	var (
+		category model.Category
+	)
+
+	err := ctx.BindJSON(&category)
+	if err != nil {
+		ctx.JSON(http.StatusOK, gin.H{
+			"code": 3040,
+			"desc": err.Error(),
+		})
+		return
+	}
+
+	err = category.SetStatus()
+	if err != nil {
+		ctx.JSON(http.StatusOK, gin.H{
+			"code": 3040,
+			"desc": err.Error(),
+		})
+		return
+	}
+
+	ctx.JSON(http.StatusOK, gin.H{
+		"code": 1000,
+		"desc": "Success",
+	})
+}
+
 // 分类列表
 func (t *Category) List(ctx *gin.Context) {
 	var (

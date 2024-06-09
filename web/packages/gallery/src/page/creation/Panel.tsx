@@ -399,48 +399,44 @@ export function Panel(props: IProps) {
         setReq({ ...req });
     }
 
-    const [style, setStyle] = useState({
-        list: new Array<dao.Style>(),
+    const [template, setTemplate] = useState({
+        list: new Array<dao.Template>(),
         collapse: true,
         selectKeys: new Set<string>(),
     });
 
-    const getStyle = async (hot = 1, categoryId = 0) => {
+    const getTemplate = async (categoryId = 0) => {
         let data = {
             currPage: 1,
-            pageSize: 10,
+            pageSize: 100,
             queryBy: [
                 {
-                    col: 'hot',
-                    val: hot
+                    col: 'categoryId',
+                    val: categoryId,
                 }
-            ]
+            ],
         }
-        if (categoryId > 0) {
-            data.queryBy.push({col: 'categoryId', val: categoryId});
-        }
-        let res = await srv.Style.list(data);
-        if (!!hot) {
-            style.list = res.data.list;
-            setStyle({ ...style });
+        let res = await srv.Template.list(data);
+        if (res.code == 1000) {
+            template.list = res.data.list;
         } else {
-            category.styleList = res.data.list;
-            setCategory({...category});
+            template.list = [];
         }
+        setTemplate({...template});
     }
 
     // 咒语书
-    const onStyle = (item: dao.Style) => {
+    const onTemplate = (item: dao.Template) => {
         if (!!req.input.prompt) {
-            style.selectKeys = new Set(req.input.prompt.split(','));
+            template.selectKeys = new Set(req.input.prompt.split(','));
         }
-        if (style.selectKeys.has(item.name)) {
-            style.selectKeys.delete(item.name);
+        if (template.selectKeys.has(item.name)) {
+            template.selectKeys.delete(item.name);
         } else {
-            style.selectKeys.add(item.name);
+            template.selectKeys.add(item.name);
         }
-        setStyle({ ...style });
-        req.input.prompt = Array.from(style.selectKeys).join(',');
+        setTemplate({ ...template });
+        req.input.prompt = Array.from(template.selectKeys).join(',');
         setReq({ ...req });
     }
 
@@ -451,36 +447,47 @@ export function Panel(props: IProps) {
 
     let [category, setCategory] = useState({
         info: new dao.Category(),
-        open: false,
         list: new Array<dao.Category>(),
-        styleList: new Array<dao.Style>()
+        open: false,
+        prompt: '',
     });
 
     const getCategory = async () => {
         let data = {
             currPage: 1,
-            pageSize: 10,
+            pageSize: 100,
             queryBy: [
-                {col: 'scene', val: 'text_to_image'}
+                {col: 'scene', val: 'spell-book'}
             ],
         }
         let res = await srv.Category.list(data);
         if (res.code == 1000) {
             category.list = res.data.list;
+            if (category.list.length > 0) {
+                category.info = category.list[0];
+                getTemplate(category.list[0].id);
+                if (category.info.prompt.length > 0){
+                    category.prompt = category.info.prompt[0];
+                }
+            }
         } else {
             category.list = [];
         }
         setCategory({ ...category });
     }
 
-    const onCategory = (item?: dao.Category) => {
-        if (!!item) {
-            getStyle(0, item.id);
-            category.info = item;
-        } else {
-            getStyle(0, 0);
-            category.info = new dao.Category();
+    const onCategory = (item: dao.Category) => {
+        category.info = item;
+        getTemplate(item.id);
+    }
+
+    const onPrompt = () => {
+        let len = category.info.prompt.length;
+        if (len == 0) {
+            return;
         }
+        let random = Math.ceil(Math.random() * (len - 1));
+        category.prompt = category.info.prompt[random];
         setCategory({...category});
     }
 
@@ -489,7 +496,6 @@ export function Panel(props: IProps) {
     }
 
     useEffect(() => {
-        getStyle();
         onMode(0);
         getCategory();
     }, []);
@@ -522,24 +528,24 @@ export function Panel(props: IProps) {
                         placeholder="试试输入你心中的画面，尽量描述具体，可以尝试用一些风格修饰词辅助你的表达。"
                     ></TextArea>
                     <div className="box">
-                        <div className="box-head" onClick={() => setStyle({ ...style, collapse: !style.collapse })}>
+                        <div className="box-head" onClick={() => setTemplate({ ...template, collapse: !template.collapse })}>
                             <div className="text">
                                 <Icon src="/icon/book.svg" text="咒语书" />
                             </div>
                             <Icon src="/icon/arrow-up-bold.svg" size="12px" />
                         </div>
-                        <div className="box-body" style={{ display: style.collapse ? 'grid' : 'none' }}>
-                            {style.list.map((v, i) =>
-                                <Card className={style.selectKeys.has(v.name) ? ' active' : ''} key={i} onClick={() => onStyle(v)}>
+                        <div className="box-body" style={{ display: template.collapse ? 'grid' : 'none' }}>
+                            {template.list.map((v, i) =>
+                                i < 5 && <Card className={template.selectKeys.has(v.name) ? ' active' : ''} key={i} onClick={() => onTemplate(v)}>
                                     <picture className="card-body">
-                                        <img src={v.cover} />
+                                        <img src={v.outerImage} />
                                     </picture>
                                     <div className="card-foot">{v.name}</div>
                                 </Card>
                             )}
                             <Card onClick={() => setCategory({...category, open: true})}>
                                 <picture className="card-body">
-                                    <img src="https://img.alicdn.com/imgextra/i4/O1CN01FUuMnX1NodMCJ9udy_!!6000000001617-0-tps-132-132.jpg" />
+                                    <img src="/O1CN01FU1617-132-132.jpg" />
                                 </picture>
                                 <div className="card-foot">更多咒语</div>
                             </Card>
@@ -549,10 +555,13 @@ export function Panel(props: IProps) {
                 <div className="demo">
                     <div className="demo-info">
                         <span>示例：</span>
-                        <span className="demo-word" onClick={(e) => setReq({ ...req, input: { ...req.input, prompt: '大气，海盗船，满月航行，丙烯画' } })}>大气，海盗船，满月航行，丙烯画</span>
+                        <span 
+                            className="demo-word" 
+                            onClick={(e) => setReq({...req, input: { ...req.input, prompt: category.prompt}})}
+                        >{category.prompt}</span>
                     </div>
                     <div className="demo-tool">
-                        <Icon src="/icon/refresh.svg" />
+                        <Icon src="/icon/refresh.svg" onClick={() => onPrompt()} />
                     </div>
                 </div>
                 <Upload tag={{ text: '参考图', weak: true }} height="182px"></Upload>
@@ -602,6 +611,7 @@ export function Panel(props: IProps) {
         <div className="side-foot">
             <Button onClick={() => submit()}>{mode.info.btnText}</Button>
         </div>
+        {/* 咒语书弹窗 */}
         {category.open && ReactDOM.createPortal(<Popup>
             <div className="popup-head">
                 <Icon className="text" src="/icon/text.svg" text="咒语书" />
@@ -609,16 +619,15 @@ export function Panel(props: IProps) {
             </div>
             <div className="popup-body">
                 <div className="tab-menu">
-                    <a className={0 == category.info.id ? 'active' : ''} onClick={() => onCategory()}>全部</a>
                     {category.list.map((m) => <a className={m.id == category.info.id ? 'active' : ''} key={m.id} onClick={() => onCategory(m)}>
                         {m.name}
                     </a>)}
                 </div>
                 <div className="tab-list">
-                {category.styleList.map((v, i) =>
-                    <Card className={style.selectKeys.has(v.name) ? ' active' : ''} key={i} onClick={() => onStyle(v)}>
+                {template.list.map((v, i) =>
+                    <Card className={template.selectKeys.has(v.name) ? ' active' : ''} key={i} onClick={() => onTemplate(v)}>
                         <picture className="card-body">
-                            <img src={v.cover} alt="" />
+                            <img src={v.outerImage} alt="" />
                         </picture>
                         <div className="card-foot">{v.name}</div>
                     </Card>

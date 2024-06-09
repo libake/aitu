@@ -27,6 +27,8 @@ func Router(addr string) error {
 			category.POST("/delete", handler.Delete)
 			category.POST("/update", handler.Update)
 			category.POST("/list", handler.List)
+			category.POST("/setSort", handler.SetSort)
+			category.POST("/setStatus", handler.SetStatus)
 		}
 
 		template := api.Group("/template", middleware.Token())
@@ -36,15 +38,8 @@ func Router(addr string) error {
 			template.POST("/delete", handler.Delete)
 			template.POST("/update", handler.Update)
 			template.POST("/list", handler.List)
-		}
-
-		style := api.Group("/style")
-		{
-			var handler handler.Style
-			style.POST("/create", handler.Create)
-			style.POST("/delete", handler.Delete)
-			style.POST("/update", handler.Update)
-			style.POST("/list", handler.List)
+			template.POST("/setSort", handler.SetSort)
+			template.POST("/setStatus", handler.SetStatus)
 		}
 
 		aigc := api.Group("/aigc")

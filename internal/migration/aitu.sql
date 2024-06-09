@@ -129,30 +129,6 @@ COMMENT ON COLUMN template.status IS '状态:0-禁用,1-启用';
 COMMENT ON COLUMN template.category_id IS '归属分类';
 
 
--- 风格 - style
-DROP TABLE IF EXISTS "style";
-
-CREATE TABLE "style" (
-  "id" bigserial not null PRIMARY KEY,
-  "code" varchar(64) not null UNIQUE,
-  "name" varchar(64) not null default '',
-  "cover" text not null default '',
-  "type" varchar(64) not null default '',
-  "sort" smallint not null default 0,
-  "status" smallint not null default 1,
-  "category_id" bigint not null default 0,
-  "update_at" timestamp not null default (now()),
-  "create_at" timestamp not null default (now())
-);
-COMMENT ON TABLE style IS '风格';
-COMMENT ON COLUMN style.code IS '编码';
-COMMENT ON COLUMN style.name IS '名称';
-COMMENT ON COLUMN style.cover IS '封面';
-COMMENT ON COLUMN style.type IS '类型';
-COMMENT ON COLUMN style.sort IS '排序';
-COMMENT ON COLUMN style.status IS '状态';
-
-
 -- 任务 - task
 DROP TABLE IF EXISTS "task";
 

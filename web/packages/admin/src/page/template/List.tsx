@@ -89,10 +89,6 @@ export function List() {
         let data: dto.Request = {
             currPage: 1,
             pageSize: 1000,
-<<<<<<< HEAD
-=======
-            tree: true,
->>>>>>> 74bab2a2266bffcc4706d74d0917dbe8f7d62b46
         };
         if (!!queryBy.getFieldValue('val')) {
             data.queryBy = [];

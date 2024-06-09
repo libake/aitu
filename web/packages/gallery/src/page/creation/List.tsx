@@ -380,7 +380,7 @@ export function List() {
                         <div className="text">
                             {task.editable && <input onChange={(e) => selTask(e, v)} type="checkbox" />}
                             <div className="cell">
-                                <Icon src="/icon/menu.svg" text="文本生成图像" />
+                                <Icon src="/icon/text.svg" text="文本生成图像" />
                             </div>
                             <time>{v.createAt}</time>
                         </div>

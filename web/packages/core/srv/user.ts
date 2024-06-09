@@ -23,7 +23,7 @@ export class User {
      * 登录
      * @param data 
      */
-    static signIn(data: {account: string, password: string}): Promise<dto.Response> {
+    static signIn(data: {account: string, mode?: number, password?: string}): Promise<dto.Response> {
         let url = '/auth/signIn';
         return http.post(url, data);
     }

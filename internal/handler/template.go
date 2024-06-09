@@ -101,6 +101,66 @@ func (t *Template) Update(ctx *gin.Context) {
 	})
 }
 
+// 修改排序
+func (t *Template) SetSort(ctx *gin.Context) {
+	var (
+		template model.Template
+	)
+
+	err := ctx.BindJSON(&template)
+	if err != nil {
+		ctx.JSON(http.StatusOK, gin.H{
+			"code": 3040,
+			"desc": err.Error(),
+		})
+		return
+	}
+
+	err = template.SetSort()
+	if err != nil {
+		ctx.JSON(http.StatusOK, gin.H{
+			"code": 3040,
+			"desc": err.Error(),
+		})
+		return
+	}
+
+	ctx.JSON(http.StatusOK, gin.H{
+		"code": 1000,
+		"desc": "Success",
+	})
+}
+
+// 修改状态
+func (t *Template) SetStatus(ctx *gin.Context) {
+	var (
+		template model.Template
+	)
+
+	err := ctx.BindJSON(&template)
+	if err != nil {
+		ctx.JSON(http.StatusOK, gin.H{
+			"code": 3040,
+			"desc": err.Error(),
+		})
+		return
+	}
+
+	err = template.SetStatus()
+	if err != nil {
+		ctx.JSON(http.StatusOK, gin.H{
+			"code": 3040,
+			"desc": err.Error(),
+		})
+		return
+	}
+
+	ctx.JSON(http.StatusOK, gin.H{
+		"code": 1000,
+		"desc": "Success",
+	})
+}
+
 // 模板列表
 func (t *Template) List(ctx *gin.Context) {
 	var (
