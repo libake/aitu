@@ -2,7 +2,7 @@ import { message } from "antd";
 import { useEffect, useState } from "react";
 import styled from "styled-components";
 
-import { srv } from "@/core";
+import { srv } from "core";
 
 const Container = styled.div`
     display: flex;

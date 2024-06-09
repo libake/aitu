@@ -2,7 +2,7 @@ import styled from "styled-components";
 
 import { Icon } from "@/common";
 import { useRef, useState } from "react";
-import { srv } from "@/core";
+import { srv } from "core";
 
 const Container = styled.div`
     position: relative;

@@ -3,7 +3,7 @@ import { Link, NavLink, Outlet, useNavigate } from "react-router-dom";
 import styled, { ThemeProvider } from "styled-components";
 import { Dropdown, message, Popover, Button } from "antd";
 
-import { srv } from "@/core";
+import { srv } from "core";
 import { Icon, Captcha } from "@/common";
 import { UserContext } from "@/context/UserContext";
 

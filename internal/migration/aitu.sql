@@ -83,8 +83,6 @@ CREATE TABLE "category" (
   "code" varchar(64) not null default '',
   "name" varchar(64) not null default '',
   "icon" text not null default '',
-  "inner_image" text not null default '',
-  "outer_image" text not null default '',
   "prompt" json not null default '[]',
   "sort" smallint not null default 0,
   "scene" varchar(64) not null default '',
@@ -98,14 +96,37 @@ COMMENT ON TABLE category IS '分类';
 COMMENT ON COLUMN category.code IS '编码';
 COMMENT ON COLUMN category.name IS '名称';
 COMMENT ON COLUMN category.icon IS '图标';
-COMMENT ON COLUMN category.inner_image IS '内部:模板使用';
-COMMENT ON COLUMN category.outer_image IS '外部:封面或展示使用';
 COMMENT ON COLUMN category.prompt IS '提示语';
 COMMENT ON COLUMN category.sort IS '排序';
 COMMENT ON COLUMN category.platform IS '平台';
-COMMENT ON COLUMN category.scene IS '场景:text_to_image,word_art';
+COMMENT ON COLUMN category.scene IS '场景:text_to_image,word_art_image';
 COMMENT ON COLUMN category.status IS '状态:0-禁用,1-启用';
 COMMENT ON COLUMN category.parent_id IS '父id';
+
+
+-- 模板 - template
+DROP TABLE IF EXISTS "template";
+
+CREATE TABLE "template" (
+  "id" bigserial not null PRIMARY KEY,
+  "code" varchar(64) not null default '',
+  "name" varchar(64) not null default '',
+  "inner_image" text not null default '',
+  "outer_image" text not null default '',
+  "sort" smallint not null default 0,
+  "status" smallint not null default 1,
+  "category_id" bigint not null default 0,
+  "update_at" timestamp not null default (now()),
+  "create_at" timestamp not null default (now())
+);
+COMMENT ON TABLE template IS '模板';
+COMMENT ON COLUMN template.code IS '模板编码';
+COMMENT ON COLUMN template.name IS '模板名称';
+COMMENT ON COLUMN template.inner_image IS '内部:模板使用';
+COMMENT ON COLUMN template.outer_image IS '外部:封面或展示使用';
+COMMENT ON COLUMN template.sort IS '排序';
+COMMENT ON COLUMN template.status IS '状态:0-禁用,1-启用';
+COMMENT ON COLUMN template.category_id IS '归属分类';
 
 
 -- 风格 - style

@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import styled from "styled-components";
 import { Spin, message } from "antd";
 
-import { dao, srv } from "@/core";
+import { dao, srv } from "core";
 import { Icon } from "@/common";
 import { Preview } from './Preview';
 
@@ -193,7 +193,7 @@ export function List() {
             lastId: 0,
             pageSize: 50,
         }
-        let res = await srv.Aigc.recommend(data);
+        let res = await srv.Task.recommend(data);
         if (res.code == 1000) {
             recommend.total = res.data.total;
             let tmp: Array<dao.Recommend> = res.data.data.works.filter((f: any) => f.type == 'WORK').map((m: any) => m.data);

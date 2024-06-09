@@ -1,9 +1,10 @@
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { Link, Outlet, useNavigate } from "react-router-dom";
 import { Dropdown, Space } from "antd";
 
-import { dao, srv } from "@/core";
+import { dao, srv } from "core";
 import styled from "styled-components";
+import { UserContext } from "@/context";
 
 const Container = styled.div`
     display: grid;
@@ -121,16 +122,26 @@ export function Layout() {
         setMenu({...menu});
     }
 
+    const userContext = useContext(UserContext);
+
     const logout = async () => {
         await srv.User.logout();
-        localStorage.clear();
+        userContext.dispatch({
+            type: 'logout',
+        });
         setTimeout(() => {
             navigate('/auth/signIn');
-        }, 500)
+        }, 500);
     }
 
     useEffect(() => {
-        getMenu();
+        setTimeout(() => {
+            if (userContext.state.id <= 0) {
+                navigate('/auth/signIn');
+                return;
+            }
+            getMenu();
+        }, 1000);
     }, []);
 
     return <Container>

@@ -11,19 +11,17 @@ import (
 
 // 分类
 type Category struct {
-	ID         int64     `xorm:"pk autoincr id" json:"id"`
-	Code       string    `xorm:"code varchar(64)" json:"code" validate:"required"`
-	Name       string    `xorm:"name varchar(64)" json:"name" validate:"required"`
-	Icon       string    `xorm:"icon text" json:"icon"`
-	InnerImage string    `xorm:"inner_image text" json:"innerImage"`
-	OuterImage string    `xorm:"outer_image text" json:"outerImage"`
-	Prompt     []string  `xorm:"prompt json" json:"prompt"`
-	Sort       int8      `xorm:"sort int" json:"sort"`
-	Scene      string    `xorm:"scene varchar(64)" json:"scene"`
-	Status     int8      `xorm:"status int" json:"status"`
-	ParentID   int64     `xorm:"parent_id int" json:"parentId"`
-	UpdateAt   time.Time `xorm:"update_at datetime" json:"updateAt"`
-	CreateAt   time.Time `xorm:"create_at datetime" json:"createAt"`
+	ID       int64     `xorm:"pk autoincr id" json:"id"`
+	Code     string    `xorm:"code varchar(64)" json:"code" validate:"required"`
+	Name     string    `xorm:"name varchar(64)" json:"name" validate:"required"`
+	Icon     string    `xorm:"icon text" json:"icon"`
+	Prompt   []string  `xorm:"prompt json" json:"prompt"`
+	Sort     int8      `xorm:"sort int" json:"sort"`
+	Scene    string    `xorm:"scene varchar(64)" json:"scene"`
+	Status   int8      `xorm:"status int" json:"status"`
+	ParentID int64     `xorm:"parent_id int" json:"parentId"`
+	UpdateAt time.Time `xorm:"update_at datetime" json:"updateAt"`
+	CreateAt time.Time `xorm:"create_at datetime" json:"createAt"`
 }
 
 // 设定表名
@@ -145,8 +143,6 @@ func (t *Category) NewTree(node []Category, parentID int64, level int8) []Catego
 			tmp.Name = v.Name
 			tmp.Scene = v.Scene
 			tmp.Sort = v.Sort
-			tmp.InnerImage = v.InnerImage
-			tmp.OuterImage = v.OuterImage
 			tmp.Prompt = v.Prompt
 			tmp.ParentID = v.ParentID
 			tmp.Status = v.Status
@@ -156,7 +152,7 @@ func (t *Category) NewTree(node []Category, parentID int64, level int8) []Catego
 			child := t.NewTree(node, v.ID, level)
 			tmp.Children = child
 			if len(child) == 0 {
-				tmp.Children = make([]CategoryTree, 0)
+				// tmp.Children = make([]CategoryTree, 0)
 				tmp.Leaf = true
 			} else {
 				tmp.Leaf = false

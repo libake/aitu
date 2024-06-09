@@ -7,6 +7,7 @@ import {
     home,
     node,
     task,
+    template,
     user,
     NotFound
 } from '@/page';
@@ -53,6 +54,15 @@ const routes: RouteObject[] = [
                 {
                     path: '',
                     element: <node.List />
+                },
+            ]
+        }, {
+            path: 'template',
+            element: <Outlet />,
+            children: [
+                {
+                    path: '',
+                    element: <template.List />
                 },
             ]
         }, {

@@ -3,7 +3,7 @@ import { useEffect, useState, useContext } from "react";
 import { Popconfirm, Spin, message } from "antd";
 
 import { Icon } from "@/common";
-import { dao, dto, srv } from "@/core";
+import { dao, dto, srv } from "core";
 import { Panel } from './Panel';
 import { Preview } from "./Preview";
 import { UserContext } from "@/context";

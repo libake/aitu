@@ -4,7 +4,7 @@ import styled from "styled-components";
 
 import { Upload } from "./Upload";
 import { Icon, TextArea } from "@/common";
-import { dao, srv } from "@/core";
+import { dao, srv } from "core";
 
 const Container = styled.div`
     display: grid;

@@ -6,22 +6,30 @@ import zhCN from 'antd/locale/zh_CN';
 import routes from './router';
 import '@/style/index.less';
 import { UserProvider } from './context/UserContext';
+import { http } from 'core';
 
-// let theme = {
-//   token: {
-//     colorPrimary: "#4bfef1"
-//   }
-// };
+// 请求拦截器
+http.interceptors.request.use(
+  (config) => {
+    let token = localStorage.getItem("token");
+    if (!!token) {
+      config.headers!['Access-Token'] = `${token}`;
+    }
+    config.headers!['Scheme'] = 'gallery';
+    return config;
+  },
+  (error) => {
+    return Promise.reject(error);
+  }
+);
 
 const App = () => useRoutes(routes);
 
 const rootDom = document.getElementById('root') as HTMLElement;
 ReactDOM.createRoot(rootDom).render(
   <BrowserRouter>
-    {/* <ConfigProvider locale={zhCN} theme={theme}> */}
-      <UserProvider>
+    <UserProvider>
       <App />
-      </UserProvider>
-    {/* </ConfigProvider> */}
+    </UserProvider>
   </BrowserRouter>
 );

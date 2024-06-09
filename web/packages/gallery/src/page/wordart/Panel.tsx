@@ -3,7 +3,7 @@ import ReactDOM from 'react-dom';
 import styled from "styled-components";
 
 import { Icon, TextArea } from "@/common";
-import { dao, srv } from "@/core";
+import { dao, srv } from "core";
 
 const Container = styled.div`
     display: grid;
@@ -188,10 +188,15 @@ const Popup = styled.div`
 
     .cell {
         display: flex;
+        cursor: pointer;
     }
 
     .cell-text {
         flex: 1;
+
+        span:hover {
+            color: #fff;
+        }
     }
 
     .textarea {
@@ -290,14 +295,18 @@ export function Panel(props: IProps) {
     }
 
     const setInput = (evt: any) => {
+        let tmp = String(evt.target.value);
+        if (tmp.length > 4) {
+            return;
+        }
         req.input.text.text_content = evt.target.value;
         setReq({...req});
     }
 
     let [category, setCategory] = useState({
         info: new dao.Category(),
-        open: false,
         list: new Array<dao.Category>(),
+        open: false,
         selectKey: 0,
         styleType: 1,
     });
@@ -307,15 +316,15 @@ export function Panel(props: IProps) {
             currPage: 1,
             pageSize: 1000,
             queryBy: [
-                {col:'scene', val: 'word_art'}
-            ],
-            tree: true
+                {col:'scene', val: 'word_art_image'}
+            ]
         }
         let res = await srv.Category.list(data);
         if (res.code == 1000) {
             category.list = res.data.list;
             if (category.list.length > 0) {
                 category.info = category.list[0];
+                getTemplate(category.list[0].id);
             }
         } else {
             category.list = [];
@@ -324,26 +333,37 @@ export function Panel(props: IProps) {
         setCategory({ ...category });
     }
 
-    const onCategory = (item?: dao.Category, childIdx?: number) => {
-        console.log(item)
-        if (!!item) {
-            if (!!childIdx) {
-                category.info.children.map((m) => {
-                    m.active = m.id == childIdx ? true : false;
-                    return m;
-                });
-            } else {
-                category.info = item;
-            }
-        } else {
-            category.info = new dao.Category();
-        }
+    const onCategory = (item: dao.Category) => {
+        category.info = item;
         setCategory({...category});
+        getTemplate(item.id);
     }
 
     const onRadio = (v: number) => {
         category.styleType = v;
         setCategory({...category});
+    }
+
+    const [template, setTemplate] = useState({
+        info: new dao.Template(),
+        list: new Array<dao.Template>(),
+    });
+
+    const getTemplate = async (categoryId: number) => {
+        let data = {
+            currPage: 1,
+            pageSize: 10,
+            queryBy: [
+                {col: 'categoryId', val: categoryId},
+            ]
+        }
+        let res = await srv.Template.list(data);
+        if (res.code == 1000) {
+            template.list = res.data.list;
+        } else {
+            template.list = [];
+        }
+        setTemplate({...template});
     }
 
     const submit = () => {
@@ -359,7 +379,7 @@ export function Panel(props: IProps) {
             <h3>文字内容(1-4个字符)</h3>
             <div className="input-group">
                 <input type="text" value={req.input.text.text_content} onChange={(e) => setInput(e)} placeholder="支持中文、字母、数字" />
-                <span className="suffix">0/4</span>
+                <span className="suffix">{req.input.text.text_content.length}/4</span>
             </div>
             <h3>文字风格</h3>
             <div className="cell" onClick={() => setCategory({...category, open: true})}>
@@ -413,8 +433,8 @@ export function Panel(props: IProps) {
                         <label htmlFor="style-1">风格模板</label>
                     </div>
                     <div className="tab-list">
-                    {category.info.children.map((v, i) =>
-                        <Card className={v.active ? 'active' : ''} key={i} onClick={() => onCategory(v, v.id)}>
+                    {template.list.map((v, i) =>
+                        <Card className={template.info.id == v.id ? 'active' : ''} key={i} onClick={() => setTemplate({...template, info: v})}>
                             <picture className="card-body">
                                 <img src={v.innerImage} alt={v.name} />
                             </picture>
@@ -437,17 +457,17 @@ export function Panel(props: IProps) {
                         onChange={(v: string) => setReq({ ...req, input: { ...req.input, prompt: v } })}
                         placeholder="试试输入你心中的文字创意，输入自定义风格时已选择的风格模版将失效"
                     ></TextArea>
-                    <div className="cell">
+                    {category.info.prompt && <div className="cell">
                         <div className="cell-text">
                             <label>示例：</label>
-                            <span>{category.info.prompt && category.info.prompt[0]}</span>
+                            <span>{category.info.prompt[0]}</span>
                         </div>
                         <Icon className="cell-icon" src="/icon/update.svg" />
-                    </div>
+                    </div>}
                 </div>
             </div>
             <div className="popup-foot">
-                <button className="btn-default">取消</button>
+                <button className="btn-default" onClick={() => setCategory({...category, open: false})}>取消</button>
                 <button className="btn-primary">确认</button>
             </div>
         </Popup>, document.body)

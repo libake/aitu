@@ -42,6 +42,13 @@ func (t *User) SignIn(ctx *gin.Context) {
 		return
 	}
 
+	reg := regexp.MustCompile(`\w+([-+.]\w+)*@\w+([-.]\w+)*\.\w+([-.]\w+)*`)
+	if reg.MatchString(param.Account) {
+		user.Email = param.Account
+	} else {
+		user.Mobile = param.Account
+	}
+
 	// 0-密码登录，1-验证码登录
 	switch param.Mode {
 	case 1:
@@ -53,12 +60,7 @@ func (t *User) SignIn(ctx *gin.Context) {
 			})
 			return
 		}
-		reg := regexp.MustCompile(`\w+([-+.]\w+)*@\w+([-.]\w+)*\.\w+([-.]\w+)*`)
-		if reg.MatchString(param.Account) {
-			user.Email = param.Account
-		} else {
-			user.Mobile = param.Account
-		}
+
 		err := user.Info()
 		if err != nil {
 			ctx.JSON(http.StatusOK, gin.H{

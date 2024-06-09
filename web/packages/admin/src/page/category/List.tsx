@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { Button, Drawer, Form, Input, message, Popconfirm, Select, Space, Switch, Table, Tooltip, Image } from "antd";
 import styled from "styled-components";
 
-import { dao, dto, srv } from "@/core";
+import { dao, dto, srv } from "core";
 
 const Container = styled.div`
     margin: 16px;
@@ -24,17 +24,17 @@ export function List() {
             title: '编码',
             dataIndex: 'code',
         }, {
-            title: '图像',
-            dataIndex: 'image',
+            title: '图标',
+            dataIndex: 'icon',
             width: 100,
-            render: (f: string, r: dao.Category) => {
+            render: (f: string) => {
                 return <Image.PreviewGroup
                 preview={{
                   onChange: (current, prev) => console.log(`current index: ${current}, prev index: ${prev}`),
                 }}
-                items={[r.innerImage, r.outerImage]}
+                items={[f]}
               >
-                <Image width={60} src={r.innerImage || r.outerImage} />
+                <Image width={60} src={f} />
               </Image.PreviewGroup>;
             }
         }, {
@@ -241,11 +241,17 @@ export function List() {
                 }
             >
                 <Form form={categoryForm} layout="vertical">
+                    <Form.Item name="parentId" label="上级分类">
+                        <Select options={category.list} fieldNames={{ label: 'name', value: 'id' }} allowClear />
+                    </Form.Item>
                     <Form.Item
                         name="name"
                         label="名称"
                         rules={[{ required: true, message: '请输入节点名称!' }]}
                     >
+                        <Input />
+                    </Form.Item>
+                    <Form.Item name="icon" label="图标">
                         <Input />
                     </Form.Item>
                     <Form.Item name="code" label="编码" rules={[{ required: false, message: '请输入元数据!' }]}>
@@ -263,15 +269,6 @@ export function List() {
                     </Form.Item>
                     <Form.Item name="prompt" label="提示语">
                         <Input.TextArea />
-                    </Form.Item>
-                    <Form.Item name="innerImage" label="内部图像">
-                        <Input />
-                    </Form.Item>
-                    <Form.Item name="outerImage" label="外部图像">
-                        <Input />
-                    </Form.Item>
-                    <Form.Item name="parentId" label="上级分类">
-                        <Select options={category.list} fieldNames={{ label: 'name', value: 'id' }} allowClear />
                     </Form.Item>
                     <Form.Item name="id" hidden>
                         <Input />
