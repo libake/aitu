@@ -1,5 +1,5 @@
 import { useContext, useState } from "react";
-import { Link, NavLink, Outlet } from "react-router-dom";
+import { Link, NavLink, Outlet, useNavigate } from "react-router-dom";
 import styled, { ThemeProvider } from "styled-components";
 import { Dropdown, message, Popover, Button } from "antd";
 
@@ -20,7 +20,7 @@ const Header = styled.header`
     top: 0;
     z-index: 100;
     color: #fff;
-    background-color: ${props => props.theme.backgroundColor};
+    background-color: var(--backgroundColor);
 
     a {
         color: #838589;
@@ -131,6 +131,11 @@ const Modal = styled.div`
         color: #fff;
     }
 
+    button {
+        width: 100%;
+        background-color: var(--primaryColor);
+    }
+
     .box {
         padding: 16px;
         border-radius: 20px;
@@ -146,7 +151,7 @@ const Modal = styled.div`
     .box-body {
         display: grid;
         grid-template-rows: auto;
-        gap: 16px;
+        gap: 24px;
         padding: 24px;
         min-width: 360px;
     }
@@ -155,11 +160,26 @@ const Modal = styled.div`
         
         input {
             width: 100%;
-            min-height: 34px;
+            min-height: 42px;
             padding: 4px 8px;
             box-sizing: border-box;
             outline: none;
             border-radius: 4px;
+        }
+
+        .checkbox {
+            display: grid;
+            grid-template-columns: auto 1fr;
+            align-items: center;
+            gap: 8px;
+
+            input {
+                width: 16px;
+            }
+
+            a {
+                color: var(--linkColor);
+            }
         }
     }
 `
@@ -186,6 +206,7 @@ export function Layout() {
 
     const [user, setUser] = useState({
         open: false,
+        agree: false,
         info: {
             account: '',
             mode: 1,
@@ -204,19 +225,24 @@ export function Layout() {
                 type: 'login',
                 payload: res.data,
             });
-            onModal();
+            setUser({...user, open: false});
         } else {
             message.error(res.desc);
         }
     }
 
-    const onModal = () => {
-        user.open = !user.open;
-        setUser({ ...user });
-    }
-
     const handleChange = (val: any, name: string) => {
         setUser({...user, info: {...user.info, [name]: val.target.value}});
+    }
+
+    const navigate = useNavigate();
+
+    const navigateTo = (url: string) => {
+        if (userContext.state.id > 0) {
+            navigate(url);
+        } else {
+            setUser({...user, open: true});
+        }
     }
 
     const logout = async () => {
@@ -235,8 +261,8 @@ export function Layout() {
                     <img src="/logo-text.png" alt="喵闪AI" />
                 </a>
                 <NavLink to="/" end>探索发现</NavLink>
-                <NavLink to="/creation">创意作图</NavLink>
-                <NavLink to="/wordart">AI艺术字</NavLink>
+                <a onClick={() => navigateTo('/creation')}>创意作图</a>
+                <a onClick={() => navigateTo('/wordart')}>AI艺术字</a>
             </NavLeft>
             <NavRight>
                 {userContext.state.id > 0 ? <>
@@ -266,7 +292,7 @@ export function Layout() {
                             </a>
                         </Dropdown>
                     </li>
-                </> : <Button ghost onClick={() => onModal()}>登录/注册</Button>}
+                </> : <Button ghost onClick={() => setUser({...user, open: true})}>登录/注册</Button>}
             </NavRight>
         </Header>
         <Outlet />
@@ -303,7 +329,7 @@ export function Layout() {
             <div className="box">
                 <div className="box-head">
                     &nbsp;
-                    <div className="close" onClick={() => onModal()}>
+                    <div className="close" onClick={() => setUser({...user, open: false})}>
                         <Icon src="/icon/close-bold.svg" />
                     </div>
                 </div>
@@ -315,7 +341,13 @@ export function Layout() {
                         <Captcha value={user.info.captcha} mobile={user.info.account} onChange={(v: React.ChangeEvent<HTMLInputElement>) => handleChange(v, 'captcha')} />
                     </div>
                     <div className="form-item">
-                        <Button type="primary" onClick={() => signIn()} block={true}>登录</Button>
+                        <span className="checkbox">
+                            <input type="checkbox" id="agree" checked={user.agree} onChange={(e) => setUser({...user, agree: !user.agree})} />
+                            <label htmlFor="agree">登录即视为您已阅读并同意<Link to="/">服务条款、隐私政策</Link></label>
+                        </span>
+                    </div>
+                    <div className="form-item">
+                        <button type="button" onClick={() => signIn()} disabled={!user.agree}>登录</button>
                     </div>
                 </form>
             </div>

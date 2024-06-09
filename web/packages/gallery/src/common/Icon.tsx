@@ -28,7 +28,7 @@ export function Icon(props: Props) {
         props.onClick(e);
     }
 
-    return <Container className={props.className} onClick={(e) => handlerClick(e)}>
+    return <Container className={props.className} onClick={(e) => {e.stopPropagation;handlerClick(e)}}>
         <Img src={props.src} style={{width: props.size, height: props.size}} />
         {props.text && <span style={{marginLeft: "8px"}}>{props.text}</span>}
     </Container>

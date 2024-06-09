@@ -23,7 +23,6 @@ const Container = styled.div`
 
     .box {
         display: flex;
-        margin: 16px;
         border: 1px dashed #2d3240;
         border-radius: 8px;
         color: #999;

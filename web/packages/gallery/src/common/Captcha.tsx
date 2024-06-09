@@ -21,6 +21,7 @@ const Container = styled.div`
     }
 
     .suffix {
+        width: auto;
         margin-right: 8px;
         padding: 0;
         color: var(--wanx-wh);

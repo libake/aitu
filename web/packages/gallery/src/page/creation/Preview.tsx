@@ -229,16 +229,16 @@ export function Preview(props: IProps) {
                         <Icon src="/icon/update.svg"></Icon>
                     </a>
                 </div>
-                <div className="tool">
+                {/* <div className="tool">
                     <a onClick={(e) => { e.stopPropagation(); onZoom(1); }}>
                         <Icon src="/icon/good.svg"></Icon>
                     </a>
                     <a onClick={() => onZoom(-1)}>
                         <Icon src="/icon/bad.svg"></Icon>
                     </a>
-                </div>
+                </div> */}
                 <div className="tool">
-                    <Tooltip title="高清放大">
+                    {/* <Tooltip title="高清放大">
                     <a onClick={(e) => { e.stopPropagation(); onZoom(1); }}>
                         <Icon src="/icon/hd.svg"></Icon>
                     </a>
@@ -252,7 +252,7 @@ export function Preview(props: IProps) {
                         <a onClick={() => onZoom(0)}>
                             <Icon src="/icon/picture.svg"></Icon>
                         </a>
-                    </Tooltip>
+                    </Tooltip> */}
                     <Tooltip title="下载AI生成结果">
                         <a onClick={() => onDownload()}>
                             <Icon src="/icon/download.svg"></Icon>

@@ -241,7 +241,9 @@ export function List() {
                 task.info.taskId = res.data.output.task_id;
                 task.info.taskStatus = res.data.output.task_status;
                 setTask({ ...task });
-                pollTask();
+                if (task.info.taskStatus == 'PENDING') {
+                    pollTask();
+                }
             }, 1000);
         } else {
             message.error(res.desc);
@@ -252,7 +254,8 @@ export function List() {
         let data = {
             ...new dto.Request(),
             queryBy: [
-                {col: 'taskType', val: 'text_to_image'}
+                {col: 'taskType', val: 'text_to_image'},
+                {col: 'taskStatus', val: 'SUCCEEDED'},
             ],
         }
         let res = await srv.Task.list(data);
@@ -316,7 +319,6 @@ export function List() {
     }, [userContext]);
 
     return <Container>
-        {userContext.state.id > 0 && <>
         <Panel className="side" submit={(e: any) => addTask(e)}></Panel>
         <div className="main">
             <Title>
@@ -432,6 +434,5 @@ export function List() {
             )}
         </div>
         <Preview open={task.preview.open} current={task.preview.current} data={task.info} onClose={() => onPreview()}></Preview>
-        </>}
     </Container>
 }

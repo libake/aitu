@@ -239,7 +239,9 @@ export function List() {
                 task.info.taskId = res.data.output.task_id;
                 task.info.taskStatus = res.data.output.task_status;
                 setTask({ ...task });
-                pollTask();
+                if (task.info.taskStatus == 'PENDING') {
+                    pollTask();
+                }
             }, 1000);
         } else {
             message.error(res.desc);
@@ -250,7 +252,8 @@ export function List() {
         let data = {
             ...new dto.Request(),
             queryBy: [
-                {col: 'taskType', val: 'word_art_image'}
+                {col: 'taskType', val: 'word_art_image'},
+                {col: 'taskStatus', val: 'SUCCEEDED'},
             ]
         }
         let res = await srv.Task.list(data);

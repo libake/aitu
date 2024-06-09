@@ -69,7 +69,7 @@ const Container = styled.div`
         display: flex;
         justify-content: space-between;
         align-items: center;
-        padding: 0 16px;
+        margin: 16px 0;
         color: #878aab;
     }
 
@@ -92,7 +92,6 @@ const Container = styled.div`
         display: grid;
         grid-template-columns: repeat(3, 1fr);
         gap: 16px;
-        padding: 16px;
         color: #fff;
         font-size: 10px;
     }
@@ -136,6 +135,7 @@ const Container = styled.div`
     .side-body {
         color: #fff;
         overflow-y: auto;
+        padding: 16px;
 
         ::-webkit-scrollbar {
             width: 6px;
@@ -161,7 +161,6 @@ const Container = styled.div`
             display: flex;
             align-items: center;
             gap: 8px;
-            padding: 0 16px;
         }
 
         .icon {
@@ -184,7 +183,6 @@ const Button = styled.button`
 `
 const TextImage = styled.div`
     position: relative;
-    margin: 16px;
     border: 1px dashed #2d3240;
     border-radius: 8px;
     color: #999;
@@ -461,7 +459,10 @@ export function Panel(props: IProps) {
     const getCategory = async () => {
         let data = {
             currPage: 1,
-            pageSize: 10
+            pageSize: 10,
+            queryBy: [
+                {col: 'scene', val: 'text_to_image'}
+            ],
         }
         let res = await srv.Category.list(data);
         if (res.code == 1000) {
@@ -555,6 +556,7 @@ export function Panel(props: IProps) {
                     </div>
                 </div>
                 <Upload tag={{ text: '参考图', weak: true }} height="182px"></Upload>
+                <h3>图片比例</h3>
                 <div className="size">
                     <div className={`size-item${req.parameters.size == '1024*1024' ? ' active' : ''}`} onClick={() => onSize('1024*1024')}>
                         <span className="size-ratio s-1v1"></span>
