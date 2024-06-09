@@ -29,6 +29,15 @@ func Router(addr string) error {
 			category.POST("/list", handler.List)
 		}
 
+		template := api.Group("/template", middleware.Token())
+		{
+			var handler handler.Template
+			template.POST("/create", handler.Create)
+			template.POST("/delete", handler.Delete)
+			template.POST("/update", handler.Update)
+			template.POST("/list", handler.List)
+		}
+
 		style := api.Group("/style")
 		{
 			var handler handler.Style

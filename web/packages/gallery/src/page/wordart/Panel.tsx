@@ -3,7 +3,7 @@ import ReactDOM from 'react-dom';
 import styled from "styled-components";
 
 import { Icon, TextArea } from "@/common";
-import { dao, srv } from "@/core";
+import { dao, srv } from "core";
 
 const Container = styled.div`
     display: grid;
@@ -188,10 +188,15 @@ const Popup = styled.div`
 
     .cell {
         display: flex;
+        cursor: pointer;
     }
 
     .cell-text {
         flex: 1;
+
+        span:hover {
+            color: #fff;
+        }
     }
 
     .textarea {
@@ -290,6 +295,10 @@ export function Panel(props: IProps) {
     }
 
     const setInput = (evt: any) => {
+        let tmp = String(evt.target.value);
+        if (tmp.length > 4) {
+            return;
+        }
         req.input.text.text_content = evt.target.value;
         setReq({...req});
     }
@@ -307,7 +316,7 @@ export function Panel(props: IProps) {
             currPage: 1,
             pageSize: 1000,
             queryBy: [
-                {col:'scene', val: 'word_art'}
+                {col:'scene', val: 'word_art_image'}
             ],
             tree: true
         }
@@ -325,7 +334,6 @@ export function Panel(props: IProps) {
     }
 
     const onCategory = (item?: dao.Category, childIdx?: number) => {
-        console.log(item)
         if (!!item) {
             if (!!childIdx) {
                 category.info.children.map((m) => {
@@ -338,6 +346,7 @@ export function Panel(props: IProps) {
         } else {
             category.info = new dao.Category();
         }
+        console.log(category)
         setCategory({...category});
     }
 
@@ -359,7 +368,7 @@ export function Panel(props: IProps) {
             <h3>文字内容(1-4个字符)</h3>
             <div className="input-group">
                 <input type="text" value={req.input.text.text_content} onChange={(e) => setInput(e)} placeholder="支持中文、字母、数字" />
-                <span className="suffix">0/4</span>
+                <span className="suffix">{req.input.text.text_content.length}/4</span>
             </div>
             <h3>文字风格</h3>
             <div className="cell" onClick={() => setCategory({...category, open: true})}>
@@ -437,17 +446,17 @@ export function Panel(props: IProps) {
                         onChange={(v: string) => setReq({ ...req, input: { ...req.input, prompt: v } })}
                         placeholder="试试输入你心中的文字创意，输入自定义风格时已选择的风格模版将失效"
                     ></TextArea>
-                    <div className="cell">
+                    {category.info.prompt && <div className="cell">
                         <div className="cell-text">
                             <label>示例：</label>
-                            <span>{category.info.prompt && category.info.prompt[0]}</span>
+                            <span>{category.info.prompt[0]}</span>
                         </div>
                         <Icon className="cell-icon" src="/icon/update.svg" />
-                    </div>
+                    </div>}
                 </div>
             </div>
             <div className="popup-foot">
-                <button className="btn-default">取消</button>
+                <button className="btn-default" onClick={() => setCategory({...category, open: false})}>取消</button>
                 <button className="btn-primary">确认</button>
             </div>
         </Popup>, document.body)

@@ -4,7 +4,7 @@ import styled from "styled-components";
 import { Tooltip } from "antd";
 
 import { Icon } from "@/common";
-import { dao } from "@/core";
+import { dao } from "core";
 
 const Container = styled.div`
     position: fixed;

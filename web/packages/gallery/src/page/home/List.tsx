@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import styled from "styled-components";
 import { Spin, message } from "antd";
 
-import { dao, srv } from "@/core";
+import { dao, srv } from "core";
 import { Icon } from "@/common";
 import { Preview } from './Preview';
 

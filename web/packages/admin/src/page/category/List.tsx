@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { Button, Drawer, Form, Input, message, Popconfirm, Select, Space, Switch, Table, Tooltip, Image } from "antd";
 import styled from "styled-components";
 
-import { dao, dto, srv } from "@/core";
+import { dao, dto, srv } from "core";
 
 const Container = styled.div`
     margin: 16px;

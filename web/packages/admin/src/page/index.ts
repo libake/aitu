@@ -4,5 +4,6 @@ export * as category from './category';
 export * as home from './home';
 export * as node from './node';
 export * as task from './task';
+export * as template from './template';
 export * as user from './user';
 export * from './NotFound';

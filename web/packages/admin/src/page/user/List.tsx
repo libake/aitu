@@ -4,7 +4,7 @@ import dayjs from 'dayjs';
 import { Badge, Button, Form, Input, Select, Space, Table, TablePaginationConfig } from "antd";
 import styled from "styled-components";
 
-import { dto, srv } from "@/core";
+import { dto, srv } from "core";
 
 const Container = styled.div`
     margin: 1rem;

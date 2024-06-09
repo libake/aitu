@@ -1,6 +1,6 @@
 import { createContext, useReducer, ReactNode, useEffect } from "react";
 
-import { dao, srv } from "@/core";
+import { dao, srv } from "core";
 
 export const UserContext = createContext({
     state: new dao.User(),

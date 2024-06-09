@@ -3,7 +3,9 @@ import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
 import md5 from 'md5';
 
-import { srv } from "@/core";
+import { srv } from "core";
+import { useContext } from "react";
+import { UserContext } from "@/context";
 
 const Container = styled.div`
     display: flex;
@@ -32,16 +34,21 @@ const Container = styled.div`
 
 export function SignIn() {
     const [userForm] = Form.useForm();
+    const userContext = useContext(UserContext);
     const navigate = useNavigate();
 
     const submit = async () => {
         let data = {
             account: userForm.getFieldValue('account'),
+            mode: 0,
             password: md5(userForm.getFieldValue('password')),
         };
         let res = await srv.User.signIn(data);
         if (res.code == 1000) {
-            localStorage.setItem('token', res.data);
+            userContext.dispatch({
+                type: 'login',
+                payload: res.data,
+            });
             setTimeout(() => {
                 navigate('/');
             }, 1000);
