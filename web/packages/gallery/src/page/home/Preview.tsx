@@ -18,6 +18,7 @@ const Container = styled.div`
     .preview-head {
         display: flex;
         justify-content: flex-end;
+        height: 10vh;
 
         .close {
             display: flex;
@@ -33,18 +34,24 @@ const Container = styled.div`
     }
 
     .preview-body {
-        display: flex;
-        justify-content: center;
-        align-items: center;
+        display: grid;
+        grid-template-columns: auto 30vw;
+        gap: 24px;
+        max-height: 70vh;
+        padding: 0 10vw;
+        color: #fff;
     }
 
-    .img-wrap {
-        display: grid;
-        grid-template-columns: repeat(2, 1fr);
-        gap: 24px;
-        max-width: 60vw;
-        max-height: 70vh;
-        color: #fff;
+    picture {
+        display: flex;
+        justify-content: flex-end;
+
+        img {
+            max-width: 60vw;
+            max-height: 70vh;
+            border-radius: 12px;
+            transition: all 0.3s;
+        }
     }
 
     .list-item {
@@ -75,13 +82,28 @@ const Container = styled.div`
         left: 0;
         right: 0;
 
+        button {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 40px;
+            color: var(--heading-text-color);
+            background-color: var(--primary-color);
+            border-radius: 20px;
+
+            img {
+                filter: drop-shadow(var(--heading-text-color) 80px 0);
+            }
+        }
+
         .tool {
             display: flex;
             justify-content: center;
             align-items: center;
             gap: 24px;
             height: 40px;
-            padding: 10px 16px;
+            padding: 0 16px;
+            box-sizing: border-box;
             border-radius: 60px;
             color: #fff;
             background-color: #2d3240;
@@ -91,7 +113,7 @@ const Container = styled.div`
             }
         }
 
-        .single {
+        .hide {
             display: flex;
             justify-content: center;
             align-items: center;
@@ -99,11 +121,12 @@ const Container = styled.div`
             height: 40px;
             border-radius: 50%;
             background-color: #fff;
+
+            img {
+                filter: drop-shadow(#333 80px 0);
+            }
         }
     }
-`
-const Button = styled.button`
-    background-color: ${props => props.theme.primaryColor};
 `
 
 interface IProps {
@@ -115,6 +138,23 @@ interface IProps {
 export function Preview(props: IProps) {
     let [info, setInfo] = useState<typeof props.data>({});
 
+    const close = () => {
+        props.onClose(false);
+    }
+
+    let [zoom, setZoom] = useState(1);
+
+    const onZoom = (step: number) => {
+        zoom += step;
+        if (zoom < 1) {
+            zoom = 1;
+        }
+        if (zoom > 8) {
+            zoom = 8;
+        }
+        setZoom(zoom);
+    }
+
     useEffect(() => {
         if (props.open) {
             document.body.style.overflow = 'hidden';
@@ -123,27 +163,8 @@ export function Preview(props: IProps) {
         }
         Object.assign(info, props.data);
         setInfo({ ...info });
+        setZoom(1);
     }, [props]);
-
-    const close = () => {
-        props.onClose(false);
-    }
-
-    let [tool, setTool] = useState({
-        imageZoom: 1,
-        display: 'block',
-    });
-
-    const onZoom = (step: number) => {
-        tool.imageZoom += step;
-        if (tool.imageZoom < 1) {
-            tool.imageZoom = 1;
-            tool.display = 'block';
-        } else {
-            tool.display = 'none';
-        }
-        setTool({ ...tool });
-    }
 
     return props.open ? ReactDOM.createPortal(
         <Container>
@@ -152,12 +173,11 @@ export function Preview(props: IProps) {
                     <Icon src="/icon/close.svg"></Icon>
                 </div>
             </div>
-            <div className="preview-body" onClick={close}>
-                <div className="img-wrap" onClick={(e) => e.stopPropagation()}>
+            <div className="preview-body" onClick={() => close()}>
                     <picture>
-                        <img src={info.image.url} style={{ maxWidth: `100%`, maxHeight: "100%" }} alt="" />
+                        <img src={info.image.url}  style={{transform: `scale(${zoom})`}} alt="" />
                     </picture>
-                    <div className="list" style={{display: tool.display}}>
+                    <div className="list" style={{display: zoom != 1 ? 'none' : 'block'}}>
                         <div className="list-item">
                             <label>创意作者</label>
                             <span>{info.userPhone}</span>
@@ -197,25 +217,26 @@ export function Preview(props: IProps) {
                             <span>{info.gmtCreate}</span>
                         </div>
                     </div>
-                </div>
             </div>
             <div className="preview-foot">
                 <div className="tool">
                     <a onClick={(e) => { e.stopPropagation(); onZoom(1); }}>
-                        <Icon src="/icon/menu.svg"></Icon>
+                        <Icon src="/icon/zoom-out.svg"></Icon>
                     </a>
                     <a onClick={() => onZoom(-1)}>
-                        <Icon src="/icon/reuse.svg"></Icon>
+                        <Icon src="/icon/zoom-in.svg"></Icon>
                     </a>
-                    <a onClick={() => onZoom(0)}>
+                    <a onClick={() => setZoom(1)}>
                         <Icon src="/icon/update.svg"></Icon>
                     </a>
                 </div>
-                <Button>
+                <button>
                     <Icon src="/icon/menu.svg" text="复用创意"></Icon>
-                </Button>
-                <Tooltip overlayClassName="single" title="隐藏详情">
-                    <Icon src="/icon/menu.svg"></Icon>
+                </button>
+                <Tooltip title="隐藏详情">
+                    <a className="hide">
+                        <Icon src="/icon/tips.svg"></Icon>
+                    </a>
                 </Tooltip>
             </div>
         </Container>,

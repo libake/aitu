@@ -5,6 +5,7 @@ import { Spin, message } from "antd";
 import { dao, srv } from "core";
 import { Icon } from "@/common";
 import { Preview } from './Preview';
+import { Link } from "react-router-dom";
 
 const Container = styled.div`
     display: grid;
@@ -94,8 +95,13 @@ const Card = styled.div`
         }
     }
 
+    img {
+        width: 100%;
+    }
+
     .card-body {
         position: relative;
+        min-height: 100px;
     }
 
     .card-foot {
@@ -122,12 +128,12 @@ const Card = styled.div`
             border-radius: 50%;
         }
 
-        .default {
-            display: flex;
-            justify-content: center;
+        .icon {
+            display: grid;
+            grid-template-columns: auto 1fr;
             align-items: center;
-            width: 97px;
             height: 28px;
+            padding: 0 8px;
             font-size: 12px;
             border-radius: 60px;
             border: 1px solid #fff;
@@ -161,11 +167,6 @@ const Card = styled.div`
         }
     }
 `
-const Picture = styled.picture`
-    img {
-        width: 100%;
-    }
-`
 const Column = styled.ul`
     display: flex;
     flex-direction: column;
@@ -188,7 +189,7 @@ export function List() {
 
     const getRecommend = async () => {
         recommend.spinning = true;
-        setRecommend({...recommend});
+        setRecommend({ ...recommend });
         let data = {
             lastId: 0,
             pageSize: 50,
@@ -201,59 +202,27 @@ export function List() {
                 if (i < recommend.column) {
                     recommend.list[i] = [e];
                 } else {
-                    recommend.list[i%recommend.column].push(e);
+                    recommend.list[i % recommend.column].push(e);
                 }
             });
         } else {
             message.error(res.desc);
         }
         recommend.spinning = false;
-        setRecommend({...recommend});
+        setRecommend({ ...recommend });
     }
-    
+
     const onPreview = (item?: dao.Recommend) => {
         recommend.open = !recommend.open;
         if (!!item) {
             Object.assign(recommend.info, item);
         }
-        setRecommend({...recommend});
+        setRecommend({ ...recommend });
     }
 
     useEffect(() => {
         getRecommend();
     }, []);
-
-    let content = <>
-        {recommend.list.map((x, y) =>
-            <Column key={y}>
-                {x.map(v =>
-                    <li className="item" onClick={() => onPreview(v)} key={v.taskId}>
-                        <Card>
-                            <div className="card-body">
-                                <Picture>
-                                    <img src={v.image.url} alt="" />
-                                </Picture>
-                                <div className="prompt">
-                                    <div className="over-line">
-                                        {v.taskInput.prompt}
-                                    </div>
-                                </div>
-                            </div>
-                            <div className="card-foot">
-                                <div className="user">
-                                    <img className="avatar" src={v.avatarUrl} alt="" />
-                                    <span className="phone">{v.userPhone}</span>
-                                </div>
-                                <div className="default">
-                                    <Icon src="/icon/menu.svg" text="复用创意"></Icon>
-                                </div>
-                            </div>
-                        </Card>
-                    </li>
-                )}
-            </Column>
-        )}
-    </>
 
     return <Container>
         <Title>
@@ -262,12 +231,38 @@ export function List() {
             </div>
             <p className="slogan">一个让创作更轻松的AI智能化平台</p>
             <div className="btn">
-                <a className="default">AI艺术字</a>
-                <a className="primary">创意作图</a>
+                <Link className="default" to="/wordart">AI艺术字</Link>
+                <Link className="primary" to="/creation">创意作图</Link>
             </div>
         </Title>
         <Content>
-            {content}
+            {recommend.list.map((x, y) =>
+                <Column key={y}>
+                    {x.map(v =>
+                        <li className="item" onClick={() => onPreview(v)} key={v.taskId}>
+                            <Card>
+                                <div className="card-body">
+                                    <picture>
+                                        <img src={v.image.url} alt="" />
+                                    </picture>
+                                    <div className="prompt">
+                                        <div className="over-line">
+                                            {v.taskInput.prompt}
+                                        </div>
+                                    </div>
+                                </div>
+                                <div className="card-foot">
+                                    <div className="user">
+                                        <img className="avatar" src={v.avatarUrl} alt="" />
+                                        <span className="phone">{v.userPhone}</span>
+                                    </div>
+                                    <Icon className="icon" src="/icon/menu.svg" text="复用创意"></Icon>
+                                </div>
+                            </Card>
+                        </li>
+                    )}
+                </Column>
+            )}
         </Content>
         <Preview open={recommend.open} data={recommend.info} onClose={() => onPreview()}></Preview>
         <Spin spinning={recommend.spinning} />
