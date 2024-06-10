@@ -2,7 +2,6 @@ package model
 
 import (
 	"errors"
-	"regexp"
 	"strings"
 	"time"
 
@@ -22,6 +21,7 @@ type User struct {
 	Birthday time.Time `xorm:"birthday date" json:"birthday,omitempty"`
 	Gender   int8      `xorm:"gender int" json:"gender"`
 	Status   int8      `xorm:"status int default 1" json:"status"`
+	Power    int32     `xorm:"power int default 0" json:"power"`
 	UpdateAt time.Time `xorm:"update_at timestamp" json:"updateAt"`
 	CreateAt time.Time `xorm:"create_at timestamp" json:"createAt"`
 }
@@ -38,6 +38,8 @@ func (t *User) Create() (info User, err error) {
 		Email:    t.Email,
 		Mobile:   t.Mobile,
 		Password: t.Password,
+		Power:    20,
+		Status:   1,
 		UpdateAt: time.Now(),
 		CreateAt: time.Now(),
 	}
@@ -68,25 +70,6 @@ func (t *User) Passwd() (err error) {
 		err = status.Error(3052, "Update Fail")
 	}
 	return
-}
-
-// 登录
-func (t *User) SignIn(account string) error {
-	query := "password=?"
-	args := []interface{}{t.Password, account}
-	reg := regexp.MustCompile(`\w+([-+.]\w+)*@\w+([-.]\w+)*\.\w+([-.]\w+)*`)
-	if reg.MatchString(account) {
-		query += " AND email=?"
-	} else {
-		query += " AND mobile=?"
-	}
-
-	has, err := db.NewPostgres().Omit("password").Where(query, args...).Get(t)
-	if err != nil || !has {
-		err = errors.New("is empty")
-	}
-
-	return err
 }
 
 // 用户列表
@@ -129,29 +112,7 @@ func (t *User) List(req dto.Request) (list []User, total int64, err error) {
 }
 
 func (t *User) Info() (err error) {
-	var (
-		query string
-		args  []interface{}
-	)
-
-	if t.ID > 0 {
-		query = "id=?"
-		args = append(args, t.ID)
-	}
-	if t.Mobile != "" {
-		query = "mobile=?"
-		args = append(args, t.Mobile)
-	}
-	if t.Email != "" {
-		query = "email=?"
-		args = append(args, t.Email)
-	}
-	if t.Password != "" {
-		query += " AND password=?"
-		args = append(args, t.Password)
-	}
-
-	has, err := db.NewPostgres().Omit("password").Where(query, args...).Get(t)
+	has, err := db.NewPostgres().Omit("password").Get(t)
 	if err != nil || !has {
 		err = errors.New("is empty")
 	}
@@ -160,9 +121,8 @@ func (t *User) Info() (err error) {
 }
 
 // 检查邮箱或手机号是否存在
-func (t User) AccountExist() error {
-	user := new(User)
-	cnt, err := db.NewPostgres().Where("email=? OR mobile=?", t.Email, t.Mobile).Count(user)
+func (t *User) AccountExist() error {
+	cnt, err := db.NewPostgres().Count(t)
 	if err != nil || cnt == 0 {
 		err = errors.New("not found")
 	}

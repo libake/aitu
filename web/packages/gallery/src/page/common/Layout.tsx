@@ -269,7 +269,7 @@ export function Layout() {
                     <li>
                         <Popover className="money" trigger="click">
                             <Icon src="/icon/power.svg" />
-                            <span>20能量值</span>
+                            <span>{userContext.state.power}能量值</span>
                         </Popover>
                     </li>
                     <li>

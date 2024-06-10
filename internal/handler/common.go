@@ -32,7 +32,7 @@ func (c Common) SendSms(ctx *gin.Context) {
 	}
 
 	switch params.Scene {
-	case 1:
+	case 1: // 短信登录
 		user.Mobile = params.Mobile
 		err = user.AccountExist()
 		if err != nil {

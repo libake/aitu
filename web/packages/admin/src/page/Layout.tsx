@@ -189,7 +189,7 @@ export function Layout() {
                                     type: 'group',
                                     label: <Avatar>
                                         <img src="/avatar/01.jpg" alt="头像" />
-                                        kim
+                                        {userContext.state.nickname}
                                     </Avatar>,
                                 }, {
                                     key: 0 - 2,
@@ -208,7 +208,7 @@ export function Layout() {
                         }}>
                             <a onClick={(e) => e.preventDefault()}>
                                 <Space>
-                                    张三
+                                    {userContext.state.mobile}
                                     <i className="iconfont">&#xe66e;</i>
                                 </Space>
                             </a>

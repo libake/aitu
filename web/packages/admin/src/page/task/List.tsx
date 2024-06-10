@@ -42,8 +42,14 @@ const columns: TableColumnsType<dao.Task> = [{
     title: '图像',
     dataIndex: 'image',
     render: (v: string, r: dao.Task) => {
-        return <Image.PreviewGroup>
-            <Image width={60} src={r.results[0].url} />
+        if (!!!r.results) {
+            return '';
+        }
+        let items = r.results.map(m => {
+            return m.url;
+        });
+        return <Image.PreviewGroup items={items}>
+            <Image width={60} src={items[0]} />
         </Image.PreviewGroup>
     }
 }, {

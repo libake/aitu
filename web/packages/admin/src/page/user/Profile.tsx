@@ -1,17 +1,19 @@
-import { Alert, Button, Col, Form, Input, Row, Select } from "antd";
+import { Col, Row } from "antd";
+import { useContext } from "react";
 import styled from "styled-components";
 
+import { UserContext } from "@/context";
+
 const Container = styled.div`
-    margin: 1rem;
+    margin: 16px;
+    min-height: calc(100vh - 86px);
+    padding: 24px;
+    box-sizing: border-box;
+    background-color: #fff;
 
     h3 {
         margin-left: 5rem;
         font-weight: 500;
-    }
-
-    .box {
-        margin-bottom: 1rem;
-        padding: 1rem;
     }
 
     .avatar {
@@ -49,8 +51,10 @@ const Avatar = styled.a`
 export function Profile() {
     document.title = document.title + ' - 基本信息';
 
+    const userContext = useContext(UserContext);
+
     return <Container>
-        <Row className="box">
+        <Row>
             <Col className="avatar" span={6}>
                 <Avatar>
                     <img src="/avatar/01.jpg" alt="头像" />
@@ -59,31 +63,21 @@ export function Profile() {
             <Col span={9}>
                 <div className="item">
                     <label htmlFor="">登录账号:</label>
-                    <span>zhong***@126.com</span>
-                    <a>修改</a>
+                    <span>{userContext.state.mobile}</span>
                 </div>
                 <div className="item">
                     <label htmlFor="">账号ID:</label>
-                    <span>3756667868</span>
-                </div>
-                <div className="item">
-                    <label htmlFor="">三方账号绑定:</label>
-                    <a className="iconfont">&#xe67a;</a>
+                    <span>{userContext.state.id}</span>
                 </div>
             </Col>
             <Col span={9}>
                 <div className="item">
-                    <label htmlFor="">实名认证:</label>
-                    <span>个人实名认证</span>
-                    <a>详情</a>
-                </div>
-                <div className="item">
                     <label htmlFor="">注册时间:</label>
-                    <span>2023-01-20 10:00:00</span>
+                    <span>{userContext.state.createAt}</span>
                 </div>
                 <div className="item">
                     <label htmlFor="">上次登录时间:</label>
-                    <span>2023-01-20 10:00:00</span>
+                    <span>{userContext.state.lastTime}</span>
                 </div>
             </Col>
         </Row>

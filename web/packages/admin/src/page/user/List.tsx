@@ -38,6 +38,9 @@ const columns = [{
     title: '昵称',
     dataIndex: 'nickname',
 }, {
+    title: '能量值',
+    dataIndex: 'power',
+}, {
     title: '状态',
     dataIndex: 'status',
     render: (v: number) => {
@@ -119,7 +122,6 @@ export function List() {
                     <Button type="primary" htmlType="submit">搜索</Button>
                 </Form.Item>
             </Form>
-            <Button type="primary">新增</Button>
         </div>
         <div className="box-body">
             <Table

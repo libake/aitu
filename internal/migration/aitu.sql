@@ -8,12 +8,13 @@ CREATE TABLE "user" (
   "id" bigserial not null PRIMARY KEY,
   "nickname" varchar(32) not null default '',
   "mobile" varchar(16) UNIQUE not null,
-  "email" varchar(64) UNIQUE not null,
+  "email" varchar(64) not null default '',
   "password" varchar(32) not null,
   "birthday" timestamp,
   "gender" smallint not null default 0,
   "status" smallint not null default 1,
   "last_time" timestamp not null default (now()),
+  "power" integer not null default 0,
   "update_at" timestamp not null default (now()),
   "create_at" timestamp not null default (now())
 );
@@ -26,6 +27,7 @@ COMMENT ON COLUMN "user".birthday IS '邮箱';
 COMMENT ON COLUMN "user".gender IS '性别: 0-未知,1-男,2-女';
 COMMENT ON COLUMN "user".status IS '0-冻结,1-正常';
 COMMENT ON COLUMN "user".last_time IS '最后登录时间';
+COMMENT ON COLUMN "user".power IS '能量值';
 COMMENT ON COLUMN "user".create_at IS '注册时间';
 
 

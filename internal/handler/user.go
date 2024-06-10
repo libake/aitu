@@ -61,13 +61,26 @@ func (t *User) SignIn(ctx *gin.Context) {
 			return
 		}
 
-		err := user.Info()
+		// 不存在即注册
+		err := user.AccountExist()
 		if err != nil {
-			ctx.JSON(http.StatusOK, gin.H{
-				"code": 3040,
-				"desc": "账号不存在",
-			})
-			return
+			user, err = user.Create()
+			if err != nil {
+				ctx.JSON(http.StatusOK, gin.H{
+					"code": 3040,
+					"desc": "注册失败",
+				})
+				return
+			}
+		} else {
+			err := user.Info()
+			if err != nil {
+				ctx.JSON(http.StatusOK, gin.H{
+					"code": 3040,
+					"desc": "账号不存在",
+				})
+				return
+			}
 		}
 	default:
 		user.Password = param.Password
@@ -79,6 +92,14 @@ func (t *User) SignIn(ctx *gin.Context) {
 			})
 			return
 		}
+	}
+
+	if user.Status == 0 {
+		ctx.JSON(http.StatusOK, gin.H{
+			"code": 3040,
+			"desc": "账号已被冻结",
+		})
+		return
 	}
 
 	// 区分前后台用户

@@ -5,12 +5,10 @@ export class User {
     email: string;
     password?: number;
     birthday: string;
-    sex: number;
-    wechat: string;
-    alipay: string;
-    accessKey: string;
-    secretKey: string;
+    gender: number;
     status: number;
+    lastTime?: string;
+    power: number;
     updateAt?: string;
     createAt?: string;
 
@@ -20,11 +18,8 @@ export class User {
         this.mobile = '';
         this.email = '';
         this.birthday = '';
-        this.sex = 0;
-        this.wechat = '';
-        this.alipay = '';
-        this.accessKey = '';
-        this.secretKey = '';
+        this.gender = 0;
         this.status = 1;
+        this.power = 0;
     }
 }

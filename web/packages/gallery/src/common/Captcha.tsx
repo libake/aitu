@@ -48,7 +48,7 @@ export function Captcha(props: IProps) {
     const sendSms = async () => {
         let data = {
             mobile: props.mobile,
-            scene: props.scene || 1,
+            scene: props.scene || 0,
         }
         let res = await srv.Common.sendSms(data);
         if (res.code == 1000) {
