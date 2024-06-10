@@ -218,8 +218,9 @@ export function List() {
             Object.assign(task.info, res.data);
             getTask();
         } else {
-            if (task.percent < 100) {
-                task.percent += Math.floor(Math.random() * 20) + 1;
+            task.percent += Math.floor(Math.random() * 20) + 1;
+            if (task.percent > 100) {
+                task.percent = 99;
             }
             setTask({ ...task });
             setTimeout(() => {

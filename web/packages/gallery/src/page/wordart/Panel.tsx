@@ -4,6 +4,7 @@ import styled from "styled-components";
 
 import { Icon, TextArea } from "@/common";
 import { dao, srv } from "core";
+import { message } from "antd";
 
 const Container = styled.div`
     display: grid;
@@ -71,6 +72,7 @@ const Container = styled.div`
     }
 
     .cell {
+        cursor: pointer;
         display: grid;
         grid-template-columns: 118px 1fr;
         gap: 24px;
@@ -93,6 +95,17 @@ const Container = styled.div`
         grid-template-columns: 1fr 36px;
         justify-content: center;
         align-items: center;
+
+        .body {
+            width: 130px;
+        }
+
+        p {
+            margin: 0;
+            white-space: nowrap;
+            text-overflow: ellipsis;
+            overflow: hidden;
+        }
     }
 
     .size-ratio {
@@ -227,8 +240,10 @@ const Popup = styled.div`
 
     .btn-default, .btn-primary {
         display: flex;
+        justify-content: center;
         align-items: center;
         height: 34px;
+        min-width: 80px;
         border-radius: 20px;
         color: var(--text-color);
     }
@@ -239,7 +254,8 @@ const Popup = styled.div`
     }
 
     .btn-primary {
-        background-color: ${props => props.theme.primaryColor};
+        color: var(--heading-text-color);
+        background-color: var(--primary-color);
     }
 `
 const Card = styled.div`
@@ -251,9 +267,10 @@ const Card = styled.div`
     border-radius: 10px;
     border: 1px solid transparent;
     overflow: hidden;
+    cursor: pointer;
 
     &.active {
-        border-color: #f40;
+        border-color: var(--primary-color);
     }
 
     img {
@@ -307,8 +324,8 @@ export function Panel(props: IProps) {
         info: new dao.Category(),
         list: new Array<dao.Category>(),
         open: false,
-        selectKey: 0,
-        styleType: 1,
+        styleType: '风格模板',
+        prompt: '',
     });
 
     const getCategory = async () => {
@@ -316,7 +333,7 @@ export function Panel(props: IProps) {
             currPage: 1,
             pageSize: 1000,
             queryBy: [
-                {col:'scene', val: 'word_art_image'}
+                {col:'scene', val: 'word-style'}
             ]
         }
         let res = await srv.Category.list(data);
@@ -324,23 +341,45 @@ export function Panel(props: IProps) {
             category.list = res.data.list;
             if (category.list.length > 0) {
                 category.info = category.list[0];
+                if (category.info.prompt.length > 0) {
+                    category.prompt = category.info.prompt[0];
+                }
                 getTemplate(category.list[0].id);
             }
         } else {
             category.list = [];
         }
-        
         setCategory({ ...category });
     }
 
     const onCategory = (item: dao.Category) => {
         category.info = item;
+        if (category.info.prompt.length > 0) {
+            category.prompt = category.info.prompt[0];
+        }
         setCategory({...category});
         getTemplate(item.id);
     }
 
-    const onRadio = (v: number) => {
+    const disCategory = () => {
+        category.open = true;
+        req.input.prompt = '';
+        setCategory({...category});
+        setReq({...req});
+    }
+
+    const onRadio = (v: string) => {
         category.styleType = v;
+        setCategory({...category});
+    }
+
+    const onPrompt = () => {
+        let len = category.info.prompt.length;
+        if (len == 0) {
+            return;
+        }
+        let random = Math.ceil(Math.random() * len) - 1;
+        category.prompt = category.info.prompt[random];
         setCategory({...category});
     }
 
@@ -352,7 +391,7 @@ export function Panel(props: IProps) {
     const getTemplate = async (categoryId: number) => {
         let data = {
             currPage: 1,
-            pageSize: 10,
+            pageSize: 100,
             queryBy: [
                 {col: 'categoryId', val: categoryId},
             ]
@@ -366,7 +405,37 @@ export function Panel(props: IProps) {
         setTemplate({...template});
     }
 
+    const [textStyle, setTextStyle] = useState(['请选择文字风格']);
+
+    const onStyle = () => {
+        let text = [category.info.name];
+        switch(category.styleType) {
+            case '风格模板':
+                req.input.prompt = category.info.name;
+                req.input.texture_style = template.info.code;
+                text.push(template.info.name);
+                break;
+            case '自定义':
+                req.input.texture_style = category.info.code;
+                text = text.concat(['自定义', req.input.prompt]);
+                break;
+        }
+        setTextStyle(text);
+        setReq({...req});
+        category.open = false;
+        setCategory({...category});
+
+    }
+
     const submit = () => {
+        if (!!!req.input.text.text_content) {
+            message.error('请填写文字内容');
+            return;
+        }
+        if (textStyle.length == 1) {
+            message.error('请选择文字风格');
+            return;
+        }
         props.submit(req);
     }
 
@@ -382,12 +451,15 @@ export function Panel(props: IProps) {
                 <span className="suffix">{req.input.text.text_content.length}/4</span>
             </div>
             <h3>文字风格</h3>
-            <div className="cell" onClick={() => setCategory({...category, open: true})}>
+            <div className="cell" onClick={() => disCategory()}>
                 <div className="cell-body">
                     <img src="/word-136.png" />
                 </div>
                 <div className="cell-text">
-                    <label htmlFor="">{req.input.prompt ? category.info.name : '请选择文字风格'}</label>
+                    <div className="body">
+                        {textStyle[0]}{textStyle.length > 1 && `-${textStyle[1]}`}
+                        {textStyle.length == 3 && <p>{textStyle[2]}</p>}
+                    </div>
                     <Icon src="/icon/next.svg" />
                 </div>
             </div>
@@ -427,9 +499,9 @@ export function Panel(props: IProps) {
                         {m.name}
                     </a>)}
                 </div>
-                <div className="radio-item" onClick={() => onRadio(1)}>
+                <div className="radio-item" onClick={() => onRadio('风格模板')}>
                     <div className="cell">
-                        <input type="radio" name="style" checked={category.styleType == 1} id="style-1" />
+                        <input type="radio" name="style" checked={category.styleType == '风格模板'} onChange={() => {}} id="style-1" />
                         <label htmlFor="style-1">风格模板</label>
                     </div>
                     <div className="tab-list">
@@ -443,9 +515,9 @@ export function Panel(props: IProps) {
                     )}
                     </div>
                 </div>
-                <div className="radio-item" onClick={() => onRadio(2)}>
+                <div className="radio-item" onClick={() => onRadio('自定义')}>
                     <div className="cell">
-                        <input type="radio" name="style" checked={category.styleType == 2} id="style-2" />
+                        <input type="radio" name="style" checked={category.styleType == '自定义'} onChange={() => {}} id="style-2" />
                         <label htmlFor="style-2">自定义</label>
                     </div>
                     <TextArea
@@ -460,15 +532,15 @@ export function Panel(props: IProps) {
                     {category.info.prompt && <div className="cell">
                         <div className="cell-text">
                             <label>示例：</label>
-                            <span>{category.info.prompt[0]}</span>
+                            <span onClick={() => setReq({...req, input: { ...req.input, prompt: category.prompt}})}>{category.prompt}</span>
                         </div>
-                        <Icon className="cell-icon" src="/icon/update.svg" />
+                        <Icon className="cell-icon" src="/icon/update.svg" onClick={() => onPrompt()} />
                     </div>}
                 </div>
             </div>
             <div className="popup-foot">
                 <button className="btn-default" onClick={() => setCategory({...category, open: false})}>取消</button>
-                <button className="btn-primary">确认</button>
+                <button className="btn-primary" onClick={() => onStyle()}>确认</button>
             </div>
         </Popup>, document.body)
         }

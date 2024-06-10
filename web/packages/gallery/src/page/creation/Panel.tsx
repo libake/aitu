@@ -486,7 +486,7 @@ export function Panel(props: IProps) {
         if (len == 0) {
             return;
         }
-        let random = Math.ceil(Math.random() * (len - 1));
+        let random = Math.ceil(Math.random() * len) - 1;
         category.prompt = category.info.prompt[random];
         setCategory({...category});
     }
@@ -557,7 +557,7 @@ export function Panel(props: IProps) {
                         <span>示例：</span>
                         <span 
                             className="demo-word" 
-                            onClick={(e) => setReq({...req, input: { ...req.input, prompt: category.prompt}})}
+                            onClick={() => setReq({...req, input: { ...req.input, prompt: category.prompt}})}
                         >{category.prompt}</span>
                     </div>
                     <div className="demo-tool">
