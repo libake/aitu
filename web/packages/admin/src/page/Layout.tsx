@@ -29,10 +29,15 @@ const Container = styled.div`
 `
 const Logo = styled.div`
     display: flex;
-    justify-content: center;
     align-items: center;
     height: 52px;
+    padding: 10px 16px;
+    box-sizing: border-box;
     overflow: hidden;
+
+    img {
+        height: 100%;
+    }
 `;
 const Header = styled.header`
     display: flex;
@@ -146,7 +151,9 @@ export function Layout() {
 
     return <Container>
         <div className="side">
-            <Logo>喵闪AI</Logo>
+            <Logo>
+                <img src="/logo-text.png" alt="" />
+            </Logo>
             <Menu>
                 {menu.list.map((e: dao.Node) => {
                     if (e.leaf) {
@@ -178,9 +185,9 @@ export function Layout() {
             <Header>
                 <div>&nbsp;</div>
                 <ul>
-                    <li>
+                    {/* <li>
                         <Link className="iconfont" to="/news/notice">&#xe649;</Link>
-                    </li>
+                    </li> */}
                     <li>
                         <Dropdown menu={{
                             items: [
