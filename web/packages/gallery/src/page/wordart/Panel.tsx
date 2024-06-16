@@ -288,6 +288,20 @@ const Card = styled.div`
 interface IProps {
     submit: Function;
     className: string;
+    data?: {
+        input: {
+            prompt: string,
+            text: {
+                text_content: string,
+                output_image_ratio: string,
+            },
+            texture_style: string,
+        },
+        parameters: {
+            n: number,
+            alpha_channel: boolean,
+        }
+    }
 }
 
 export function Panel(props: IProps) {
@@ -442,6 +456,11 @@ export function Panel(props: IProps) {
     useEffect(() => {
         getCategory();
     }, []);
+
+    useEffect(() => {
+        Object.assign(req, props.data);
+        setReq({...req});
+    }, [props.data]);
 
     return <Container className={props.className}>
         <div className="side-body">

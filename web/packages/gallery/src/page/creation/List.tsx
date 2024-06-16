@@ -308,6 +308,7 @@ export function List() {
         }
         setTask({ ...task });
     }
+    
     const userContext = useContext(UserContext);
     const navigate = useNavigate();
 

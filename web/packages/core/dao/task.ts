@@ -5,6 +5,11 @@ export class Task {
         prompt?: string;
         negative_prompt?: string;
         ref_img?: string;
+        text?: {
+            text_content: string;
+            outpat_image_ratio: string;
+        },
+        texture_style?: string;
     };
     parameters?: {
         style?: string;

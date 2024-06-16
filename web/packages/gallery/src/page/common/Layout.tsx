@@ -261,8 +261,9 @@ export function Layout() {
                     <img src="/logo-text.png" alt="喵闪AI" />
                 </a>
                 <NavLink to="/" end>探索发现</NavLink>
-                <a onClick={() => navigateTo('/creation')}>创意作图</a>
-                <a onClick={() => navigateTo('/wordart')}>AI艺术字</a>
+                <NavLink to="/creation">创意作图</NavLink>
+                {/* <a onClick={() => navigateTo('/creation')}>创意作图</a> */}
+                <NavLink to="/wordart">AI艺术字</NavLink>
             </NavLeft>
             <NavRight>
                 {userContext.state.id > 0 ? <>
