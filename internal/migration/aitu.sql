@@ -143,6 +143,7 @@ CREATE TABLE "task" (
   "task_id" varchar(64) not null default '',
   "task_status" varchar(32) not null default '',
   "task_type" varchar(128) not null default '',
+  "other" json not null default '{}',
   "user_id" bigint not null default 0,
   "update_at" timestamp not null default (now()),
   "create_at" timestamp not null default (now())
@@ -155,4 +156,116 @@ COMMENT ON COLUMN task.results IS '生成结果';
 COMMENT ON COLUMN task.task_id IS '作业任务ID';
 COMMENT ON COLUMN task.task_status IS '状态';
 COMMENT ON COLUMN task.task_type IS '类型';
+COMMENT ON COLUMN task.other IS '扩展字段';
 COMMENT ON COLUMN task.user_id IS '归属用户';
+
+
+------- mysql --------------------------------
+
+
+-- 喵闪AI
+CREATE DATABASE IF NOT EXISTS aitu;
+
+-- 用户 - user
+DROP TABLE IF EXISTS user;
+
+CREATE TABLE user (
+  id bigint not null AUTO_INCREMENT PRIMARY KEY,
+  nickname varchar(32) not null default '' COMMENT '用户昵称',
+  mobile varchar(16) UNIQUE not null COMMENT '移动电话',
+  email varchar(64) not null default '' COMMENT '邮箱',
+  password varchar(32) not null COMMENT '登录密码',
+  birthday timestamp COMMENT '生日',
+  gender smallint not null default 0 COMMENT '性别: 0-未知,1-男,2-女',
+  status smallint not null default 1 COMMENT '0-冻结,1-正常',
+  last_time timestamp not null default (now()) COMMENT '最后登录时间',
+  power integer not null default 0 COMMENT '能量值',
+  update_at timestamp not null default (now()),
+  create_at timestamp not null default (now()) COMMENT '注册时间',
+)ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT '用户';
+
+
+-- 用户扩展 - oauth
+DROP TABLE IF EXISTS oauth;
+
+CREATE TABLE oauth (
+  id  bigint not null AUTO_INCREMENT PRIMARY KEY,
+  user_id bigint not null COMMENT '用户id',
+  type varchar(16) not null COMMENT '类型: weibo, qq, wechat',
+  auth_id varchar(64) not null COMMENT '授权标识: uid, openid',
+  unionid varchar(128) COMMENT 'QQ/微信同一主体下Unionid相同'
+)ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT '用户扩展';
+
+
+-- 节点 - node
+DROP TABLE IF EXISTS node;
+
+CREATE TABLE node (
+  id bigint not null AUTO_INCREMENT PRIMARY KEY,
+  icon text COMMENT '图标',
+  name varchar(90) not null COMMENT '名称',
+  meta text not null COMMENT '元数据:路由,编码',
+  type smallint not null default 1 COMMENT '类型:1-功能,2-菜单,3-操作,4-接口',
+  parent_id bigint not null default 0 COMMENT '上级id',
+  path text COMMENT '族谱',
+  sort smallint not null default 255 COMMENT '排序',
+  scope varchar(16) not null default 0 COMMENT '范围',
+  status smallint not null default 1 COMMENT '状态:1-启用,0-禁用',
+  update_at timestamp not null default (now()),
+  create_at timestamp not null default (now())
+)ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT '节点';
+
+
+-- 分类 - category
+DROP TABLE IF EXISTS category;
+
+CREATE TABLE category (
+  id bigint not null AUTO_INCREMENT PRIMARY KEY,
+  code varchar(64) not null default '' COMMENT '编码',
+  name varchar(64) not null default '' COMMENT '名称',
+  icon text COMMENT '图标',
+  prompt json COMMENT '提示语',
+  sort smallint not null default 0 COMMENT '排序',
+  scene varchar(64) not null default '' COMMENT '场景:text_to_image,word_art_image',
+  status smallint not null default 1 COMMENT '状态:0-禁用,1-启用',
+  platform varchar(32) not null default 'web' COMMENT '平台',
+  parent_id bigint not null default 0 COMMENT '父id',
+  update_at timestamp not null default (now()),
+  create_at timestamp not null default (now())
+)ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT '分类';
+
+
+-- 模板 - template
+DROP TABLE IF EXISTS template;
+
+CREATE TABLE template (
+  id bigint not null AUTO_INCREMENT PRIMARY KEY,
+  code varchar(64) not null default '' COMMENT '模板编码',
+  name varchar(64) not null default '' COMMENT '模板名称',
+  inner_image text COMMENT '内部:模板使用',
+  outer_image text COMMENT '外部:封面或展示使用',
+  sort smallint not null default 0 COMMENT '排序',
+  status smallint not null default 1 COMMENT '状态:0-禁用,1-启用',
+  category_id bigint not null default 0 COMMENT '归属分类',
+  update_at timestamp not null default (now()),
+  create_at timestamp not null default (now())
+)ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT '模板';
+
+
+-- 任务 - task
+DROP TABLE IF EXISTS task;
+
+CREATE TABLE task (
+  id bigint not null AUTO_INCREMENT PRIMARY KEY,
+  model varchar(256) not null default '' COMMENT '模型:wanx-v1',
+  input json COMMENT '输入信息',
+  parameters json COMMENT '输入信息',
+  results json COMMENT '生成结果',
+  task_id varchar(64) not null default '' COMMENT '作业任务ID',
+  task_status varchar(32) not null default '' COMMENT '状态',
+  task_type varchar(128) not null default '' COMMENT '类型',
+  other json COMMENT '扩展字段',
+  user_id bigint not null default 0 COMMENT '归属用户',
+  update_at timestamp not null default (now()),
+  create_at timestamp not null default (now())
+)ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT '任务';

@@ -91,6 +91,23 @@ const Head = styled(Time)`
         flex: 1;
     }
 
+    .text-item {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        border-radius: 4px;
+        padding: 4px 8px;
+        background-color: #202532;
+        max-width: 300px;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+        overflow: hidden;
+
+        img {
+            height: 24px;
+        }
+    }
+
     .tool {
         display: flex;
         align-items: center;
@@ -345,6 +362,10 @@ export function List() {
         parameters: {
             n: 4,
             alpha_channel: false,
+        },
+        other: {
+            text: new Array<string>(),
+            thumb: '',
         }
     });
 
@@ -404,7 +425,18 @@ export function List() {
                     </Time>
                     <Head style={{ height: "56px" }}>
                         <div className="text">
-                            <p>文字内容：{v.input.text.text_content}</p>
+                            <div className="text-item">文字内容：{v.input.text.text_content}</div>
+                            <span>X</span>
+                            <div className="text-item">
+                                <img src={v.other.thumb} alt="" />
+                                <span>{v.other.text.join('-')}</span>
+                            </div>
+                            {v.other.text[1] == '自定义' && <>
+                            <span>X</span>
+                            <div className="text-item">
+                                {v.input.prompt}
+                            </div>
+                            </>}
                         </div>
                         <div className="tool">
                             <a onClick={() => onReuse(v, 1)}>
@@ -420,9 +452,7 @@ export function List() {
                                 okText="删除"
                                 cancelText="取消"
                             >
-                                <>
-                                    <Icon src="/icon/ashbin.svg" />
-                                </>
+                                <Icon src="/icon/ashbin.svg" />
                             </Popconfirm>
                         </div>
                     </Head>

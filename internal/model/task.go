@@ -20,6 +20,7 @@ type Task struct {
 	TaskID     string                 `xorm:"task_id varchar(64)" json:"taskId"`
 	TaskStatus string                 `xorm:"task_status varchar(32)" json:"taskStatus"`
 	TaskType   string                 `xorm:"task_type varchar(128)" json:"taskType"`
+	Other      map[string]interface{} `xorm:"other json" json:"other"`
 	UserID     int64                  `xorm:"user_id int default 0" json:"userId"`
 	UpdateAt   time.Time              `xorm:"update_at timestamp" json:"updateAt"`
 	CreateAt   time.Time              `xorm:"create_at timestamp" json:"createAt"`

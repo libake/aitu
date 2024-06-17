@@ -300,6 +300,10 @@ interface IProps {
         parameters: {
             n: number,
             alpha_channel: boolean,
+        },
+        other: {
+            text: string[],
+            thumb: string,
         }
     }
 }
@@ -317,6 +321,10 @@ export function Panel(props: IProps) {
         parameters: {
             n: 4,
             alpha_channel: false,
+        },
+        other: {
+            text: new Array<string>(),
+            thumb: '',
         }
     });
 
@@ -419,26 +427,24 @@ export function Panel(props: IProps) {
         setTemplate({...template});
     }
 
-    const [textStyle, setTextStyle] = useState(['请选择文字风格']);
-
     const onStyle = () => {
-        let text = [category.info.name];
+        req.other.text = [category.info.name];
         switch(category.styleType) {
             case '风格模板':
                 req.input.prompt = category.info.name;
                 req.input.texture_style = template.info.code;
-                text.push(template.info.name);
+                req.other.text.push(template.info.name);
+                req.other.thumb = template.info.outerImage;
                 break;
             case '自定义':
                 req.input.texture_style = category.info.code;
-                text = text.concat(['自定义', req.input.prompt]);
+                req.other.text = req.other.text.concat(['自定义']);
+                req.other.thumb = '/word-144.png';
                 break;
         }
-        setTextStyle(text);
         setReq({...req});
         category.open = false;
         setCategory({...category});
-
     }
 
     const submit = () => {
@@ -446,7 +452,7 @@ export function Panel(props: IProps) {
             message.error('请填写文字内容');
             return;
         }
-        if (textStyle.length == 1) {
+        if (req.other.text.length == 0) {
             message.error('请选择文字风格');
             return;
         }
@@ -472,12 +478,12 @@ export function Panel(props: IProps) {
             <h3>文字风格</h3>
             <div className="cell" onClick={() => disCategory()}>
                 <div className="cell-body">
-                    <img src="/word-136.png" />
+                    <img src={req.other.thumb || '/word-136.png'} />
                 </div>
                 <div className="cell-text">
                     <div className="body">
-                        {textStyle[0]}{textStyle.length > 1 && `-${textStyle[1]}`}
-                        {textStyle.length == 3 && <p>{textStyle[2]}</p>}
+                        {req.other.text.length == 0 && '请选择文字风格'}{req.other.text.length > 0 && `${req.other.text[0]}-${req.other.text[1]}`}
+                        {req.other.text[1] == '自定义' && <p>{req.input.prompt}</p>}
                     </div>
                     <Icon src="/icon/next.svg" />
                 </div>
