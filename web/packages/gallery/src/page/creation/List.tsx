@@ -167,14 +167,23 @@ const Image = styled.div`
     }
 `
 const Progress = styled.div`
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    position: relative;
-    height: 200px;
-    border-radius: 12px;
-    background-color: #13171e;
-    overflow: hidden;
+    margin: 16px 0;
+
+    .hint {
+        margin-bottom: 16px;
+        color: var(--text-color);
+    }
+
+    .body {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        position: relative;
+        height: 200px;
+        border-radius: 12px;
+        background-color: #13171e;
+        overflow: hidden;
+    }
 
     .inner {
         position: absolute;
@@ -188,7 +197,7 @@ const Progress = styled.div`
     .text {
         display: grid;
         color: #fff;
-        gap: 24px;
+        gap: 16px;
         z-index: 3;
     }
 `
@@ -255,8 +264,8 @@ export function List() {
         let data = {
             ...new dto.Request(),
             queryBy: [
-                {col: 'taskType', val: 'text_to_image'},
-                {col: 'taskStatus', val: 'SUCCEEDED'},
+                { col: 'taskType', val: 'text_to_image' },
+                { col: 'taskStatus', val: 'SUCCEEDED' },
             ],
         }
         let res = await srv.Task.list(data);
@@ -308,7 +317,7 @@ export function List() {
         }
         setTask({ ...task });
     }
-    
+
     const userContext = useContext(UserContext);
     const navigate = useNavigate();
 
@@ -320,8 +329,53 @@ export function List() {
         }
     }, [userContext]);
 
+    let [req, setReq] = useState({
+        input: {
+            prompt: '',
+            text: {
+                text_content: '',
+                output_image_ratio: '1:1',
+            },
+            texture_style: '',
+        },
+        parameters: {
+            n: 4,
+            alpha_channel: false,
+        },
+        taskType: 'text_to_image',
+        other: {
+            text: new Array<string>(),
+            thumb: '',
+        }
+    });
+
+    // 复用创意、再次生成
+    const onReuse = (v: any, type = 1) => {
+        let data = {
+            input: {
+                ...v.input,
+            },
+            parameters: {
+                ...v.parameters,
+            },
+            other: {
+                ...v.other,
+            }
+        }
+        switch (type) {
+            case 1:
+                Object.assign(req, data);
+                setReq({ ...req });
+                break;
+            case 2:
+                addTask(data);
+                break;
+        }
+        console.log(data);
+    }
+
     return <Container>
-        <Panel className="side" submit={(e: any) => addTask(e)}></Panel>
+        <Panel className="side" data={req} submit={(e: any) => addTask(e)}></Panel>
         <div className="main">
             <Title>
                 <span className="text">支持下载或收藏，可通过管理画作进行删除，欢迎对创作点赞点踩并提出建议，助力模型不断进化。</span>
@@ -334,48 +388,16 @@ export function List() {
                     </div>}
                 </span>
             </Title>
-            {task.info.taskStatus == 'PENDING' && <History>
-                <Head>
-                    <div className="text">
-                        <div className="cell">
-                            <Icon src="/icon/menu.svg" text="图像风格迁移" />
-                        </div>
-                        <time>AI正在生成中...</time>
-                    </div>
-                    <div className="line"></div>
-                </Head>
-                <Head style={{ height: "56px" }}>
-                    <div className="text">
-                        <p>{task.info.input.prompt}</p>
-                    </div>
-                    <div className="tool">
-                        <a>
-                            <Icon src={"/icon/reuse.svg"} text="复用创意" />
-                        </a>
-                        <a>
-                            <Icon src="/icon/refresh.svg" text="再次生成" />
-                        </a>
-                        <Popconfirm
-                            title="确定要删除记录吗？"
-                            description="删除后的记录不可恢复"
-                            onConfirm={() => delTask(task.info)}
-                            okText="删除"
-                            cancelText="取消"
-                        >
-                            <>
-                                <Icon src="/icon/ashbin.svg" />
-                            </>
-                        </Popconfirm>
-                    </div>
-                </Head>
-                <Progress>
+            {task.info.taskStatus == 'PENDING' && <Progress>
+                <div className="hint">AI正在生成中...</div>
+                <div className="body">
                     <div className="inner" style={{ width: `${task.percent}%` }}></div>
                     <div className="text">
                         <Spin />
                         <div>{task.percent}%</div>
                     </div>
-                </Progress>
-            </History>}
+                </div>
+            </Progress>}
             {task.list.map((v, i) =>
                 <History key={i}>
                     <Time>
@@ -393,10 +415,10 @@ export function List() {
                             <p>{v.input.prompt}</p>
                         </div>
                         <div className="tool">
-                            <a>
+                            <a onClick={() => onReuse(v, 1)}>
                                 <Icon src={"/icon/reuse.svg"} text="复用创意" />
                             </a>
-                            <a>
+                            <a onClick={() => onReuse(v, 2)}>
                                 <Icon src="/icon/refresh.svg" text="再次生成" />
                             </a>
                             <Popconfirm
@@ -418,7 +440,7 @@ export function List() {
                                 <picture>
                                     <img src={d.url} alt="" />
                                 </picture>
-                                <div className="tool" onClick={(e) => {e.stopPropagation();}}>
+                                <div className="tool" onClick={(e) => { e.stopPropagation(); }}>
                                     <div className="tool-group">
                                         <Icon src="/icon/good.svg" />
                                         <Icon src="/icon/bad.svg" />

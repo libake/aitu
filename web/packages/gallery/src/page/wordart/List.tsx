@@ -377,6 +377,9 @@ export function List() {
             },
             parameters: {
                 ...v.parameters,
+            },
+            other: {
+                ...v.other,
             }
         }
         switch(type) {
