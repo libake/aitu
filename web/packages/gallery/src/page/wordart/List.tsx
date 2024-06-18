@@ -8,6 +8,7 @@ import { Panel } from './Panel';
 import { Preview } from "./Preview";
 import { UserContext } from "@/context";
 import { useNavigate } from "react-router-dom";
+import { bus } from "@/util/mitt";
 
 
 const Container = styled.div`
@@ -340,13 +341,12 @@ export function List() {
     }, []);
 
     const userContext = useContext(UserContext);
-    const navigate = useNavigate();
 
     useEffect(() => {
         if (userContext.state.id > 0) {
             getTask();
         } else {
-            navigate('/');
+            bus.emit('auth');
         }
     }, [userContext]);
 
@@ -360,7 +360,7 @@ export function List() {
             texture_style: '',
         },
         parameters: {
-            n: 4,
+            n: 1,
             alpha_channel: false,
         },
         other: {
@@ -467,12 +467,12 @@ export function List() {
                                 </picture>
                                 <div className="tool" onClick={(e) => {e.stopPropagation();}}>
                                     <div className="tool-group">
-                                        <Icon src="/icon/good.svg" />
-                                        <Icon src="/icon/bad.svg" />
+                                        {/* <Icon src="/icon/good.svg" />
+                                        <Icon src="/icon/bad.svg" /> */}
                                     </div>
                                     <div className="tool-group">
                                         <Icon src="/icon/download.svg" />
-                                        <Icon src="/icon/favorite.svg" />
+                                        {/* <Icon src="/icon/favorite.svg" /> */}
                                     </div>
                                 </div>
                                 <div className="mark"></div>

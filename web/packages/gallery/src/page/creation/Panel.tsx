@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import ReactDOM from 'react-dom';
 import styled from "styled-components";
+import { Slider } from 'antd';
 
 import { Upload } from "./Upload";
 import { Icon, TextArea } from "@/common";
@@ -75,9 +76,14 @@ const Container = styled.div`
 
     .demo-info {
         cursor: pointer;
+        display: grid;
+        grid-template-columns: auto 1fr;
     }
 
     .demo-word {
+        white-space: nowrap;
+        text-overflow: ellipsis;
+        overflow: hidden;
 
         &:hover {
             color: #fff;
@@ -357,15 +363,10 @@ interface IProps {
     data?: {
         input: {
             prompt: string,
-            text: {
-                text_content: string,
-                output_image_ratio: string,
-            },
-            texture_style: string,
         },
         parameters: {
             n: number,
-            alpha_channel: boolean,
+            size: string,
         },
         other: {
             text: string[],
@@ -380,6 +381,7 @@ export function Panel(props: IProps) {
             prompt: '',
         },
         parameters: {
+            n: 1,
             size: '1024*1024',
         },
         taskType: 'text_to_image',
@@ -440,7 +442,7 @@ export function Panel(props: IProps) {
         } else {
             template.list = [];
         }
-        setTemplate({...template});
+        setTemplate({ ...template });
     }
 
     // 咒语书
@@ -475,7 +477,7 @@ export function Panel(props: IProps) {
             currPage: 1,
             pageSize: 100,
             queryBy: [
-                {col: 'scene', val: 'spell-book'}
+                { col: 'scene', val: 'spell-book' }
             ],
         }
         let res = await srv.Category.list(data);
@@ -484,7 +486,7 @@ export function Panel(props: IProps) {
             if (category.list.length > 0) {
                 category.info = category.list[0];
                 getTemplate(category.list[0].id);
-                if (category.info.prompt.length > 0){
+                if (category.info.prompt.length > 0) {
                     category.prompt = category.info.prompt[0];
                 }
             }
@@ -506,7 +508,7 @@ export function Panel(props: IProps) {
         }
         let random = Math.ceil(Math.random() * len) - 1;
         category.prompt = category.info.prompt[random];
-        setCategory({...category});
+        setCategory({ ...category });
     }
 
     const submit = () => {
@@ -520,7 +522,7 @@ export function Panel(props: IProps) {
 
     useEffect(() => {
         Object.assign(req, props.data);
-        setReq({...req});
+        setReq({ ...req });
     }, [props.data]);
 
     return <Container className={props.className}>
@@ -566,7 +568,7 @@ export function Panel(props: IProps) {
                                     <div className="card-foot">{v.name}</div>
                                 </Card>
                             )}
-                            <Card onClick={() => setCategory({...category, open: true})}>
+                            <Card onClick={() => setCategory({ ...category, open: true })}>
                                 <picture className="card-body">
                                     <img src="/O1CN01FU1617-132-132.jpg" />
                                 </picture>
@@ -578,16 +580,16 @@ export function Panel(props: IProps) {
                 <div className="demo">
                     <div className="demo-info">
                         <span>示例：</span>
-                        <span 
-                            className="demo-word" 
-                            onClick={() => setReq({...req, input: { ...req.input, prompt: category.prompt}})}
+                        <span
+                            className="demo-word"
+                            onClick={() => setReq({ ...req, input: { ...req.input, prompt: category.prompt } })}
                         >{category.prompt}</span>
                     </div>
                     <div className="demo-tool">
                         <Icon src="/icon/refresh.svg" onClick={() => onPrompt()} />
                     </div>
                 </div>
-                <Upload tag={{ text: '参考图', weak: true }} height="182px"></Upload>
+                <Upload tag={{ text: '参考图', weak: true }} height="160px"></Upload>
                 <h3>图片比例</h3>
                 <div className="size">
                     <div className={`size-item${req.parameters.size == '1024*1024' ? ' active' : ''}`} onClick={() => onSize('1024*1024')}>
@@ -603,6 +605,13 @@ export function Panel(props: IProps) {
                         <span>9&nbsp;:&nbsp;16</span>
                     </div>
                 </div>
+                <h3>生成张数</h3>
+                <Slider
+                    min={0}
+                    max={4}
+                    defaultValue={req.parameters.n}
+                    onChange={(v) => setReq({ ...req, parameters: { ...req.parameters, n: v } })}
+                />
             </>}
             {/* 相似图像生成 */}
             {mode.info.value == 2 && <>
@@ -638,7 +647,7 @@ export function Panel(props: IProps) {
         {category.open && ReactDOM.createPortal(<Popup>
             <div className="popup-head">
                 <Icon className="text" src="/icon/text.svg" text="咒语书" />
-                <Icon className="tool" src="/icon/close-bold.svg" onClick={() => setCategory({...category, open: false})} />
+                <Icon className="tool" src="/icon/close-bold.svg" onClick={() => setCategory({ ...category, open: false })} />
             </div>
             <div className="popup-body">
                 <div className="tab-menu">
@@ -647,14 +656,14 @@ export function Panel(props: IProps) {
                     </a>)}
                 </div>
                 <div className="tab-list">
-                {template.list.map((v, i) =>
-                    <Card className={template.selectKeys.has(v.name) ? ' active' : ''} key={i} onClick={() => onTemplate(v)}>
-                        <picture className="card-body">
-                            <img src={v.outerImage} alt="" />
-                        </picture>
-                        <div className="card-foot">{v.name}</div>
-                    </Card>
-                )}
+                    {template.list.map((v, i) =>
+                        <Card className={template.selectKeys.has(v.name) ? ' active' : ''} key={i} onClick={() => onTemplate(v)}>
+                            <picture className="card-body">
+                                <img src={v.outerImage} alt="" />
+                            </picture>
+                            <div className="card-foot">{v.name}</div>
+                        </Card>
+                    )}
                 </div>
             </div>
         </Popup>, document.body)

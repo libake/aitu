@@ -8,6 +8,7 @@ import { Panel } from './Panel';
 import { Preview } from "./Preview";
 import { UserContext } from "@/context";
 import { useNavigate } from "react-router-dom";
+import { bus } from "@/util/mitt";
 
 
 const Container = styled.div`
@@ -319,28 +320,22 @@ export function List() {
     }
 
     const userContext = useContext(UserContext);
-    const navigate = useNavigate();
 
     useEffect(() => {
         if (userContext.state.id > 0) {
             getTask();
         } else {
-            navigate('/');
+            bus.emit('auth');
         }
     }, [userContext]);
 
     let [req, setReq] = useState({
         input: {
             prompt: '',
-            text: {
-                text_content: '',
-                output_image_ratio: '1:1',
-            },
-            texture_style: '',
         },
         parameters: {
-            n: 4,
-            alpha_channel: false,
+            n: 1,
+            size: '1024*1024',
         },
         taskType: 'text_to_image',
         other: {
@@ -428,9 +423,7 @@ export function List() {
                                 okText="删除"
                                 cancelText="取消"
                             >
-                                <>
-                                    <Icon src="/icon/ashbin.svg" />
-                                </>
+                                <Icon src="/icon/ashbin.svg" />
                             </Popconfirm>
                         </div>
                     </Head>
@@ -442,12 +435,12 @@ export function List() {
                                 </picture>
                                 <div className="tool" onClick={(e) => { e.stopPropagation(); }}>
                                     <div className="tool-group">
-                                        <Icon src="/icon/good.svg" />
-                                        <Icon src="/icon/bad.svg" />
+                                        {/* <Icon src="/icon/good.svg" />
+                                        <Icon src="/icon/bad.svg" /> */}
                                     </div>
                                     <div className="tool-group">
                                         <Icon src="/icon/download.svg" />
-                                        <Icon src="/icon/favorite.svg" />
+                                        {/* <Icon src="/icon/favorite.svg" /> */}
                                     </div>
                                 </div>
                                 <div className="mark"></div>

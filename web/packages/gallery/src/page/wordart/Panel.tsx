@@ -4,7 +4,7 @@ import styled from "styled-components";
 
 import { Icon, TextArea } from "@/common";
 import { dao, srv } from "core";
-import { message } from "antd";
+import { Slider, message } from "antd";
 
 const Container = styled.div`
     display: grid;
@@ -319,7 +319,7 @@ export function Panel(props: IProps) {
             texture_style: '',
         },
         parameters: {
-            n: 4,
+            n: 1,
             alpha_channel: false,
         },
         other: {
@@ -508,6 +508,13 @@ export function Panel(props: IProps) {
                 <a className={`radio-item${req.parameters.alpha_channel ? '' : ' active'}`} onClick={() => setReq({...req, parameters: {...req.parameters, alpha_channel: false}})}>生成背影</a>
                 <a className={`radio-item${req.parameters.alpha_channel ? ' active' : ''}`} onClick={() => setReq({...req, parameters: {...req.parameters, alpha_channel: true}})}>透明背景</a>
             </div>
+            <h3>生成张数</h3>
+            <Slider
+                min={0}
+                max={4}
+                defaultValue={req.parameters.n}
+                onChange={(v) => setReq({ ...req, parameters: { ...req.parameters, n: v } })}
+            />
         </div>
         <div className="side-foot">
             <Button onClick={() => submit()}>生成创意艺术字</Button>

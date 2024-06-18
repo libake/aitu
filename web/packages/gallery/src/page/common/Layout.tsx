@@ -5,7 +5,8 @@ import { Dropdown, message, Popover, Button } from "antd";
 
 import { srv } from "core";
 import { Icon, Captcha } from "@/common";
-import { UserContext } from "@/context/UserContext";
+import { UserContext } from "@/context";
+import { bus } from '@/util/mitt';
 
 
 const Header = styled.header`
@@ -146,6 +147,10 @@ const Modal = styled.div`
         display: flex;
         justify-content: space-between;
         height: 50px;
+
+        .close {
+           cursor: pointer; 
+        }
     }
 
     .box-body {
@@ -235,16 +240,6 @@ export function Layout() {
         setUser({...user, info: {...user.info, [name]: val.target.value}});
     }
 
-    const navigate = useNavigate();
-
-    const navigateTo = (url: string) => {
-        if (userContext.state.id > 0) {
-            navigate(url);
-        } else {
-            setUser({...user, open: true});
-        }
-    }
-
     const logout = async () => {
         let res = await srv.User.logout();
         if (res.code == 1000) {
@@ -254,6 +249,11 @@ export function Layout() {
         }
     }
 
+    bus.on('auth', () => {
+        user.open = true;
+        setUser({...user});
+    });
+
     return <ThemeProvider theme={currentTheme}>
         <Header>
             <NavLeft>
@@ -262,7 +262,6 @@ export function Layout() {
                 </a>
                 <NavLink to="/" end>探索发现</NavLink>
                 <NavLink to="/creation">创意作图</NavLink>
-                {/* <a onClick={() => navigateTo('/creation')}>创意作图</a> */}
                 <NavLink to="/wordart">AI艺术字</NavLink>
             </NavLeft>
             <NavRight>
@@ -330,9 +329,7 @@ export function Layout() {
             <div className="box">
                 <div className="box-head">
                     &nbsp;
-                    <div className="close" onClick={() => setUser({...user, open: false})}>
-                        <Icon src="/icon/close-bold.svg" />
-                    </div>
+                    <Icon className="close" src="/icon/close-bold.svg" onClick={() => setUser({...user, open: false})} />
                 </div>
                 <form className="box-body">
                     <div className="form-item">
