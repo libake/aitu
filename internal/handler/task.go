@@ -39,12 +39,22 @@ func (t *Task) Create(ctx *gin.Context) {
 		util.Fail(3040, err.Error(), ctx)
 		return
 	}
-	body, _ := json.Marshal(task)
 
+	user, err := middleware.ParseToken(ctx)
+	if err != nil {
+		ctx.JSON(http.StatusOK, gin.H{
+			"code": 3073,
+			"desc": err.Error(),
+		})
+		return
+	}
+	task.UserID = user.ID
+
+	body, _ := json.Marshal(task)
 	req, err := http.NewRequest(http.MethodPost, "https://dashscope.aliyuncs.com/api/v1/services/aigc/text2image/image-synthesis", bytes.NewBuffer(body))
 	if err != nil {
 		ctx.JSON(http.StatusOK, gin.H{
-			"code": -2,
+			"code": 2031,
 			"desc": "创建请求失败",
 		})
 		return
@@ -57,7 +67,7 @@ func (t *Task) Create(ctx *gin.Context) {
 	res, err := cli.Do(req)
 	if err != nil {
 		ctx.JSON(http.StatusOK, gin.H{
-			"code": -2,
+			"code": 2032,
 			"desc": "发送请求失败",
 		})
 		return
@@ -67,7 +77,7 @@ func (t *Task) Create(ctx *gin.Context) {
 	resBody, err := io.ReadAll(res.Body)
 	if err != nil {
 		ctx.JSON(http.StatusOK, gin.H{
-			"code": -1,
+			"code": 2033,
 			"desc": "读取响应失败",
 		})
 		return
@@ -76,7 +86,7 @@ func (t *Task) Create(ctx *gin.Context) {
 	err = json.Unmarshal(resBody, &t)
 	if err != nil {
 		ctx.JSON(http.StatusOK, gin.H{
-			"code": -1,
+			"code": 3040,
 			"desc": "参数解析失败",
 		})
 		return
@@ -84,20 +94,10 @@ func (t *Task) Create(ctx *gin.Context) {
 	task.TaskID = t.Output.TaskID
 	task.TaskStatus = t.Output.TaskStatus
 
-	user, err := middleware.ParseToken(ctx)
-	if err != nil {
-		ctx.JSON(http.StatusOK, gin.H{
-			"code": 3073,
-			"desc": err.Error(),
-		})
-		return
-	}
-	task.UserID = user.ID
-
 	err = task.Create()
 	if err != nil {
 		ctx.JSON(http.StatusOK, gin.H{
-			"code": -1,
+			"code": 3051,
 			"desc": err.Error(),
 		})
 		return
@@ -126,7 +126,7 @@ func (t *Task) WordArt(ctx *gin.Context) {
 	req, err := http.NewRequest(http.MethodPost, "https://dashscope.aliyuncs.com/api/v1/services/aigc/wordart/texture", bytes.NewBuffer(body))
 	if err != nil {
 		ctx.JSON(http.StatusOK, gin.H{
-			"code": -2,
+			"code": 2031,
 			"desc": "创建请求失败",
 		})
 		return
@@ -139,7 +139,7 @@ func (t *Task) WordArt(ctx *gin.Context) {
 	res, err := cli.Do(req)
 	if err != nil {
 		ctx.JSON(http.StatusOK, gin.H{
-			"code": -2,
+			"code": 2032,
 			"desc": "发送请求失败",
 		})
 		return
@@ -149,7 +149,7 @@ func (t *Task) WordArt(ctx *gin.Context) {
 	resBody, err := io.ReadAll(res.Body)
 	if err != nil {
 		ctx.JSON(http.StatusOK, gin.H{
-			"code": -1,
+			"code": 2033,
 			"desc": "读取响应失败",
 		})
 		return
@@ -158,7 +158,7 @@ func (t *Task) WordArt(ctx *gin.Context) {
 	err = json.Unmarshal(resBody, &t)
 	if err != nil {
 		ctx.JSON(http.StatusOK, gin.H{
-			"code": -1,
+			"code": 3040,
 			"desc": "参数解析失败",
 		})
 		return
@@ -179,7 +179,7 @@ func (t *Task) WordArt(ctx *gin.Context) {
 	err = task.Create()
 	if err != nil {
 		ctx.JSON(http.StatusOK, gin.H{
-			"code": -1,
+			"code": 3051,
 			"desc": err.Error(),
 		})
 		return
@@ -203,7 +203,7 @@ func (t *Task) Delete(ctx *gin.Context) {
 	err := ctx.BindJSON(&param)
 	if err != nil {
 		ctx.JSON(http.StatusOK, gin.H{
-			"code": -2,
+			"code": 3040,
 			"desc": err.Error(),
 		})
 		return
@@ -212,7 +212,7 @@ func (t *Task) Delete(ctx *gin.Context) {
 	err = task.Delete(param.ID)
 	if err != nil {
 		ctx.JSON(http.StatusOK, gin.H{
-			"code": -2,
+			"code": 3053,
 			"desc": err.Error(),
 		})
 		return
@@ -236,7 +236,7 @@ func (t *Task) Info(ctx *gin.Context) {
 	err := ctx.BindQuery(&param)
 	if err != nil {
 		ctx.JSON(http.StatusOK, gin.H{
-			"code": -2,
+			"code": 3040,
 			"desc": err.Error(),
 		})
 		return
@@ -247,7 +247,7 @@ func (t *Task) Info(ctx *gin.Context) {
 	req, err := http.NewRequest(http.MethodGet, url, bytes.NewBuffer(body))
 	if err != nil {
 		ctx.JSON(http.StatusOK, gin.H{
-			"code": 2051,
+			"code": 2031,
 			"desc": "创建请求失败",
 		})
 		return
@@ -258,7 +258,7 @@ func (t *Task) Info(ctx *gin.Context) {
 	res, err := cli.Do(req)
 	if err != nil {
 		ctx.JSON(http.StatusOK, gin.H{
-			"code": 2052,
+			"code": 2032,
 			"desc": "发送请求失败",
 		})
 		return
@@ -268,7 +268,7 @@ func (t *Task) Info(ctx *gin.Context) {
 	resBody, err := io.ReadAll(res.Body)
 	if err != nil {
 		ctx.JSON(http.StatusOK, gin.H{
-			"code": 2053,
+			"code": 2033,
 			"desc": "读取响应失败",
 		})
 		return
@@ -367,7 +367,7 @@ func (t Task) Recommend(ctx *gin.Context) {
 	req, err := http.NewRequest(http.MethodPost, url, bytes.NewBuffer(body))
 	if err != nil {
 		ctx.JSON(http.StatusOK, gin.H{
-			"code": -2,
+			"code": 2051,
 			"desc": "创建请求失败",
 		})
 		return
@@ -378,7 +378,7 @@ func (t Task) Recommend(ctx *gin.Context) {
 	res, err := cli.Do(req)
 	if err != nil {
 		ctx.JSON(http.StatusOK, gin.H{
-			"code": -2,
+			"code": 2052,
 			"desc": "发送请求失败",
 		})
 		return
@@ -388,7 +388,7 @@ func (t Task) Recommend(ctx *gin.Context) {
 	resBody, err := io.ReadAll(res.Body)
 	if err != nil {
 		ctx.JSON(http.StatusOK, gin.H{
-			"code": -1,
+			"code": 2053,
 			"desc": "读取响应失败",
 		})
 		return
