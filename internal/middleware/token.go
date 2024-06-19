@@ -61,3 +61,14 @@ func Token() gin.HandlerFunc {
 		ctx.Next()
 	}
 }
+
+// 解析 token
+func ParseToken(ctx *gin.Context) (user model.User, err error) {
+	token := ctx.Request.Header.Get("Access-Token")
+	sToken, err := db.NewRedis().HGet("token", token).Result()
+	if err != nil {
+		return
+	}
+	json.Unmarshal([]byte(sToken), &user)
+	return
+}

@@ -85,7 +85,7 @@ func (t *Task) List(req dto.Request) (list []Task, total int64, err error) {
 			query += " AND task_status=?"
 			args = append(args, v.Val)
 		case "taskType":
-			query += " AND task_type IN (?)"
+			query += " AND task_type=?"
 			args = append(args, v.Val)
 		}
 	}

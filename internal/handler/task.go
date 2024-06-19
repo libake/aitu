@@ -8,6 +8,7 @@ import (
 	"time"
 
 	"aitu.cn/internal/dto"
+	"aitu.cn/internal/middleware"
 	"aitu.cn/internal/model"
 	"aitu.cn/util"
 	"github.com/gin-gonic/gin"
@@ -82,7 +83,17 @@ func (t *Task) Create(ctx *gin.Context) {
 	}
 	task.TaskID = t.Output.TaskID
 	task.TaskStatus = t.Output.TaskStatus
-	task.UserID = 1
+
+	user, err := middleware.ParseToken(ctx)
+	if err != nil {
+		ctx.JSON(http.StatusOK, gin.H{
+			"code": 3073,
+			"desc": err.Error(),
+		})
+		return
+	}
+	task.UserID = user.ID
+
 	err = task.Create()
 	if err != nil {
 		ctx.JSON(http.StatusOK, gin.H{
@@ -154,7 +165,17 @@ func (t *Task) WordArt(ctx *gin.Context) {
 	}
 	task.TaskID = t.Output.TaskID
 	task.TaskStatus = t.Output.TaskStatus
-	task.UserID = 1
+
+	user, err := middleware.ParseToken(ctx)
+	if err != nil {
+		ctx.JSON(http.StatusOK, gin.H{
+			"code": 3073,
+			"desc": err.Error(),
+		})
+		return
+	}
+	task.UserID = user.ID
+
 	err = task.Create()
 	if err != nil {
 		ctx.JSON(http.StatusOK, gin.H{
@@ -290,9 +311,22 @@ func (t *Task) List(ctx *gin.Context) {
 
 	err := ctx.BindJSON(&param)
 	if nil != err {
-		util.Fail(3040, err.Error(), ctx)
+		ctx.JSON(http.StatusOK, gin.H{
+			"code": 3040,
+			"desc": err.Error(),
+		})
 		return
 	}
+
+	user, err := middleware.ParseToken(ctx)
+	if err != nil {
+		ctx.JSON(http.StatusOK, gin.H{
+			"code": 3073,
+			"desc": err.Error(),
+		})
+		return
+	}
+	task.UserID = user.ID
 
 	ret, cnt, err := task.List(param)
 	if err != nil {
