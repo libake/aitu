@@ -341,12 +341,13 @@ export function List() {
     }, []);
 
     const userContext = useContext(UserContext);
+    const navigate = useNavigate();
 
     useEffect(() => {
         if (userContext.state.id > 0) {
             getTask();
         } else {
-            bus.emit('auth');
+            navigate('/');
         }
     }, [userContext]);
 

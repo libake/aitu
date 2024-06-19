@@ -250,8 +250,12 @@ export function Layout() {
     }
 
     bus.on('auth', () => {
-        user.open = true;
-        setUser({...user});
+        setTimeout(() => {
+            if (userContext.state.id == 0) {
+                user.open = true;
+                setUser({...user});
+            }
+        }, 500);
     });
 
     return <ThemeProvider theme={currentTheme}>
