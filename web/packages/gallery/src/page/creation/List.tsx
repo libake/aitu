@@ -338,10 +338,6 @@ export function List() {
             size: '1024*1024',
         },
         taskType: 'text_to_image',
-        other: {
-            text: new Array<string>(),
-            thumb: '',
-        }
     });
 
     // 复用创意、再次生成
@@ -352,9 +348,6 @@ export function List() {
             },
             parameters: {
                 ...v.parameters,
-            },
-            other: {
-                ...v.other,
             }
         }
         switch (type) {

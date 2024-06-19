@@ -33,7 +33,7 @@ func (t *Template) Create() error {
 	t.CreateAt = time.Now()
 	t.UpdateAt = time.Now()
 	t.Status = 1
-	row, err := db.NewPostgres().Insert(t)
+	row, err := db.NewRdb().Insert(t)
 	if err != nil || row == 0 {
 		err = errors.New("create fail")
 	}
@@ -43,7 +43,7 @@ func (t *Template) Create() error {
 // 更新模板
 func (t *Template) Update() error {
 	t.UpdateAt = time.Now()
-	row, err := db.NewPostgres().Where("id=?", t.ID).Update(t)
+	row, err := db.NewRdb().Where("id=?", t.ID).Update(t)
 	if nil != err || row == 0 {
 		err = errors.New("update fail")
 	}
@@ -52,7 +52,7 @@ func (t *Template) Update() error {
 
 // 更新排序
 func (t *Template) SetSort() error {
-	row, err := db.NewPostgres().Where("id=?", t.ID).Update(t)
+	row, err := db.NewRdb().Where("id=?", t.ID).Update(t)
 	if nil != err || row == 0 {
 		err = errors.New("update fail")
 	}
@@ -62,7 +62,7 @@ func (t *Template) SetSort() error {
 
 // 更新状态
 func (t *Template) SetStatus() error {
-	row, err := db.NewPostgres().Cols("status").Where("id=?", t.ID).Update(t)
+	row, err := db.NewRdb().Cols("status").Where("id=?", t.ID).Update(t)
 	if nil != err || row == 0 {
 		err = errors.New("update fail")
 	}
@@ -72,7 +72,7 @@ func (t *Template) SetStatus() error {
 
 // 删除模板
 func (t *Template) Delete() error {
-	row, err := db.NewPostgres().Delete(t)
+	row, err := db.NewRdb().Delete(t)
 	if nil != err || row == 0 {
 		err = errors.New("delete fail")
 	}
@@ -101,7 +101,7 @@ func (t *Template) List(req dto.Request) (list []Template, total int64, err erro
 	}
 	query = strings.TrimLeft(query, " AND")
 
-	db := db.NewPostgres()
+	db := db.NewRdb()
 	// 统计条数
 	user := new(Template)
 	total, err = db.Where(query, args...).Count(user)

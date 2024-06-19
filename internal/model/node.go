@@ -35,7 +35,7 @@ func (t *Node) Create(node Node) error {
 	node.CreateAt = time.Now()
 	node.UpdateAt = time.Now()
 	node.Status = 1
-	row, err := db.NewPostgres().Insert(&node)
+	row, err := db.NewRdb().Insert(&node)
 	if err != nil || row == 0 {
 		fmt.Println(err.Error())
 		err = errors.New("create fail")
@@ -46,7 +46,7 @@ func (t *Node) Create(node Node) error {
 // 更新节点
 func (t *Node) Update(node Node) error {
 	node.UpdateAt = time.Now()
-	row, err := db.NewPostgres().UseBool("enable").Cols("meta", "icon").Where("id=?", node.ID).Update(&node)
+	row, err := db.NewRdb().UseBool("enable").Cols("meta", "icon").Where("id=?", node.ID).Update(&node)
 	if nil != err || row == 0 {
 		err = errors.New("update fail")
 	}
@@ -55,7 +55,7 @@ func (t *Node) Update(node Node) error {
 
 // 更新排序
 func (t *Node) SetSort(node Node) error {
-	row, err := db.NewPostgres().Where("id=?", node.ID).Update(&node)
+	row, err := db.NewRdb().Where("id=?", node.ID).Update(&node)
 	if nil != err || row == 0 {
 		err = errors.New("update fail")
 	}
@@ -68,7 +68,7 @@ func (t *Node) SetStatus() error {
 	var node Node
 
 	node.Status = t.Status
-	row, err := db.NewPostgres().Cols("status").Where("id=?", t.ID).Update(&node)
+	row, err := db.NewRdb().Cols("status").Where("id=?", t.ID).Update(&node)
 	if nil != err || row == 0 {
 		err = errors.New("update fail")
 	}
@@ -82,7 +82,7 @@ func (t *Node) Delete() error {
 		node Node
 	)
 	node.ID = t.ID
-	row, err := db.NewPostgres().Delete(&node)
+	row, err := db.NewRdb().Delete(&node)
 	if nil != err || row == 0 {
 		err = errors.New("delete fail")
 	}
@@ -111,7 +111,7 @@ func (t *Node) List(req dto.Request) (list []Node, err error) {
 	}
 	query = strings.TrimLeft(query, " AND")
 
-	err = db.NewPostgres().Where(query, args...).OrderBy("sort").Find(&list)
+	err = db.NewRdb().Where(query, args...).OrderBy("sort").Find(&list)
 	if len(list) == 0 {
 		err = errors.New("is empty")
 	}
@@ -135,7 +135,7 @@ func (t *Node) ListByRole(roleID int64, req dto.Request) (list []Node, err error
 		}
 	}
 
-	db := db.NewPostgres().Alias("a").Join("LEFT", "role_node AS b", "b.node_id=a.id")
+	db := db.NewRdb().Alias("a").Join("LEFT", "role_node AS b", "b.node_id=a.id")
 	err = db.Where(query, args...).Find(&list)
 	if len(list) == 0 {
 		err = errors.New("is empty")
@@ -204,7 +204,7 @@ func (t *Node) Permission(userID int32, req dto.Request) (list []Node, err error
 		}
 	}
 
-	db := db.NewPostgres().Alias("a").Join("LEFT", "role_node AS b", "b.node_id=a.id").Join("LEFT", "role_user AS c", "c.role_id=b.role_id")
+	db := db.NewRdb().Alias("a").Join("LEFT", "role_node AS b", "b.node_id=a.id").Join("LEFT", "role_user AS c", "c.role_id=b.role_id")
 	err = db.Where(query, args...).Find(&list)
 	if len(list) == 0 {
 		err = errors.New("is empty")

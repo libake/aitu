@@ -367,10 +367,6 @@ interface IProps {
         parameters: {
             n: number,
             size: string,
-        },
-        other: {
-            text: string[],
-            thumb: string,
         }
     }
 }

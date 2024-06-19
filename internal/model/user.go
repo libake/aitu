@@ -43,7 +43,7 @@ func (t *User) Create() (info User, err error) {
 		UpdateAt: time.Now(),
 		CreateAt: time.Now(),
 	}
-	has, err := db.NewPostgres().Insert(&info)
+	has, err := db.NewRdb().Insert(&info)
 	if err != nil || has == 0 {
 		err = errors.New(err.Error())
 	}
@@ -53,7 +53,7 @@ func (t *User) Create() (info User, err error) {
 
 // 更新用户
 func (t *User) Update() (err error) {
-	_, err = db.NewPostgres().Update(t)
+	_, err = db.NewRdb().Update(t)
 	return
 }
 
@@ -65,7 +65,7 @@ func (t *User) Passwd() (err error) {
 	)
 
 	user.Password = t.Password
-	row, err = db.NewPostgres().Where("mobile=? OR email=?", t.Mobile, t.Email).Cols("password").Update(&user)
+	row, err = db.NewRdb().Where("mobile=? OR email=?", t.Mobile, t.Email).Cols("password").Update(&user)
 	if err != nil || row == 0 {
 		err = status.Error(3052, "Update Fail")
 	}
@@ -94,7 +94,7 @@ func (t *User) List(req dto.Request) (list []User, total int64, err error) {
 	}
 	query = strings.TrimPrefix(query, " AND ")
 
-	db := db.NewPostgres()
+	db := db.NewRdb()
 	// 统计条数
 	user := new(User)
 	total, err = db.Where(query, args...).Count(user)
@@ -112,7 +112,7 @@ func (t *User) List(req dto.Request) (list []User, total int64, err error) {
 }
 
 func (t *User) Info() (err error) {
-	has, err := db.NewPostgres().Omit("password").Get(t)
+	has, err := db.NewRdb().Omit("password").Get(t)
 	if err != nil || !has {
 		err = errors.New("is empty")
 	}
@@ -122,7 +122,7 @@ func (t *User) Info() (err error) {
 
 // 检查邮箱或手机号是否存在
 func (t *User) AccountExist() error {
-	cnt, err := db.NewPostgres().Count(t)
+	cnt, err := db.NewRdb().Count(t)
 	if err != nil || cnt == 0 {
 		err = errors.New("not found")
 	}

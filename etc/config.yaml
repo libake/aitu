@@ -3,20 +3,20 @@ port: 8090
 debug: true
 
 database:
-  type: postgres
+  type: mysql
   deploy: 0 # 部署方式:0 集中式(单一服务器),1 分布式(主从服务器)
   master:
-    host: 127.0.0.1
-    name: aitu
-    port: 5432
-    user: postgres
-    password: rMHmqsn0c
-  slave:
     host: 127.0.0.1
     name: aitu
     port: 3306
     user: root
     password: mGB1f0xZ
+  slave:
+    host: 127.0.0.1
+    name: aitu
+    port: 5432
+    user: postgres
+    password: rMHmqsn0c
   charset: utf8
   debug: true
 

@@ -34,7 +34,7 @@ func (t *Category) Create() error {
 	t.CreateAt = time.Now()
 	t.UpdateAt = time.Now()
 	t.Status = 1
-	row, err := db.NewPostgres().Insert(t)
+	row, err := db.NewRdb().Insert(t)
 	if err != nil || row == 0 {
 		err = errors.New("create fail")
 	}
@@ -44,7 +44,7 @@ func (t *Category) Create() error {
 // 更新分类
 func (t *Category) Update() error {
 	t.UpdateAt = time.Now()
-	row, err := db.NewPostgres().Where("id=?", t.ID).Update(t)
+	row, err := db.NewRdb().Where("id=?", t.ID).Update(t)
 	if nil != err || row == 0 {
 		err = errors.New("update fail")
 	}
@@ -53,7 +53,7 @@ func (t *Category) Update() error {
 
 // 更新排序
 func (t *Category) SetSort() error {
-	row, err := db.NewPostgres().Where("id=?", t.ID).Update(t)
+	row, err := db.NewRdb().Where("id=?", t.ID).Update(t)
 	if nil != err || row == 0 {
 		err = errors.New("update fail")
 	}
@@ -63,7 +63,7 @@ func (t *Category) SetSort() error {
 
 // 更新状态
 func (t *Category) SetStatus() error {
-	row, err := db.NewPostgres().Cols("status").Where("id=?", t.ID).Update(t)
+	row, err := db.NewRdb().Cols("status").Where("id=?", t.ID).Update(t)
 	if nil != err || row == 0 {
 		err = errors.New("update fail")
 	}
@@ -73,7 +73,7 @@ func (t *Category) SetStatus() error {
 
 // 删除分类
 func (t *Category) Delete() error {
-	row, err := db.NewPostgres().Delete(t)
+	row, err := db.NewRdb().Delete(t)
 	if nil != err || row == 0 {
 		err = errors.New("delete fail")
 	}
@@ -105,7 +105,7 @@ func (t *Category) List(req dto.Request) (list []Category, total int64, err erro
 	}
 	query = strings.TrimLeft(query, " AND")
 
-	db := db.NewPostgres()
+	db := db.NewRdb()
 	// 统计条数
 	user := new(Category)
 	total, err = db.Where(query, args...).Count(user)

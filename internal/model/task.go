@@ -37,7 +37,7 @@ func (t *Task) Create() (err error) {
 	t.ID = util.NewMist().Generate()
 	t.UpdateAt = now
 	t.CreateAt = now
-	has, err := db.NewPostgres().Insert(t)
+	has, err := db.NewRdb().Insert(t)
 	if err != nil || has == 0 {
 		err = errors.New(err.Error())
 	}
@@ -47,7 +47,7 @@ func (t *Task) Create() (err error) {
 
 // 删除任务
 func (t *Task) Delete(args []int64) (err error) {
-	has, err := db.NewPostgres().In("id", args).Delete(t)
+	has, err := db.NewRdb().In("id", args).Delete(t)
 	if err != nil || has == 0 {
 		err = errors.New("删除失败")
 	}
@@ -57,7 +57,7 @@ func (t *Task) Delete(args []int64) (err error) {
 
 // 更新任务
 func (t *Task) Update() error {
-	has, err := db.NewPostgres().Where("id=? OR task_id=?", t.ID, t.TaskID).Update(t)
+	has, err := db.NewRdb().Where("id=? OR task_id=?", t.ID, t.TaskID).Update(t)
 	if err != nil || has == 0 {
 		err = errors.New("update fail")
 	}
@@ -91,7 +91,7 @@ func (t *Task) List(req dto.Request) (list []Task, total int64, err error) {
 	}
 	query = strings.TrimPrefix(query, " AND ")
 
-	db := db.NewPostgres()
+	db := db.NewRdb()
 	// 统计条数
 	user := new(Task)
 	total, err = db.Where(query, args...).Count(user)
@@ -117,7 +117,7 @@ func (t *Task) Info() (info Task, err error) {
 
 	query = "id=?"
 	args = append(args, t.ID)
-	has, err := db.NewPostgres().Where(query, args...).Get(&info)
+	has, err := db.NewRdb().Where(query, args...).Get(&info)
 	if err != nil || !has {
 		err = errors.New("is empty")
 	}
