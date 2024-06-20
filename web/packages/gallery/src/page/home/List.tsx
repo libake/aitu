@@ -176,6 +176,20 @@ const Column = styled.ul`
         cursor: pointer;
     }
 `
+const Pagination = styled.div`
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 0 24px;
+    color: var(--text-color);
+
+    button {
+        background-color: transparent;
+        border: 1px solid var(--primary-color);
+        color: var(--text-color);
+        border-radius: 20px;
+    }
+`
 
 export function List() {
     let [recommend, setRecommend] = useState({
@@ -184,21 +198,26 @@ export function List() {
         open: false,
         column: 4,
         list: new Array<Array<dao.Recommend>>(),
+        works: new Array<dao.Recommend>(),
         spinning: false,
+    });
+    let [req, setReq] = useState({
+        lastId: 0,
+        pageSize: 200,
     });
 
     const getRecommend = async () => {
         recommend.spinning = true;
         setRecommend({ ...recommend });
         let data = {
-            lastId: 0,
-            pageSize: 50,
+            ...req,
         }
         let res = await srv.Task.recommend(data);
         if (res.code == 1000) {
-            recommend.total = res.data.total;
+            recommend.total = Number(res.data.data.total);
             let tmp: Array<dao.Recommend> = res.data.data.works.filter((f: any) => f.type == 'WORK').map((m: any) => m.data);
-            tmp.forEach((e, i) => {
+            recommend.works = recommend.works.concat(tmp);
+            recommend.works.forEach((e, i) => {
                 if (i < recommend.column) {
                     recommend.list[i] = [e];
                 } else {
@@ -206,6 +225,7 @@ export function List() {
                 }
             });
         } else {
+            recommend.total = 0;
             message.error(res.desc);
         }
         recommend.spinning = false;
@@ -220,9 +240,17 @@ export function List() {
         setRecommend({ ...recommend });
     }
 
+    const onPagination = () => {
+        req.lastId += req.pageSize;
+        if (recommend.total != 0 && req.lastId > recommend.total) {
+            req.lastId = recommend.total;
+        }
+        setReq({...req});
+    }
+
     useEffect(() => {
         getRecommend();
-    }, []);
+    }, [req]);
 
     return <Container>
         <Title>
@@ -264,6 +292,9 @@ export function List() {
                 </Column>
             )}
         </Content>
+        <Pagination>
+            {req.lastId == recommend.total ? <span>已经到底啦</span> : <button onClick={() => onPagination()}>点击查看更多</button>}
+        </Pagination>
         <Preview open={recommend.open} data={recommend.info} onClose={() => onPreview()}></Preview>
         <Spin spinning={recommend.spinning} />
     </Container>

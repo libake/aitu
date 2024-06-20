@@ -8,7 +8,6 @@ import { Panel } from './Panel';
 import { Preview } from "./Preview";
 import { UserContext } from "@/context";
 import { useNavigate } from "react-router-dom";
-import { bus } from "@/util/mitt";
 
 
 const Container = styled.div`
@@ -22,10 +21,11 @@ const Container = styled.div`
         position: fixed;
         width: 360px;
     }
+
+    .main {
+        margin: 0 36px 0 420px;
+    }
 `;
-const Content = styled.div`
-    margin: 0 36px 0 420px;
-`
 const Title = styled.div`
     display: flex;
     justify-content: space-between;
@@ -218,11 +218,25 @@ const Progress = styled.div`
         z-index: 3;
     }
 `
+const Pagination = styled.div`
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 0 24px;
+    color: var(--text-color);
+
+    button {
+        background-color: transparent;
+        border: 1px solid var(--primary-color);
+        color: var(--text-color);
+        border-radius: 20px;
+    }
+`
 
 export function List() {
     let [task, setTask] = useState({
         info: new dao.Task(),
-        current: 0,
+        total: 0,
         editable: false,
         list: new Array<dao.Task>(),
         keys: new Array<number>(),
@@ -242,7 +256,11 @@ export function List() {
         if (res.code == 1000) {
             task.percent = 100;
             Object.assign(task.info, res.data);
-            getTask();
+            task.total = 0;
+            task.list = [];
+            setTask({ ...task });
+            req.currPage = 1;
+            setReq({...req});
         } else {
             task.percent += Math.floor(Math.random() * 20) + 1;
             if (task.percent > 100) {
@@ -253,7 +271,6 @@ export function List() {
                 pollTask();
             }, 5000);
         }
-        setTask({ ...task });
     }
 
     const addTask = async (v: any) => {
@@ -278,19 +295,23 @@ export function List() {
         }
     }
 
+    let [req, setReq] = useState({
+        currPage: 1,
+        pageSize: 10,
+        queryBy: [
+            {col: 'taskType', val: 'word_art_image'},
+            {col: 'taskStatus', val: 'SUCCEEDED'},
+        ]
+    });
+
     const getTask = async () => {
         let data = {
-            ...new dto.Request(),
-            queryBy: [
-                {col: 'taskType', val: 'word_art_image'},
-                {col: 'taskStatus', val: 'SUCCEEDED'},
-            ]
+            ...req,
         }
         let res = await srv.Task.list(data);
         if (res.code == 1000) {
-            task.list = res.data.list;
-        } else {
-            task.list = [];
+            task.list = task.list.concat(res.data.list);
+            task.total = res.data.total;
         }
         setTask({ ...task });
     }
@@ -336,10 +357,6 @@ export function List() {
         setTask({ ...task });
     }
 
-    useEffect(() => {
-        getTask();
-    }, []);
-
     const userContext = useContext(UserContext);
     const navigate = useNavigate();
 
@@ -349,9 +366,9 @@ export function List() {
         } else {
             navigate('/');
         }
-    }, [userContext]);
+    }, [userContext, req]);
 
-    let [req, setReq] = useState({
+    let [form, setForm] = useState({
         input: {
             prompt: '',
             text: {
@@ -385,8 +402,8 @@ export function List() {
         }
         switch(type) {
             case 1:
-                Object.assign(req, data);
-                setReq({...req});
+                Object.assign(form, data);
+                setForm({...form});
                 break;
             case 2:
                 addTask(data);
@@ -394,9 +411,17 @@ export function List() {
         }
     }
 
+    const onPagination = () => {
+        if (req.currPage * req.pageSize > task.total) {
+            return;
+        }
+        req.currPage += 1;
+        setReq({...req});
+    }
+
     return <Container>
-        <Panel className="side" data={req} submit={(e: any) => addTask(e)}></Panel>
-        <Content>
+        <Panel className="side" data={form} submit={(e: any) => addTask(e)}></Panel>
+        <div className="main">
             <Title>
                 <span className="text">支持下载或收藏，可通过管理画作进行删除，欢迎对创作点赞点踩并提出建议，助力模型不断进化。</span>
                 <span className="tool">
@@ -482,7 +507,10 @@ export function List() {
                     </Column>
                 </History>
             )}
-        </Content>
+            <Pagination>
+                {(req.currPage * req.pageSize) >= task.total ? <span>已经到底啦</span> : <button onClick={() => onPagination()}>点击查看更多</button>}
+            </Pagination>
+        </div>
         <Preview open={task.preview.open} current={task.preview.current} data={task.info} onClose={() => onPreview()}></Preview>
     </Container>
 }
