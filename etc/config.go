@@ -1,7 +1,7 @@
 package etc
 
 import (
-	"fmt"
+	"flag"
 
 	"github.com/spf13/viper"
 )
@@ -10,15 +10,15 @@ import (
 type Config struct {
 }
 
-// LoadFile 加载配置文件
+// 加载配置文件
 func (t *Config) LoadFile() {
-	// pwd, _ := os.Getwd()
-	viper.SetConfigName("config")
-	viper.SetConfigType("yaml")
-	viper.AddConfigPath("../etc")
+	var file string
+	flag.StringVar(&file, "c", "../etc/config.yaml", "配置文件")
+	flag.StringVar(&file, "config", "../etc/config.yaml", "配置文件")
+	flag.Parse()
+	viper.SetConfigFile(file)
 	err := viper.ReadInConfig()
 	if err != nil {
-		err = fmt.Errorf("Fatal error config file: %s", err)
 		panic(err)
 	}
 }

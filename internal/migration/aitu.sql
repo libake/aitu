@@ -178,10 +178,10 @@ CREATE TABLE user (
   birthday timestamp COMMENT '生日',
   gender smallint not null default 0 COMMENT '性别: 0-未知,1-男,2-女',
   status smallint not null default 1 COMMENT '0-冻结,1-正常',
-  last_time timestamp not null default (now()) COMMENT '最后登录时间',
+  last_time timestamp not null COMMENT '最后登录时间',
   power integer not null default 0 COMMENT '能量值',
-  update_at timestamp not null default (now()),
-  create_at timestamp not null default (now()) COMMENT '注册时间',
+  update_at timestamp not null,
+  create_at timestamp not null COMMENT '注册时间'
 )ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT '用户';
 
 
@@ -211,8 +211,8 @@ CREATE TABLE node (
   sort smallint not null default 255 COMMENT '排序',
   scope varchar(16) not null default 0 COMMENT '范围',
   status smallint not null default 1 COMMENT '状态:1-启用,0-禁用',
-  update_at timestamp not null default (now()),
-  create_at timestamp not null default (now())
+  update_at timestamp not null,
+  create_at timestamp not null
 )ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT '节点';
 
 
@@ -230,8 +230,8 @@ CREATE TABLE category (
   status smallint not null default 1 COMMENT '状态:0-禁用,1-启用',
   platform varchar(32) not null default 'web' COMMENT '平台',
   parent_id bigint not null default 0 COMMENT '父id',
-  update_at timestamp not null default (now()),
-  create_at timestamp not null default (now())
+  update_at timestamp not null,
+  create_at timestamp not null
 )ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT '分类';
 
 
@@ -247,8 +247,8 @@ CREATE TABLE template (
   sort smallint not null default 0 COMMENT '排序',
   status smallint not null default 1 COMMENT '状态:0-禁用,1-启用',
   category_id bigint not null default 0 COMMENT '归属分类',
-  update_at timestamp not null default (now()),
-  create_at timestamp not null default (now())
+  update_at timestamp not null,
+  create_at timestamp not null
 )ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT '模板';
 
 
@@ -266,6 +266,6 @@ CREATE TABLE task (
   task_type varchar(128) not null default '' COMMENT '类型',
   other json COMMENT '扩展字段',
   user_id bigint not null default 0 COMMENT '归属用户',
-  update_at timestamp not null default (now()),
-  create_at timestamp not null default (now())
+  update_at timestamp not null,
+  create_at timestamp not null
 )ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT '任务';
