@@ -1,15 +1,16 @@
 {
   "name": "gallery",
   "private": true,
-  "version": "2.0.0",
+  "version": "1.0.0",
   "type": "module",
   "scripts": {
     "serve": "vite",
+    "build:test": "tsc && vite build --mode test",
     "build": "tsc && vite build",
     "preview": "vite preview"
   },
   "dependencies": {
-    "antd": "^5.17.0",
+    "antd": "^5.3.1",
     "core": "workspace:*",
     "dayjs": "^1.11.7",
     "mitt": "^3.0.1",

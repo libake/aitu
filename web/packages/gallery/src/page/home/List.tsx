@@ -11,7 +11,7 @@ import { Footer } from "../common";
 const Container = styled.div`
     display: grid;
     margin-top: 52px;
-    background-color: ${props => props.theme.backgroundColor};
+    background-color: var(--background-color);
 `;
 const Title = styled.div`
     display: flex;
@@ -20,7 +20,7 @@ const Title = styled.div`
     padding: 16px 0;
     color: #fff;
     z-index: 100;
-    background-color: ${props => props.theme.backgroundColor};
+    background-color: var(--background-color);
 
     .logo {
         margin-bottom: 20px;
@@ -67,11 +67,11 @@ const Title = styled.div`
 
     .primary {
         color: #333;
-        background-color: ${props => props.theme.primaryColor};
+        background-color: var(--primary-color);
     }
 
     .primary:hover {
-        background-color: ${props => props.theme.secondaryColor};
+        background-color: var(--text-color-secondary);
     }
 `
 const Content = styled.div`
@@ -88,7 +88,7 @@ const Card = styled.div`
     box-sizing: border-box;
 
     &:hover {
-        border: 1px solid ${props => props.theme.primaryColor};
+        border: 1px solid var(--primary-color);
         box-shadow: 0 2px 20px 0 hsla(0,0%,100%,.4);
 
         .prompt {

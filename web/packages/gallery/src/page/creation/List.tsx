@@ -16,7 +16,7 @@ const Container = styled.div`
     grid-template-columns: 1fr;
     margin: 52px 0 0;
     min-height: calc(100vh - 52px);
-    background-color: ${props => props.theme.backgroundColor};
+    background-color: var(--background-color);
 
     .side {
         position: fixed;
@@ -129,7 +129,7 @@ const Image = styled.div`
     cursor: pointer;
     
     &:hover {
-        border-color: ${props => props.theme.primaryColor};
+        border-color: var(--primary-color);
 
         .mark {
             opacity: 1;

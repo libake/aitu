@@ -18,7 +18,7 @@ const Container = styled.div`
         color: #333;
         font-size: 10px;
         border-radius: 8px 0;
-        background-color: ${props => props.theme.primaryColor};
+        background-color: var(--primary-color);
     }
 
     .box {

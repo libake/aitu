@@ -143,7 +143,7 @@ const Image = styled.div`
     cursor: pointer;
     
     &:hover {
-        border-color: ${props => props.theme.primaryColor};
+        border-color: var(--primary-color);
 
         .mark {
             opacity: 1;

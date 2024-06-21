@@ -2,7 +2,7 @@ import styled from "styled-components";
 
 const Container = styled.div`
     color: #fff;
-    background-color: ${props => props.theme.backgroundColor};
+    background-color: var(--background-color);
 
     a {
         display: flex;

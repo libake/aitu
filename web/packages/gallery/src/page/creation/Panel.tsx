@@ -113,7 +113,7 @@ const Container = styled.div`
 
         &.active {
             color: #333;
-            background-color: ${props => props.theme.primaryColor};
+            background-color: var(--primary-color);
         }
     }
 
@@ -185,7 +185,7 @@ const Button = styled.button`
     width: 100%;
     border-radius: 24px;
     color: #333;
-    background-color: ${props => props.theme.primaryColor};
+    background-color: var(--primary-color);
 `
 const TextImage = styled.div`
     position: relative;
@@ -212,7 +212,7 @@ const TextImage = styled.div`
             }
 
             &.active {
-                border-color: ${props => props.theme.primaryColor};
+                border-color: var(--primary-color);
             }
             
             img {
@@ -303,7 +303,7 @@ const Popup = styled.div`
                 content: "";
                 width: 2px;
                 height: 20px;
-                background-color: ${props => props.theme.primaryColor};
+                background-color: var(--primary-color);
             }
         }
     }
@@ -334,7 +334,7 @@ const Card = styled.div`
     }
 
     &.active {
-        border-color: ${props => props.theme.primaryColor};
+        border-color: var(--primary-color);
     }
     
     img {

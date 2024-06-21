@@ -1,6 +1,6 @@
 import { useContext, useState } from "react";
 import { Link, NavLink, Outlet } from "react-router-dom";
-import styled, { ThemeProvider } from "styled-components";
+import styled from "styled-components";
 import { Dropdown, message, Popover, Button } from "antd";
 
 import { srv } from "core";
@@ -151,25 +151,6 @@ const Modal = styled.div`
 `
 
 export function Layout() {
-    const theme = {
-        dark: {
-            primaryColor: "#4bfef1", // 主色
-            secondaryColor: "#0fbdb4", // 辅色
-            linkColor: "#4bfef1", // 链接色
-            successColor: "#52c41a", // 成功色
-            warningColor: "#faad14", // 警告色
-            errorColor: "#f5222d", // 错误色
-            fontSize: "14px", // 主字号
-            headingColor: "rgba(0,0,0,.85)", // 标题色
-            textColor: "rgba(0,0,0,.65)", // 主文本色
-            textColorSecondary: "rgba(0,0,0,.45)", // 次文本色
-            backgroundColor: "#0b0f14",
-        },
-    }
-    const currentTheme = {
-        ...theme.dark,
-    }
-
     const [user, setUser] = useState({
         open: false,
         agree: false,
@@ -219,7 +200,7 @@ export function Layout() {
         }, 500);
     });
 
-    return <ThemeProvider theme={currentTheme}>
+    return <>
         <Header>
             <NavLeft>
                 <a className="logo">
@@ -288,5 +269,5 @@ export function Layout() {
             </div>
         </Modal>
         }
-    </ThemeProvider>
+    </>
 }

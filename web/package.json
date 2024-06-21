@@ -1,7 +1,7 @@
 {
-  "name": "ai-gallery",
+  "name": "aitu",
   "version": "1.0.0",
-  "description": "",
+  "description": "喵闪ai",
   "workspaces": {
     "packages": [
       "packages/*"

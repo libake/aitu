@@ -44,7 +44,7 @@ const Container = styled.div`
 
             &.active {
                 color: #333;
-                background-color: ${props => props.theme.primaryColor};
+                background-color: var(--primary-color);
             }
         }
     }
@@ -137,7 +137,7 @@ const Button = styled.button`
     width: 100%;
     border-radius: 24px;
     color: #333;
-    background-color: ${props => props.theme.primaryColor};
+    background-color: var(--primary-color);
 `
 const Popup = styled.div`
     position: fixed;
@@ -187,7 +187,7 @@ const Popup = styled.div`
         .active {
             border-radius: 4px;
             color: var(--heading-text-color);
-            background-color: ${props => props.theme.primaryColor};
+            background-color: var(--primary-color);
         }
     }
 
