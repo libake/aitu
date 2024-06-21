@@ -3,11 +3,12 @@ import { useEffect, useState, useContext } from "react";
 import { Popconfirm, Spin, message } from "antd";
 
 import { Icon } from "@/common";
-import { dao, dto, srv } from "core";
+import { dao, srv } from "core";
 import { Panel } from './Panel';
 import { Preview } from "./Preview";
 import { UserContext } from "@/context";
 import { useNavigate } from "react-router-dom";
+import { Footer } from "../common";
 
 
 const Container = styled.div`
@@ -23,7 +24,16 @@ const Container = styled.div`
     }
 
     .main {
-        margin: 0 36px 0 420px;
+        position: relative;
+        margin: 0 36px 112px 420px;
+        min-height: 100%;
+
+        .footer {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+        }
     }
 `;
 const Title = styled.div`
@@ -51,7 +61,10 @@ const Title = styled.div`
         display: flex;
         align-items: center;
         gap: 8px;
+    }
 
+    .icon {
+        cursor: pointer;
     }
 `
 const Time = styled.div`
@@ -287,6 +300,10 @@ export function List() {
     });
 
     const getTask = async () => {
+        if (req.currPage == 1) {
+            task.list = [];
+            task.total = 0;
+        }
         let data = {
             ...req,
         }
@@ -323,8 +340,9 @@ export function List() {
         }
         let res = await srv.Task.delete(data);
         if (res.code == 1000) {
+            setTask({...task, editable: false, keys: []});
+            setReq({...req, currPage: 1});
             message.success('删除成功');
-            getTask();
         } else {
             message.error(res.desc);
         }
@@ -395,14 +413,10 @@ export function List() {
         <div className="main">
             <Title>
                 <span className="text">支持下载或收藏，可通过管理画作进行删除，欢迎对创作点赞点踩并提出建议，助力模型不断进化。</span>
-                <span className="tool">
-                    {task.editable ? <>
-                        <a onClick={() => setTask({ ...task, editable: false })}>取消</a>
-                        <a onClick={() => delTask()}>删除{task.keys.length}条生成记录</a>
-                    </> : <div onClick={() => setTask({ ...task, editable: true })}>
-                        <Icon src="/icon/modular.svg" text="管理画作" />
-                    </div>}
-                </span>
+                {task.editable ? <div className="tool">
+                    <a onClick={() => setTask({ ...task, editable: false })}>取消</a>
+                    <a onClick={() => delTask()}>删除{task.keys.length}条生成记录</a>
+                </div> : <Icon className="icon" onClick={() => setTask({ ...task, editable: true })} src="/icon/modular.svg" text="管理画作" />}
             </Title>
             {task.info.taskStatus == 'PENDING' && <Progress>
                 <div className="hint">AI正在生成中...</div>
@@ -473,6 +487,7 @@ export function List() {
             <Pagination>
                 {req.currPage == task.total ? <span>已经到底啦</span> : <button onClick={() => onPagination()}>点击查看更多</button>}
             </Pagination>
+            <Footer className="footer" />
         </div>
         <Preview open={task.preview.open} current={task.preview.current} data={task.info} onClose={() => onPreview()}></Preview>
     </Container>

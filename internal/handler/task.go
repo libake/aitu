@@ -50,8 +50,9 @@ func (t *Task) Create(ctx *gin.Context) {
 	}
 	task.UserID = user.ID
 
+	url := "https://dashscope.aliyuncs.com/api/v1/services/aigc/text2image/image-synthesis"
 	body, _ := json.Marshal(task)
-	req, err := http.NewRequest(http.MethodPost, "https://dashscope.aliyuncs.com/api/v1/services/aigc/text2image/image-synthesis", bytes.NewBuffer(body))
+	req, err := http.NewRequest(http.MethodPost, url, bytes.NewBuffer(body))
 	if err != nil {
 		ctx.JSON(http.StatusOK, gin.H{
 			"code": 2031,
@@ -123,7 +124,8 @@ func (t *Task) WordArt(ctx *gin.Context) {
 	}
 	body, _ := json.Marshal(task)
 
-	req, err := http.NewRequest(http.MethodPost, "https://dashscope.aliyuncs.com/api/v1/services/aigc/wordart/texture", bytes.NewBuffer(body))
+	url := "https://dashscope.aliyuncs.com/api/v1/services/aigc/wordart/texture"
+	req, err := http.NewRequest(http.MethodPost, url, bytes.NewBuffer(body))
 	if err != nil {
 		ctx.JSON(http.StatusOK, gin.H{
 			"code": 2031,

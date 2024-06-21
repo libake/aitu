@@ -6,6 +6,7 @@ import { dao, srv } from "core";
 import { Icon } from "@/common";
 import { Preview } from './Preview';
 import { Link } from "react-router-dom";
+import { Footer } from "../common";
 
 const Container = styled.div`
     display: grid;
@@ -203,7 +204,7 @@ export function List() {
     });
     let [req, setReq] = useState({
         lastId: 0,
-        pageSize: 200,
+        pageSize: 50,
     });
 
     const getRecommend = async () => {
@@ -295,6 +296,7 @@ export function List() {
         <Pagination>
             {req.lastId == recommend.total ? <span>已经到底啦</span> : <button onClick={() => onPagination()}>点击查看更多</button>}
         </Pagination>
+        <Footer />
         <Preview open={recommend.open} data={recommend.info} onClose={() => onPreview()}></Preview>
         <Spin spinning={recommend.spinning} />
     </Container>

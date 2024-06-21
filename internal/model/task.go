@@ -33,10 +33,9 @@ func (t *Task) TableName() string {
 
 // 新增任务
 func (t *Task) Create() (err error) {
-	now := time.Now()
+	t.CreateAt = time.Now()
 	t.ID = util.NewMist().Generate()
-	t.UpdateAt = now
-	t.CreateAt = now
+	t.UpdateAt = t.CreateAt
 	has, err := db.NewRdb().Insert(t)
 	if err != nil || has == 0 {
 		err = errors.New(err.Error())

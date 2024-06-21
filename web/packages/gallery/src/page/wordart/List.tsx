@@ -3,11 +3,12 @@ import { useContext, useEffect, useState } from "react";
 import { Popconfirm, Spin, message } from "antd";
 
 import { Icon } from "@/common";
-import { dao, dto, srv } from "core";
+import { dao, srv } from "core";
 import { Panel } from './Panel';
 import { Preview } from "./Preview";
 import { UserContext } from "@/context";
 import { useNavigate } from "react-router-dom";
+import { Footer } from "../common";
 
 
 const Container = styled.div`
@@ -23,7 +24,16 @@ const Container = styled.div`
     }
 
     .main {
-        margin: 0 36px 0 420px;
+        position: relative;
+        margin: 0 36px 112px 420px;
+        min-height: 100%;
+
+        .footer {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+        }
     }
 `;
 const Title = styled.div`
@@ -244,7 +254,6 @@ export function List() {
             open: false,
             current: 0,
         },
-        open: false,
         percent: 0,
     });
 
@@ -305,6 +314,10 @@ export function List() {
     });
 
     const getTask = async () => {
+        if (req.currPage == 1) {
+            task.list = [];
+            task.total = 0;
+        }
         let data = {
             ...req,
         }
@@ -341,8 +354,9 @@ export function List() {
         }
         let res = await srv.Task.delete(data);
         if (res.code == 1000) {
+            setTask({...task, editable: false, keys: []});
+            setReq({...req, currPage: 1});
             message.success('删除成功');
-            getTask();
         } else {
             message.error(res.desc);
         }
@@ -474,7 +488,7 @@ export function List() {
                             <a onClick={() => onReuse(v, 2)}>
                                 <Icon src="/icon/refresh.svg" text="再次生成" />
                             </a>
-                            <Popconfirm
+                            {/* <Popconfirm
                                 title="确定要删除记录吗？"
                                 description="删除后的记录不可恢复"
                                 onConfirm={() => delTask(v)}
@@ -482,7 +496,7 @@ export function List() {
                                 cancelText="取消"
                             >
                                 <Icon src="/icon/ashbin.svg" />
-                            </Popconfirm>
+                            </Popconfirm> */}
                         </div>
                     </Head>
                     <Column>
@@ -510,6 +524,7 @@ export function List() {
             <Pagination>
                 {(req.currPage * req.pageSize) >= task.total ? <span>已经到底啦</span> : <button onClick={() => onPagination()}>点击查看更多</button>}
             </Pagination>
+            <Footer className="footer" />
         </div>
         <Preview open={task.preview.open} current={task.preview.current} data={task.info} onClose={() => onPreview()}></Preview>
     </Container>
