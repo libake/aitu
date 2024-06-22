@@ -3,6 +3,7 @@ package handler
 import (
 	"bytes"
 	"encoding/json"
+	"errors"
 	"io"
 	"net/http"
 	"time"
@@ -12,6 +13,7 @@ import (
 	"aitu.cn/internal/model"
 	"aitu.cn/util"
 	"github.com/gin-gonic/gin"
+	"github.com/mitchellh/mapstructure"
 	"github.com/spf13/viper"
 )
 
@@ -32,6 +34,7 @@ type Task struct {
 func (t *Task) Create(ctx *gin.Context) {
 	var (
 		task model.Task
+		n    int32
 	)
 
 	err := ctx.BindJSON(&task)
@@ -43,59 +46,32 @@ func (t *Task) Create(ctx *gin.Context) {
 	user, err := middleware.ParseToken(ctx)
 	if err != nil {
 		ctx.JSON(http.StatusOK, gin.H{
-			"code": 3073,
+			"code": 3040,
 			"desc": err.Error(),
 		})
 		return
 	}
 	task.UserID = user.ID
 
-	url := "https://dashscope.aliyuncs.com/api/v1/services/aigc/text2image/image-synthesis"
-	body, _ := json.Marshal(task)
-	req, err := http.NewRequest(http.MethodPost, url, bytes.NewBuffer(body))
-	if err != nil {
-		ctx.JSON(http.StatusOK, gin.H{
-			"code": 2031,
-			"desc": "创建请求失败",
-		})
-		return
-	}
-	req.Header.Set("Content-Type", "application/json")
-	req.Header.Set("Authorization", viper.GetString("aliyun.api-key"))
-	req.Header.Set("X-DashScope-Async", "enable")
-
-	cli := &http.Client{Timeout: 5 * time.Second}
-	res, err := cli.Do(req)
-	if err != nil {
-		ctx.JSON(http.StatusOK, gin.H{
-			"code": 2032,
-			"desc": "发送请求失败",
-		})
-		return
-	}
-	defer res.Body.Close()
-
-	resBody, err := io.ReadAll(res.Body)
-	if err != nil {
-		ctx.JSON(http.StatusOK, gin.H{
-			"code": 2033,
-			"desc": "读取响应失败",
-		})
-		return
-	}
-
-	err = json.Unmarshal(resBody, &t)
+	n, err = t.checkPower(task)
 	if err != nil {
 		ctx.JSON(http.StatusOK, gin.H{
 			"code": 3040,
-			"desc": "参数解析失败",
+			"desc": err.Error(),
 		})
+		return
+	}
+
+	url := "https://dashscope.aliyuncs.com/api/v1/services/aigc/text2image/image-synthesis"
+	body, _ := json.Marshal(task)
+	err = t.newRequest(url, body, ctx)
+	if err != nil {
 		return
 	}
 	task.TaskID = t.Output.TaskID
 	task.TaskStatus = t.Output.TaskStatus
 
-	err = task.Create()
+	err = task.Create(n)
 	if err != nil {
 		ctx.JSON(http.StatusOK, gin.H{
 			"code": 3051,
@@ -115,6 +91,7 @@ func (t *Task) Create(ctx *gin.Context) {
 func (t *Task) WordArt(ctx *gin.Context) {
 	var (
 		task model.Task
+		n    int32
 	)
 
 	err := ctx.BindJSON(&task)
@@ -122,9 +99,52 @@ func (t *Task) WordArt(ctx *gin.Context) {
 		util.Fail(3040, err.Error(), ctx)
 		return
 	}
-	body, _ := json.Marshal(task)
+
+	user, err := middleware.ParseToken(ctx)
+	if err != nil {
+		ctx.JSON(http.StatusOK, gin.H{
+			"code": 3073,
+			"desc": err.Error(),
+		})
+		return
+	}
+	task.UserID = user.ID
+
+	n, err = t.checkPower(task)
+	if err != nil {
+		ctx.JSON(http.StatusOK, gin.H{
+			"code": 3040,
+			"desc": err.Error(),
+		})
+		return
+	}
 
 	url := "https://dashscope.aliyuncs.com/api/v1/services/aigc/wordart/texture"
+	body, _ := json.Marshal(task)
+	err = t.newRequest(url, body, ctx)
+	if err != nil {
+		return
+	}
+	task.TaskID = t.Output.TaskID
+	task.TaskStatus = t.Output.TaskStatus
+
+	err = task.Create(n)
+	if err != nil {
+		ctx.JSON(http.StatusOK, gin.H{
+			"code": 3051,
+			"desc": err.Error(),
+		})
+		return
+	}
+
+	ctx.JSON(http.StatusOK, gin.H{
+		"code": 1000,
+		"data": t,
+		"desc": "Success",
+	})
+}
+
+func (t *Task) newRequest(url string, body []byte, ctx *gin.Context) (err error) {
 	req, err := http.NewRequest(http.MethodPost, url, bytes.NewBuffer(body))
 	if err != nil {
 		ctx.JSON(http.StatusOK, gin.H{
@@ -165,33 +185,7 @@ func (t *Task) WordArt(ctx *gin.Context) {
 		})
 		return
 	}
-	task.TaskID = t.Output.TaskID
-	task.TaskStatus = t.Output.TaskStatus
-
-	user, err := middleware.ParseToken(ctx)
-	if err != nil {
-		ctx.JSON(http.StatusOK, gin.H{
-			"code": 3073,
-			"desc": err.Error(),
-		})
-		return
-	}
-	task.UserID = user.ID
-
-	err = task.Create()
-	if err != nil {
-		ctx.JSON(http.StatusOK, gin.H{
-			"code": 3051,
-			"desc": err.Error(),
-		})
-		return
-	}
-
-	ctx.JSON(http.StatusOK, gin.H{
-		"code": 1000,
-		"data": t,
-		"desc": "Success",
-	})
+	return nil
 }
 
 func (t *Task) Delete(ctx *gin.Context) {
@@ -404,4 +398,28 @@ func (t Task) Recommend(ctx *gin.Context) {
 		"data": ret,
 		"desc": "Success",
 	})
+}
+
+// 检查能量值
+func (t *Task) checkPower(task model.Task) (n int32, err error) {
+	var (
+		parameters struct {
+			N int32 `json:"n"`
+		}
+		user model.User
+	)
+
+	err = mapstructure.Decode(task.Parameters, &parameters)
+	if nil != err {
+		err = errors.New("解析 parameters 失败")
+		return
+	}
+	user.ID = task.UserID
+	err = user.Info()
+	if parameters.N > user.Power {
+		err = errors.New("能量值不够")
+		return
+	}
+	n = parameters.N
+	return
 }

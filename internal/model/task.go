@@ -32,16 +32,30 @@ func (t *Task) TableName() string {
 }
 
 // 新增任务
-func (t *Task) Create() (err error) {
+func (t *Task) Create(n int32) (err error) {
 	t.CreateAt = time.Now()
 	t.ID = util.NewMist().Generate()
 	t.UpdateAt = t.CreateAt
-	has, err := db.NewRdb().Insert(t)
+
+	session := db.NewRdb().NewSession()
+	defer session.Close()
+
+	if err = session.Begin(); err != nil {
+		err = errors.New("开启事务失败")
+		return
+	}
+
+	has, err := session.Insert(t)
 	if err != nil || has == 0 {
 		err = errors.New(err.Error())
 	}
 
-	return
+	_, err = session.Exec("update user set power=power-? where id=?", n, t.UserID)
+	if err != nil || has == 0 {
+		err = errors.New(err.Error())
+	}
+
+	return session.Commit()
 }
 
 // 删除任务
@@ -58,7 +72,7 @@ func (t *Task) Delete(args []int64) (err error) {
 func (t *Task) Update() error {
 	has, err := db.NewRdb().Where("id=? OR task_id=?", t.ID, t.TaskID).Update(t)
 	if err != nil || has == 0 {
-		err = errors.New("update fail")
+		err = errors.New("更新失败")
 	}
 	return err
 }
