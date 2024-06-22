@@ -250,8 +250,8 @@ export function List() {
         }
         let res = await srv.Task.info(data);
         if (res.code == 1000) {
-            task.percent = 100;
             Object.assign(task.info, res.data);
+            task.percent = 0;
             task.list = [];
             task.total = 0;
             setTask({...task});
@@ -292,7 +292,7 @@ export function List() {
 
     let [req, setReq] = useState({
         currPage: 1,
-        pageSize: 1,
+        pageSize: 10,
         queryBy: [
             { col: 'taskType', val: 'text_to_image' },
             { col: 'taskStatus', val: 'SUCCEEDED' },
@@ -451,7 +451,7 @@ export function List() {
                             <a onClick={() => onReuse(v, 2)}>
                                 <Icon src="/icon/refresh.svg" text="再次生成" />
                             </a>
-                            <Popconfirm
+                            {/* <Popconfirm
                                 title="确定要删除记录吗？"
                                 description="删除后的记录不可恢复"
                                 onConfirm={() => delTask(v)}
@@ -459,7 +459,7 @@ export function List() {
                                 cancelText="取消"
                             >
                                 <Icon src="/icon/ashbin.svg" />
-                            </Popconfirm>
+                            </Popconfirm> */}
                         </div>
                     </Head>
                     <Column>
@@ -485,7 +485,7 @@ export function List() {
                 </History>
             )}
             <Pagination>
-                {req.currPage == task.total ? <span>已经到底啦</span> : <button onClick={() => onPagination()}>点击查看更多</button>}
+                {(req.currPage * req.pageSize) >= task.total ? <span>已经到底啦</span> : <button onClick={() => onPagination()}>点击查看更多</button>}
             </Pagination>
             <Footer className="footer" />
         </div>

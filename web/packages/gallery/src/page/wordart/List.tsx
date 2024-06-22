@@ -263,8 +263,8 @@ export function List() {
         }
         let res = await srv.Task.info(data);
         if (res.code == 1000) {
-            task.percent = 100;
             Object.assign(task.info, res.data);
+            task.percent = 0;
             task.total = 0;
             task.list = [];
             setTask({ ...task });

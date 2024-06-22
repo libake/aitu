@@ -48,9 +48,7 @@ const columns: TableColumnsType<dao.Task> = [{
         let items = r.results.map(m => {
             return m.url;
         });
-        return <Image.PreviewGroup items={items}>
-            <Image width={60} src={items[0]} />
-        </Image.PreviewGroup>
+        return <Image width={60} src={items[0]} />
     }
 }, {
     title: '更新时间',

@@ -28,14 +28,7 @@ export function List() {
             dataIndex: 'image',
             width: 100,
             render: (f: string, r: dao.Template) => {
-                return <Image.PreviewGroup
-                preview={{
-                  onChange: (current, prev) => console.log(`current index: ${current}, prev index: ${prev}`),
-                }}
-                items={[r.innerImage, r.outerImage]}
-              >
-                <Image width={60} src={r.innerImage || r.outerImage} />
-              </Image.PreviewGroup>;
+                return <Image width={60} src={r.innerImage || r.outerImage} />
             }
         }, {
             title: '状态',

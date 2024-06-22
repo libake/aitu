@@ -1,4 +1,34 @@
-全局编码
+## 环境准备
+安装 golang、nodejs 环境，然后将项目从 gitee 拉取下来，进入项目根目录运行 go get 安装 golang 相关的依赖，安装完成进入 web 下安装前端相关依赖 pnpm i 完成后分别用命令将前后端跑起来。
+
+
+## 后端打包
+
+在项目根目录下有一个 makefile 的编译配置文件，可以根据平台编译得到对应的二进制可执行文件。
+例如要编译 Linux 下的可执行文件运行 make linux 编译完成生成的二制文件在bin下，如下：
+
+```base
+cd aitu.cn
+make linux
+```
+
+## 前端打包
+
+进入项目根目录的 web 目录下，运行 pnpm build:gly-prod，会在各自目录下生成 dist 目录，将 dist 拷贝到服务器上进行部署。 
+
+```base
+cd web
+# 前台打包
+pnpm build:gly-prod
+
+# 后台打包
+pnpm build:adm-prod
+
+```
+
+<p style="color: red">*注：以上命令都是在终端下运行，如果您使用的是 windows 请用git bash(安装了git 的话都带有git bash)，powershell 有些命令是用不了的。</p>
+
+## 全局编码
 
 > 归类编码(10) + 业务编码(00) = 返回码(1000)
 

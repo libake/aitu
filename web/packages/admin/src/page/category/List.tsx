@@ -28,14 +28,7 @@ export function List() {
             dataIndex: 'icon',
             width: 100,
             render: (f: string) => {
-                return <Image.PreviewGroup
-                preview={{
-                  onChange: (current, prev) => console.log(`current index: ${current}, prev index: ${prev}`),
-                }}
-                items={[f]}
-              >
-                <Image width={60} src={f} />
-              </Image.PreviewGroup>;
+                return <Image width={60} src={f} />
             }
         }, {
             title: '场景',
@@ -195,7 +188,7 @@ export function List() {
     const setStatus = async (r: dao.Category) => {
         let data = {
             id: r.id,
-            status: Number(r.status),
+            status: Number(!r.status),
         };
         let res = await srv.Category.setStatus(data);
         if (res.code == 1000) {
