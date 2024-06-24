@@ -348,6 +348,7 @@ export function Panel(props: IProps) {
         open: false,
         styleType: '风格模板',
         prompt: '',
+        random: 0,
     });
 
     const getCategory = async () => {
@@ -355,7 +356,8 @@ export function Panel(props: IProps) {
             currPage: 1,
             pageSize: 1000,
             queryBy: [
-                {col:'scene', val: 'word-style'}
+                {col:'scene', val: 'word-style'},
+                {col:'status', val: 1}
             ]
         }
         let res = await srv.Category.list(data);
@@ -396,12 +398,10 @@ export function Panel(props: IProps) {
     }
 
     const onPrompt = () => {
-        let len = category.info.prompt.length;
-        if (len == 0) {
-            return;
+        category.random = category.info.prompt.length - category.random - 1;
+        if (category.random < 0) {
+            category.random = 0;
         }
-        let random = Math.ceil(Math.random() * len) - 1;
-        category.prompt = category.info.prompt[random];
         setCategory({...category});
     }
 
@@ -564,7 +564,7 @@ export function Panel(props: IProps) {
                     {category.info.prompt && <div className="cell">
                         <div className="cell-text">
                             <label>示例：</label>
-                            <span onClick={() => setReq({...req, input: { ...req.input, prompt: category.prompt}})}>{category.prompt}</span>
+                            <span onClick={() => setReq({...req, input: { ...req.input, prompt: category.info.prompt[category.random]}})}>{category.info.prompt[category.random]}</span>
                         </div>
                         <Icon className="cell-icon" src="/icon/update.svg" onClick={() => onPrompt()} />
                     </div>}

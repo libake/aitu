@@ -16,6 +16,7 @@ type Template struct {
 	Name       string    `xorm:"name varchar(64)" json:"name" validate:"required"`
 	InnerImage string    `xorm:"inner_image text" json:"innerImage"`
 	OuterImage string    `xorm:"outer_image text" json:"outerImage"`
+	Prompt     []string  `xorm:"prompt json" json:"prompt"`
 	Sort       int8      `xorm:"sort int" json:"sort"`
 	Status     int8      `xorm:"status int" json:"status"`
 	CategoryID int64     `xorm:"category_id int" json:"categoryId"`
@@ -96,6 +97,9 @@ func (t *Template) List(req dto.Request) (list []Template, total int64, err erro
 			args = append(args, v.Val)
 		case "categoryId":
 			query += " AND category_id=?"
+			args = append(args, v.Val)
+		case "status":
+			query += " AND status=?"
 			args = append(args, v.Val)
 		}
 	}

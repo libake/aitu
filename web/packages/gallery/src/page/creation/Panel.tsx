@@ -94,6 +94,60 @@ const Container = styled.div`
         cursor: pointer;
     }
 
+    .tpl {
+        position: relative;
+        padding: 16px;
+        background-color: #0f1319;
+        border-radius: 12px;
+
+        .item {
+            background-color: #2d3240;
+            border-radius: 4px;
+            cursor: pointer;
+            border-radius: 4px;
+            box-sizing: border-box;
+            overflow: hidden;
+            border: 1px solid transparent;
+
+            &:hover {
+                color: #fff;
+            }
+
+            &.active {
+                border-color: var(--primary-color);
+            }
+            
+            img {
+                width: 100%;
+            }
+
+            p {
+                margin: 0;
+                text-align: center;
+                white-space: nowrap;
+                font-size: 12px;
+                font-weight: 400;
+            }
+        }
+    }
+
+    .tpl-head {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        color: #fff;
+        font-size: 14px;
+        cursor: pointer;
+        margin-bottom: 16px;
+    }
+    
+    .tpl-body {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        grid-template-rows: repeat(2, auto);
+        gap: 16px;
+    }
+
     .size {
         display: grid;
         grid-template-columns: repeat(3, 1fr);
@@ -179,81 +233,26 @@ const Container = styled.div`
 
     .side-foot {
         padding: 24px;
+
+        button {
+            width: 100%;
+            border-radius: 24px;
+            color: #333;
+            background-color: var(--primary-color);
+        }
     }
 `;
-const Button = styled.button`
-    width: 100%;
-    border-radius: 24px;
-    color: #333;
-    background-color: var(--primary-color);
-`
 const TextImage = styled.div`
     position: relative;
     border: 1px dashed #2d3240;
     border-radius: 8px;
     color: #999;
     background-color: #0f1319;
-
-    .box {
-        position: relative;
-        border-top: 1px solid #252934;
-
-        .item {
-            background-color: #2d3240;
-            border-radius: 4px;
-            cursor: pointer;
-            border-radius: 4px;
-            box-sizing: border-box;
-            overflow: hidden;
-            border: 1px solid transparent;
-
-            &:hover {
-                color: #fff;
-            }
-
-            &.active {
-                border-color: var(--primary-color);
-            }
-            
-            img {
-                width: 100%;
-            }
-
-            p {
-                margin: 0;
-                text-align: center;
-                white-space: nowrap;
-                font-size: 12px;
-                font-weight: 400;
-            }
-        }
-    }
-
-    .box-head {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        height: 50px;
-        padding: 16px;
-        color: #fff;
-        font-size: 14px;
-        cursor: pointer;
-    }
-    
-    .box-body {
-        display: grid;
-        grid-template-columns: repeat(4, 1fr);
-        grid-template-rows: repeat(2, auto);
-        gap: 16px;
-        padding: 16px;
-    }
 `
 const Popup = styled.div`
     position: fixed;
     top: 76px;
     left: 396px;
-    width: 400px;
-    height: 600px;
     border-radius: 20px;
     overflow: hidden;
     background-color: #1d212c;
@@ -279,7 +278,7 @@ const Popup = styled.div`
     .popup-body {
         display: grid;
         grid-template-columns: 80px 1fr;
-        height: 100%;
+        min-height: 500px;
     }
 
     .tab-menu {
@@ -310,7 +309,7 @@ const Popup = styled.div`
 
     .tab-list {
         display: grid;
-        grid-template-columns: repeat(3, 1fr);
+        grid-template-columns: repeat(4, 80px);
         grid-template-rows: 100px;
         gap: 16px;
         padding: 16px;
@@ -321,7 +320,7 @@ const Popup = styled.div`
 `
 const Card = styled.div`
     display: grid;
-    grid-template-rows: 1fr 34px;
+    grid-template-rows: 1fr auto;
     background-color: #2d3240;
     cursor: pointer;
     border-radius: 4px;
@@ -416,9 +415,13 @@ export function Panel(props: IProps) {
     }
 
     const [template, setTemplate] = useState({
+        info: {
+            ...new dao.Template(),
+            prompt: ['大气，海盗船，满月航行，丙烯画'],
+        },
         list: new Array<dao.Template>(),
         collapse: true,
-        selectKeys: new Set<string>(),
+        random: 0,
     });
 
     const getTemplate = async (categoryId = 0) => {
@@ -441,19 +444,10 @@ export function Panel(props: IProps) {
         setTemplate({ ...template });
     }
 
-    // 咒语书
+    // 创意模板
     const onTemplate = (item: dao.Template) => {
-        if (!!req.input.prompt) {
-            template.selectKeys = new Set(req.input.prompt.split(','));
-        }
-        if (template.selectKeys.has(item.name)) {
-            template.selectKeys.delete(item.name);
-        } else {
-            template.selectKeys.add(item.name);
-        }
+        Object.assign(template.info, item);
         setTemplate({ ...template });
-        req.input.prompt = Array.from(template.selectKeys).join(',');
-        setReq({ ...req });
     }
 
     const onMode = (i: number) => {
@@ -473,7 +467,7 @@ export function Panel(props: IProps) {
             currPage: 1,
             pageSize: 100,
             queryBy: [
-                { col: 'scene', val: 'spell-book' }
+                { col: 'scene', val: 'creative-style' }
             ],
         }
         let res = await srv.Category.list(data);
@@ -498,13 +492,11 @@ export function Panel(props: IProps) {
     }
 
     const onPrompt = () => {
-        let len = category.info.prompt.length;
-        if (len == 0) {
-            return;
+        template.random = template.info.prompt.length - template.random - 1;
+        if (template.random < 0) {
+            template.random = 0;
         }
-        let random = Math.ceil(Math.random() * len) - 1;
-        category.prompt = category.info.prompt[random];
-        setCategory({ ...category });
+        setTemplate({ ...template });
     }
 
     const submit = () => {
@@ -545,44 +537,42 @@ export function Panel(props: IProps) {
                         name="prompt"
                         value={req.input.prompt}
                         rows={5}
+                        limit={500}
                         onChange={(v: string) => setReq({ ...req, input: { ...req.input, prompt: v } })}
                         placeholder="试试输入你心中的画面，尽量描述具体，可以尝试用一些风格修饰词辅助你的表达。"
                     ></TextArea>
-                    <div className="box">
-                        <div className="box-head" onClick={() => setTemplate({ ...template, collapse: !template.collapse })}>
-                            <div className="text">
-                                <Icon src="/icon/book.svg" text="咒语书" />
-                            </div>
-                            <Icon src="/icon/arrow-up-bold.svg" size="12px" />
-                        </div>
-                        <div className="box-body" style={{ display: template.collapse ? 'grid' : 'none' }}>
-                            {template.list.map((v, i) =>
-                                i < 5 && <Card className={template.selectKeys.has(v.name) ? ' active' : ''} key={i} onClick={() => onTemplate(v)}>
-                                    <picture className="card-body">
-                                        <img src={v.outerImage} />
-                                    </picture>
-                                    <div className="card-foot">{v.name}</div>
-                                </Card>
-                            )}
-                            <Card onClick={() => setCategory({ ...category, open: true })}>
-                                <picture className="card-body">
-                                    <img src="/O1CN01FU1617-132-132.jpg" />
-                                </picture>
-                                <div className="card-foot">更多咒语</div>
-                            </Card>
-                        </div>
-                    </div>
                 </TextImage>
-                <div className="demo">
+                {template.info.prompt.length > 0 && <div className="demo">
                     <div className="demo-info">
-                        <span>示例：</span>
+                        <Icon src="/icon/wand.svg" text="推荐：" />
                         <span
                             className="demo-word"
-                            onClick={() => setReq({ ...req, input: { ...req.input, prompt: category.prompt } })}
-                        >{category.prompt}</span>
+                            onClick={() => setReq({ ...req, input: { ...req.input, prompt: template.info.prompt[template.random] } })}
+                        >{template.info.prompt[template.random]}</span>
                     </div>
                     <div className="demo-tool">
                         <Icon src="/icon/refresh.svg" onClick={() => onPrompt()} />
+                    </div>
+                </div>}
+                <div className="tpl">
+                    <div className="tpl-head">
+                        <div className="text">创意模板</div>
+                    </div>
+                    <div className="tpl-body" style={{ display: template.collapse ? 'grid' : 'none' }}>
+                        {template.list.map((v, i) =>
+                            i < 5 && <Card className={template.info.id == v.id ? ' active' : ''} key={i} onClick={() => onTemplate(v)}>
+                                <picture className="card-body">
+                                    <img src={v.outerImage} />
+                                </picture>
+                                <div className="card-foot">{v.name}</div>
+                            </Card>
+                        )}
+                        <Card onClick={() => setCategory({ ...category, open: true })}>
+                            <picture className="card-body">
+                                <img src="/O1CN01FU1617-132-132.jpg" />
+                            </picture>
+                            <div className="card-foot">更多模板</div>
+                        </Card>
                     </div>
                 </div>
                 <Upload tag={{ text: '参考图', weak: true }} height="160px"></Upload>
@@ -637,12 +627,12 @@ export function Panel(props: IProps) {
             </>}
         </div>
         <div className="side-foot">
-            <Button onClick={() => submit()}>{mode.info.btnText}</Button>
+            <button onClick={() => submit()}>{mode.info.btnText}</button>
         </div>
-        {/* 咒语书弹窗 */}
+        {/* 创意模板弹窗 */}
         {category.open && ReactDOM.createPortal(<Popup>
             <div className="popup-head">
-                <Icon className="text" src="/icon/text.svg" text="咒语书" />
+                <div className="text">创意模板</div>
                 <Icon className="tool" src="/icon/close-bold.svg" onClick={() => setCategory({ ...category, open: false })} />
             </div>
             <div className="popup-body">
@@ -653,7 +643,7 @@ export function Panel(props: IProps) {
                 </div>
                 <div className="tab-list">
                     {template.list.map((v, i) =>
-                        <Card className={template.selectKeys.has(v.name) ? ' active' : ''} key={i} onClick={() => onTemplate(v)}>
+                        <Card className={template.info.id == v.id ? ' active' : ''} key={i} onClick={() => onTemplate(v)}>
                             <picture className="card-body">
                                 <img src={v.outerImage} alt="" />
                             </picture>

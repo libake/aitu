@@ -184,7 +184,7 @@ export function Preview(props: IProps) {
                         </div>
                         <div className="list-item">
                             <label>生成方式</label>
-                            <span>13555*877</span>
+                            <span>{'文本生成图像'}</span>
                         </div>
                         {info.taskType == 'text_to_image' &&
                             <div className="list-item">
@@ -210,7 +210,7 @@ export function Preview(props: IProps) {
                         }
                         <div className="list-item">
                             <label>图像比例</label>
-                            <span>1:1</span>
+                            {/* <span>{info.params}</span> */}
                         </div>
                         <div className="list-item">
                             <label>创作时间</label>

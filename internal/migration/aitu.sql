@@ -115,6 +115,7 @@ CREATE TABLE "template" (
   "name" varchar(64) not null default '',
   "inner_image" text not null default '',
   "outer_image" text not null default '',
+  "prompt" json not null default '[]',
   "sort" smallint not null default 0,
   "status" smallint not null default 1,
   "category_id" bigint not null default 0,
@@ -126,6 +127,7 @@ COMMENT ON COLUMN template.code IS '模板编码';
 COMMENT ON COLUMN template.name IS '模板名称';
 COMMENT ON COLUMN template.inner_image IS '内部:模板使用';
 COMMENT ON COLUMN template.outer_image IS '外部:封面或展示使用';
+COMMENT ON COLUMN template.prompt IS '提示语';
 COMMENT ON COLUMN template.sort IS '排序';
 COMMENT ON COLUMN template.status IS '状态:0-禁用,1-启用';
 COMMENT ON COLUMN template.category_id IS '归属分类';
@@ -244,6 +246,7 @@ CREATE TABLE template (
   name varchar(64) not null default '' COMMENT '模板名称',
   inner_image text COMMENT '内部:模板使用',
   outer_image text COMMENT '外部:封面或展示使用',
+  prompt json COMMENT '提示语',
   sort smallint not null default 0 COMMENT '排序',
   status smallint not null default 1 COMMENT '状态:0-禁用,1-启用',
   category_id bigint not null default 0 COMMENT '归属分类',

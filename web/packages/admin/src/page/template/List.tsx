@@ -28,7 +28,9 @@ export function List() {
             dataIndex: 'image',
             width: 100,
             render: (f: string, r: dao.Template) => {
-                return <Image width={60} src={r.innerImage || r.outerImage} />
+                return <Image.PreviewGroup>
+                    <Image width={60} src={r.innerImage || r.outerImage} />
+                </Image.PreviewGroup>
             }
         }, {
             title: '状态',
@@ -98,28 +100,31 @@ export function List() {
     }
 
     const [drawer, setDrawer] = useState({ open: false, title: '' });
-    const [categoryForm] = Form.useForm();
+    const [templateForm] = Form.useForm();
 
     const disTemplate = (item?: dao.Template) => {
         drawer.open = !drawer.open;
         if (!!item) {
             drawer.title = '编辑分类';
-            categoryForm.setFieldsValue(item);
+            templateForm.setFieldsValue(item);
         } else {
             drawer.title = '新增分类';
-            categoryForm.setFieldsValue(new dao.Template());
+            templateForm.setFieldsValue(new dao.Template());
         }
         setDrawer({ ...drawer });
     }
 
     const onTemplate = async () => {
-        let valid = await categoryForm.validateFields().catch(e => console.log(e));
+        let valid = await templateForm.validateFields().catch(e => console.log(e));
         if (!valid) {
             return;
         }
         let data = {
-            ...categoryForm.getFieldsValue(),
+            ...templateForm.getFieldsValue(),
         };
+        if (!Array.isArray(data.prompt)) {
+            data.prompt = data.prompt.split(',');
+        }
         let res: dto.Response;
         if (data.id > 0) {
             res = await srv.Template.update(data);
@@ -232,7 +237,7 @@ export function List() {
                     </Space>
                 }
             >
-                <Form form={categoryForm} layout="vertical">
+                <Form form={templateForm} layout="vertical">
                     <Form.Item
                         name="name"
                         label="名称"
@@ -254,6 +259,9 @@ export function List() {
                     </Form.Item>
                     <Form.Item name="id" hidden>
                         <Input />
+                    </Form.Item>
+                    <Form.Item name="prompt" label="提示语">
+                        <Input.TextArea />
                     </Form.Item>
                 </Form>
             </Drawer>

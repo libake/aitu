@@ -7,6 +7,7 @@ export class Template {
     categoryId: number;
     sort: number;
     status: number;
+    prompt: string[];
 
     constructor() {
         this.id = 0;
@@ -17,5 +18,6 @@ export class Template {
         this.categoryId = undefined!;
         this.sort = 0;
         this.status = 0;
+        this.prompt = [];
     }
 }

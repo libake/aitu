@@ -101,6 +101,9 @@ func (t *Category) List(req dto.Request) (list []Category, total int64, err erro
 		case "parentId":
 			query += " AND parent_id=?"
 			args = append(args, v.Val)
+		case "status":
+			query += " AND status=?"
+			args = append(args, v.Val)
 		}
 	}
 	query = strings.TrimLeft(query, " AND")
