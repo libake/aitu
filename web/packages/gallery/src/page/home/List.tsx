@@ -207,6 +207,10 @@ export function List() {
     });
 
     const getRecommend = async () => {
+        if (req.currPage == 1) {
+            recommend.list = [];
+            recommend.total = 0;
+        }
         recommend.spinning = true;
         setRecommend({ ...recommend });
         let data = {
@@ -215,11 +219,16 @@ export function List() {
         let res = await srv.Task.recommend(data);
         if (res.code == 1000) {
             recommend.total = Number(res.data.total);
+
             res.data.list.forEach((e: dao.TaskUser, i: number) => {
-                if (i < recommend.column) {
-                    recommend.list[i] = [e];
+                if (req.currPage == 1) {
+                    if (i < recommend.column) {
+                        recommend.list[i] = [e];
+                    } else {
+                        recommend.list[i % recommend.column].push(e);
+                    }
                 } else {
-                    recommend.list[i % recommend.column].push(e);
+                    recommend.list[i % recommend.column] = recommend.list[i % recommend.column].concat(e);
                 }
             });
         } else {
@@ -239,11 +248,11 @@ export function List() {
     }
 
     const onPagination = () => {
-        // req.currPage += req.pageSize;
-        // if (recommend.total != 0 && req.lastId > recommend.total) {
-        //     req.lastId = recommend.total;
-        // }
-        // setReq({...req});
+        if (req.currPage * req.pageSize > recommend.total) {
+            return;
+        }
+        req.currPage += 1;
+        setReq({...req});
     }
 
     useEffect(() => {
