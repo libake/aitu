@@ -26,9 +26,9 @@ const Container = styled.div`
             display: flex;
             justify-content: center;
             align-items: center;
+            margin: 20px 20px 0 0;
             width: 34px;
             height: 34px;
-            margin: 20px 20px 0 0;
             border-radius: 50%;
             background-color: #2d3240;
             cursor: pointer;
@@ -166,11 +166,9 @@ export function Preview(props: IProps) {
     return props.open ? ReactDOM.createPortal(
         <Container>
             <div className="preview-head">
-                <div className="close" onClick={close}>
-                    <Icon src="/icon/close.svg"></Icon>
-                </div>
+                <Icon className="close" onClick={close} src="/icon/close.svg" />
             </div>
-            <div className="preview-body" onClick={() => close()}>
+            <div className="preview-body">
                     <picture>
                         {info.results.length > 0 && <img src={info.results[0].url}  style={{transform: `scale(${zoom})`}} alt="" />}
                     </picture>

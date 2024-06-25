@@ -192,9 +192,7 @@ export function Preview(props: IProps) {
     return props.open ? ReactDOM.createPortal(
         <Container>
             <div className="preview-head">
-                <div className="close" onClick={close}>
-                    <Icon src="/icon/close.svg"></Icon>
-                </div>
+                <Icon className="close" onClick={close} src="/icon/close.svg" />
             </div>
             <div className="preview-body">
                 <picture>
