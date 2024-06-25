@@ -515,11 +515,11 @@ export function Panel(props: IProps) {
 
     return <Container className={props.className}>
         <div className="side-head">
-            <div className="info" onClick={() => setMode({ ...mode, collapse: !mode.collapse })}>
+            <div className="info">
                 <div className="text">
                     <Icon src={mode.info.icon} text={mode.info.text} size="16px" />
                 </div>
-                <Icon src={mode.collapse ? "/icon/arrow-up-bold.svg" : "/icon/arrow-down-bold.svg"} />
+                {/* <Icon src={mode.collapse ? "/icon/arrow-up-bold.svg" : "/icon/arrow-down-bold.svg"} /> */}
             </div>
             <div className="list" style={{ display: mode.collapse ? 'block' : 'none' }}>
                 {mode.list.map((v, i) =>
