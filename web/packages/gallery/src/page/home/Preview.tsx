@@ -49,11 +49,16 @@ const Container = styled.div`
         justify-content: flex-end;
 
         img {
-            max-width: 60vw;
+            max-width: 50vw;
             max-height: 70vh;
             border-radius: 12px;
             transition: all 0.3s;
         }
+    }
+
+    .list {
+        padding: 0 16px;
+        box-sizing: border-box;
     }
 
     .list-item {
@@ -84,11 +89,13 @@ const Container = styled.div`
         left: 0;
         right: 0;
 
-        button {
+        .btn {
+            cursor: pointer;
             display: flex;
             justify-content: center;
             align-items: center;
             height: 40px;
+            width: 124px;
             color: var(--heading-text-color);
             background-color: var(--primary-color);
             border-radius: 20px;
@@ -112,20 +119,6 @@ const Container = styled.div`
 
             a {
                 display: block;
-            }
-        }
-
-        .hide {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            background-color: #fff;
-
-            img {
-                filter: drop-shadow(#333 80px 0);
             }
         }
     }
@@ -209,23 +202,18 @@ export function Preview(props: IProps) {
             <div className="preview-foot">
                 <div className="tool">
                     <a onClick={(e) => { e.stopPropagation(); onZoom(1); }}>
-                        <Icon src="/icon/zoom-out.svg"></Icon>
+                        <Icon src="/icon/zoom-out.svg" />
                     </a>
                     <a onClick={() => onZoom(-1)}>
-                        <Icon src="/icon/zoom-in.svg"></Icon>
+                        <Icon src="/icon/zoom-in.svg" />
                     </a>
                     <a onClick={() => setZoom(1)}>
-                        <Icon src="/icon/update.svg"></Icon>
+                        <Icon src="/icon/update.svg" />
                     </a>
                 </div>
-                <button>
-                    <Icon src="/icon/menu.svg" text="复用创意"></Icon>
-                </button>
-                <Tooltip title="隐藏详情">
-                    <a className="hide">
-                        <Icon src="/icon/tips.svg"></Icon>
-                    </a>
-                </Tooltip>
+                {/* <button> */}
+                    <Icon className="btn" src="/icon/reuse.svg" text="复用创意" />
+                {/* </button> */}
             </div>
         </Container>,
         document.body

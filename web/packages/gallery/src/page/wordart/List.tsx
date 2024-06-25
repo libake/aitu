@@ -434,6 +434,13 @@ export function List() {
         setReq({...req});
     }
 
+    // 下载
+    const onDownload = (url: string) => {
+        let link = document.createElement('a');
+        link.href = url;
+        link.click();
+    }
+
     return <Container>
         <Panel className="side" data={form} submit={(e: any) => addTask(e)}></Panel>
         <div className="main">
@@ -512,7 +519,7 @@ export function List() {
                                         <Icon src="/icon/bad.svg" /> */}
                                     </div>
                                     <div className="tool-group">
-                                        <Icon src="/icon/download.svg" />
+                                        <Icon src="/icon/download.svg" onClick={() => onDownload(d.url)} />
                                         {/* <Icon src="/icon/favorite.svg" /> */}
                                     </div>
                                 </div>

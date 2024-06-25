@@ -367,8 +367,9 @@ func (t Task) Recommend(ctx *gin.Context) {
 	data := make(map[string]interface{})
 	data["total"] = total
 	tmp := make([]model.TaskUser, 0)
+	// 手机号脱敏
 	for _, v := range ret {
-		v.Mobile = maskPhoneNumber(v.Mobile)
+		v.Mobile = v.Mobile[:3] + "****" + v.Mobile[7:]
 		tmp = append(tmp, v)
 	}
 	data["list"] = tmp
@@ -378,15 +379,6 @@ func (t Task) Recommend(ctx *gin.Context) {
 		"data": data,
 		"desc": "Success",
 	})
-}
-
-func maskPhoneNumber(phoneNumber string) string {
-	if len(phoneNumber) != 11 { // 假设中国大陆手机号为11位
-		return "无效的手机号"
-	}
-
-	// 使用字符串拼接方式脱敏，保留前三位和后四位，中间用星号替代
-	return phoneNumber[:3] + "****" + phoneNumber[7:]
 }
 
 // 检查能量值

@@ -142,6 +142,10 @@ const Card = styled.div`
             &:hover {
                 color: #333;
                 background-color: #fff;
+
+                img {
+                    filter: drop-shadow(var(--heading-text-color) 80px 0);
+                }
             }
         }
     }
@@ -291,7 +295,7 @@ export function List() {
                                         <img className="avatar" src={v.avatar || '/avatar/01.jpg'} alt="" />
                                         <span className="phone">{v.mobile}</span>
                                     </div>
-                                    <Icon className="icon" src="/icon/menu.svg" text="复用创意"></Icon>
+                                    <Icon className="icon" src="/icon/reuse.svg" text="复用创意"></Icon>
                                 </div>
                             </Card>
                         </li>
