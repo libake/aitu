@@ -9,6 +9,7 @@ import { Preview } from "./Preview";
 import { UserContext } from "@/context";
 import { useNavigate } from "react-router-dom";
 import { Footer } from "../common";
+import dayjs from "dayjs";
 
 
 const Container = styled.div`
@@ -462,7 +463,7 @@ export function List() {
                     <Time>
                         <div className="text">
                             {task.editable && <input onChange={(e) => selTask(e, v)} type="checkbox" />}
-                            <time>{v.createAt}</time>
+                            <time>{dayjs(v.createAt).format('YYYY-MM-DD HH:mm:ss')}</time>
                         </div>
                         <div className="line"></div>
                     </Time>

@@ -137,3 +137,36 @@ func (t *Task) Info() (info Task, err error) {
 
 	return
 }
+
+type TaskUser struct {
+	Task   `xorm:"extends"`
+	Mobile string `json:"mobile"`
+	Avatar string `json:"avatar"`
+}
+
+// 推荐列表
+func (t *Task) Recommend(req dto.Request) (list []TaskUser, total int64, err error) {
+	var (
+		query string
+		args  []interface{}
+	)
+
+	query = "a.task_status=?"
+	args = append(args, "SUCCEEDED")
+
+	db := db.NewRdb()
+	// 统计条数
+	user := new(Task)
+	total, err = db.Alias("a").Where(query, args...).Count(user)
+	if err != nil {
+		return
+	}
+	if total > 0 {
+		// 分页数据
+		offset := (req.CurrPage - 1) * req.PageSize
+		err = db.Alias("a").Select("a.*,b.mobile").Join("LEFT", "user AS b", "a.user_id=b.id").Where(query, args...).OrderBy("a.update_at DESC").Limit(req.PageSize, offset).Find(&list)
+	} else {
+		err = errors.New("is empty")
+	}
+	return
+}

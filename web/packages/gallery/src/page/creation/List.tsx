@@ -9,6 +9,7 @@ import { Preview } from "./Preview";
 import { UserContext } from "@/context";
 import { useNavigate } from "react-router-dom";
 import { Footer } from "../common";
+import dayjs from "dayjs";
 
 
 const Container = styled.div`
@@ -436,7 +437,7 @@ export function List() {
                             <div className="cell">
                                 <Icon src="/icon/text.svg" text="文本生成图像" />
                             </div>
-                            <time>{v.createAt}</time>
+                            <time>{dayjs(v.createAt).format('YYYY-MM-DD HH:mm:ss')}</time>
                         </div>
                         <div className="line"></div>
                     </Time>

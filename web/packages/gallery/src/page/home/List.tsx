@@ -194,16 +194,15 @@ const Pagination = styled.div`
 
 export function List() {
     let [recommend, setRecommend] = useState({
-        info: new dao.Recommend(),
+        info: new dao.TaskUser(),
         total: 0,
         open: false,
         column: 4,
-        list: new Array<Array<dao.Recommend>>(),
-        works: new Array<dao.Recommend>(),
+        list: new Array<Array<dao.TaskUser>>(),
         spinning: false,
     });
     let [req, setReq] = useState({
-        lastId: 0,
+        currPage: 1,
         pageSize: 50,
     });
 
@@ -215,10 +214,8 @@ export function List() {
         }
         let res = await srv.Task.recommend(data);
         if (res.code == 1000) {
-            recommend.total = Number(res.data.data.total);
-            let tmp: Array<dao.Recommend> = res.data.data.works.filter((f: any) => f.type == 'WORK').map((m: any) => m.data);
-            recommend.works = recommend.works.concat(tmp);
-            recommend.works.forEach((e, i) => {
+            recommend.total = Number(res.data.total);
+            res.data.list.forEach((e: dao.TaskUser, i: number) => {
                 if (i < recommend.column) {
                     recommend.list[i] = [e];
                 } else {
@@ -233,7 +230,7 @@ export function List() {
         setRecommend({ ...recommend });
     }
 
-    const onPreview = (item?: dao.Recommend) => {
+    const onPreview = (item?: dao.TaskUser) => {
         recommend.open = !recommend.open;
         if (!!item) {
             Object.assign(recommend.info, item);
@@ -242,11 +239,11 @@ export function List() {
     }
 
     const onPagination = () => {
-        req.lastId += req.pageSize;
-        if (recommend.total != 0 && req.lastId > recommend.total) {
-            req.lastId = recommend.total;
-        }
-        setReq({...req});
+        // req.currPage += req.pageSize;
+        // if (recommend.total != 0 && req.lastId > recommend.total) {
+        //     req.lastId = recommend.total;
+        // }
+        // setReq({...req});
     }
 
     useEffect(() => {
@@ -272,18 +269,18 @@ export function List() {
                             <Card>
                                 <div className="card-body">
                                     <picture>
-                                        <img src={v.image.url} alt="" />
+                                        <img src={v.results[0].url} alt="" />
                                     </picture>
                                     <div className="prompt">
                                         <div className="over-line">
-                                            {v.taskInput.prompt}
+                                            {v.input.prompt}
                                         </div>
                                     </div>
                                 </div>
                                 <div className="card-foot">
                                     <div className="user">
-                                        <img className="avatar" src={v.avatarUrl} alt="" />
-                                        <span className="phone">{v.userPhone}</span>
+                                        <img className="avatar" src={v.avatar} alt="" />
+                                        <span className="phone">{v.mobile}</span>
                                     </div>
                                     <Icon className="icon" src="/icon/menu.svg" text="复用创意"></Icon>
                                 </div>
@@ -294,7 +291,7 @@ export function List() {
             )}
         </Content>
         <Pagination>
-            {req.lastId == recommend.total ? <span>已经到底啦</span> : <button onClick={() => onPagination()}>点击查看更多</button>}
+            {(req.currPage * req.pageSize) >= recommend.total ? <span>已经到底啦</span> : <button onClick={() => onPagination()}>点击查看更多</button>}
         </Pagination>
         <Footer />
         <Preview open={recommend.open} data={recommend.info} onClose={() => onPreview()}></Preview>

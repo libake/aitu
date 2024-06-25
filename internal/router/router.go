@@ -42,12 +42,6 @@ func Router(addr string) error {
 			template.POST("/setStatus", handler.SetStatus)
 		}
 
-		aigc := api.Group("/aigc")
-		{
-			var handler handler.Task
-			aigc.POST("/recommend", handler.Recommend)
-		}
-
 		task := api.Group("/task", middleware.Token())
 		{
 			var handler handler.Task
@@ -85,8 +79,10 @@ func Router(addr string) error {
 
 		common := api.Group("/common")
 		{
-			var handler handler.Common
-			common.POST("/sendSms", handler.SendSms)
+			var com handler.Common
+			common.POST("/sendSms", com.SendSms)
+			var task handler.Task
+			common.POST("/recommend", task.Recommend)
 		}
 
 	}

@@ -51,8 +51,8 @@ export class Task {
      * 推荐列表
      * @param data 
      */
-    static recommend(data: {lastId: number, pageSize: number}): Promise<dto.Response> {
-        let url = '/aigc/recommend';
+    static recommend(data: dto.Request): Promise<dto.Response> {
+        let url = '/common/recommend';
         return http.post(url, data);
     }
 }

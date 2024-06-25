@@ -49,3 +49,14 @@ export class Task {
         this.taskStatus = '';
     }
 }
+
+export class TaskUser extends Task {
+    mobile: string;
+    avatar: string;
+
+    constructor() {
+        super();
+        this.mobile = '';
+        this.avatar = '';
+    }
+}

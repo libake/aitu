@@ -346,10 +346,8 @@ func (t *Task) List(ctx *gin.Context) {
 // 首页推荐
 func (t Task) Recommend(ctx *gin.Context) {
 	var (
-		param struct {
-			LastId   int64 `json:"lastId"`
-			PageSize int64 `json:"pageSize"`
-		}
+		param dto.Request
+		task  model.Task
 	)
 
 	err := ctx.BindJSON(&param)
@@ -357,47 +355,38 @@ func (t Task) Recommend(ctx *gin.Context) {
 		util.Fail(3040, err.Error(), ctx)
 		return
 	}
-	body, _ := json.Marshal(param)
 
-	url := `https://wanxiang.aliyun.com/wanx/api/square/recommend`
-	req, err := http.NewRequest(http.MethodPost, url, bytes.NewBuffer(body))
+	ret, total, err := task.Recommend(param)
 	if err != nil {
 		ctx.JSON(http.StatusOK, gin.H{
-			"code": 2051,
-			"desc": "创建请求失败",
+			"code": 3010,
+			"desc": err.Error(),
 		})
 		return
 	}
-	req.Header.Set("Content-Type", "application/json")
-
-	cli := &http.Client{Timeout: 5 * time.Second}
-	res, err := cli.Do(req)
-	if err != nil {
-		ctx.JSON(http.StatusOK, gin.H{
-			"code": 2052,
-			"desc": "发送请求失败",
-		})
-		return
+	data := make(map[string]interface{})
+	data["total"] = total
+	tmp := make([]model.TaskUser, 0)
+	for _, v := range ret {
+		v.Mobile = maskPhoneNumber(v.Mobile)
+		tmp = append(tmp, v)
 	}
-	defer res.Body.Close()
-
-	resBody, err := io.ReadAll(res.Body)
-	if err != nil {
-		ctx.JSON(http.StatusOK, gin.H{
-			"code": 2053,
-			"desc": "读取响应失败",
-		})
-		return
-	}
-
-	ret := make(map[string]interface{})
-	json.Unmarshal(resBody, &ret)
+	data["list"] = tmp
 
 	ctx.JSON(http.StatusOK, gin.H{
 		"code": 1000,
-		"data": ret,
+		"data": data,
 		"desc": "Success",
 	})
+}
+
+func maskPhoneNumber(phoneNumber string) string {
+	if len(phoneNumber) != 11 { // 假设中国大陆手机号为11位
+		return "无效的手机号"
+	}
+
+	// 使用字符串拼接方式脱敏，保留前三位和后四位，中间用星号替代
+	return phoneNumber[:3] + "****" + phoneNumber[7:]
 }
 
 // 检查能量值

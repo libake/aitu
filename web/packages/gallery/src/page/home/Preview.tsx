@@ -4,6 +4,8 @@ import styled from "styled-components";
 import { Tooltip } from "antd";
 
 import { Icon } from "@/common";
+import { dao } from "core";
+import dayjs from "dayjs";
 
 const Container = styled.div`
     position: fixed;
@@ -132,11 +134,13 @@ const Container = styled.div`
 interface IProps {
     open: boolean;
     onClose: Function;
-    data: any;
+    data: dao.TaskUser;
 }
 
 export function Preview(props: IProps) {
-    let [info, setInfo] = useState<typeof props.data>({});
+    let [info, setInfo] = useState({
+        ...new dao.TaskUser(),
+    });
 
     const close = () => {
         props.onClose(false);
@@ -175,46 +179,30 @@ export function Preview(props: IProps) {
             </div>
             <div className="preview-body" onClick={() => close()}>
                     <picture>
-                        <img src={info.image.url}  style={{transform: `scale(${zoom})`}} alt="" />
+                        {info.results.length > 0 && <img src={info.results[0].url}  style={{transform: `scale(${zoom})`}} alt="" />}
                     </picture>
                     <div className="list" style={{display: zoom != 1 ? 'none' : 'block'}}>
                         <div className="list-item">
                             <label>创意作者</label>
-                            <span>{info.userPhone}</span>
+                            <span>{info.mobile}</span>
                         </div>
                         <div className="list-item">
                             <label>生成方式</label>
-                            <span>{'文本生成图像'}</span>
+                            <span>{info.taskType == 'text_to_image' ? '文本生成图像' : '艺术字'}</span>
                         </div>
                         {info.taskType == 'text_to_image' &&
                             <div className="list-item">
                                 <label>创意输入</label>
-                                <span>{info.taskInput.prompt}</span>
+                                <span>{info.input.prompt}</span>
                             </div>
-                        }
-                        {info.taskType == 'sketch_to_image' &&
-                            <>
-                                <div className="list-item">
-                                    <label>涂鸦</label>
-                                    <img src={info.taskInput.baseImage} alt="" />
-                                </div>
-                                <div className="list-item">
-                                    <label>画面描述</label>
-                                    <span>{info.taskInput.prompt}</span>
-                                </div>
-                                <div className="list-item">
-                                    <label>画面风格</label>
-                                    <span>{info.taskInput.styleName}</span>
-                                </div>
-                            </>
                         }
                         <div className="list-item">
                             <label>图像比例</label>
-                            {/* <span>{info.params}</span> */}
+                            <span>{info.parameters?.size}</span>
                         </div>
                         <div className="list-item">
                             <label>创作时间</label>
-                            <span>{info.gmtCreate}</span>
+                            <span>{dayjs(info.createAt).format('YYYY-MM-DD HH:mm:ss')}</span>
                         </div>
                     </div>
             </div>
