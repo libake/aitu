@@ -288,7 +288,7 @@ export function List() {
                                 </div>
                                 <div className="card-foot">
                                     <div className="user">
-                                        <img className="avatar" src={v.avatar} alt="" />
+                                        <img className="avatar" src={v.avatar || '/avatar/01.jpg'} alt="" />
                                         <span className="phone">{v.mobile}</span>
                                     </div>
                                     <Icon className="icon" src="/icon/menu.svg" text="复用创意"></Icon>

@@ -15,6 +15,7 @@ CREATE TABLE "user" (
   "status" smallint not null default 1,
   "last_time" timestamp not null default (now()),
   "power" integer not null default 0,
+  "avatar" test not null default '',
   "update_at" timestamp not null default (now()),
   "create_at" timestamp not null default (now())
 );
@@ -28,6 +29,7 @@ COMMENT ON COLUMN "user".gender IS '性别: 0-未知,1-男,2-女';
 COMMENT ON COLUMN "user".status IS '0-冻结,1-正常';
 COMMENT ON COLUMN "user".last_time IS '最后登录时间';
 COMMENT ON COLUMN "user".power IS '能量值';
+COMMENT ON COLUMN "user".avatar IS '头像';
 COMMENT ON COLUMN "user".create_at IS '注册时间';
 
 
@@ -182,6 +184,7 @@ CREATE TABLE user (
   status smallint not null default 1 COMMENT '0-冻结,1-正常',
   last_time timestamp not null COMMENT '最后登录时间',
   power integer not null default 0 COMMENT '能量值',
+  avatar text not null default '' COMMENT '头像',
   update_at timestamp not null,
   create_at timestamp not null COMMENT '注册时间'
 )ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT '用户';

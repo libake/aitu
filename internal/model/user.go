@@ -20,6 +20,7 @@ type User struct {
 	Password string    `xorm:"password varchar(32) notnull" json:"password,omitempty"`
 	Birthday time.Time `xorm:"birthday date" json:"birthday,omitempty"`
 	Gender   int8      `xorm:"gender int" json:"gender"`
+	Avatar   string    `xorm:"avatar text" json:"avatar"`
 	Status   int8      `xorm:"status int default 1" json:"status"`
 	Power    int32     `xorm:"power int default 0" json:"power"`
 	UpdateAt time.Time `xorm:"update_at timestamp" json:"updateAt"`
