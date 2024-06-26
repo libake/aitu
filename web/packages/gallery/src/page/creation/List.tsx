@@ -6,7 +6,7 @@ import { Icon } from "@/common";
 import { dao, srv } from "core";
 import { Panel } from './Panel';
 import { Preview } from "./Preview";
-import { UserContext } from "@/context";
+import { TaskContext, UserContext } from "@/context";
 import { useNavigate } from "react-router-dom";
 import { Footer } from "../common";
 import dayjs from "dayjs";
@@ -358,17 +358,6 @@ export function List() {
         setTask({ ...task });
     }
 
-    const userContext = useContext(UserContext);
-    const navigate = useNavigate();
-
-    useEffect(() => {
-        if (userContext.state.id > 0) {
-            getTask();
-        } else {
-            navigate('/');
-        }
-    }, [userContext, req]);
-
     let [form, setForm] = useState({
         input: {
             prompt: '',
@@ -415,6 +404,24 @@ export function List() {
         link.href = url;
         link.click();
     }
+
+    const taskContext = useContext(TaskContext);
+    const userContext = useContext(UserContext);
+    const navigate = useNavigate();
+
+    useEffect(() => {
+        if (userContext.state.id > 0) {
+            getTask();
+        } else {
+            navigate('/');
+        }
+        if (taskContext.state.id > 0 && taskContext.state.taskType == 'text_to_image') {
+            Object.assign(form, taskContext.state);
+            setForm({ ...form });
+            message.success('成功复用创意，可在左侧调整创意内容');
+        }
+        taskContext.dispatch({ type: 'reset' });
+    }, [userContext, req]);
 
     return <Container>
         <Panel className="side" data={form} submit={(e: any) => addTask(e)}></Panel>

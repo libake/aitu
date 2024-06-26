@@ -1,12 +1,13 @@
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import styled from "styled-components";
 import { Spin, message } from "antd";
 
 import { dao, srv } from "core";
 import { Icon } from "@/common";
 import { Preview } from './Preview';
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { Footer } from "../common";
+import { TaskContext } from "@/context";
 
 const Container = styled.div`
     display: grid;
@@ -101,6 +102,7 @@ const Card = styled.div`
     }
 
     .card-body {
+        cursor: pointer;
         position: relative;
         min-height: 100px;
     }
@@ -176,10 +178,6 @@ const Column = styled.ul`
     display: flex;
     flex-direction: column;
     gap: 16px;
-
-    .item {
-        cursor: pointer;
-    }
 `
 const Pagination = styled.div`
     display: flex;
@@ -263,6 +261,23 @@ export function List() {
         getRecommend();
     }, [req]);
 
+    const taskContext = useContext(TaskContext);
+    const navigate = useNavigate();
+
+    const onReuse = (item: dao.TaskUser) => {
+        taskContext.dispatch({ type: 'reuse', payload: item });
+        setTimeout(() => {
+            switch(item.taskType) {
+                case 'text_to_image':
+                    navigate('/creation');
+                    break;
+                case 'word_art_image':
+                    navigate('/wordart');
+                    break;
+            }
+        });
+    }
+
     return <Container>
         <Title>
             <div className="logo">
@@ -278,9 +293,9 @@ export function List() {
             {recommend.list.map((x, y) =>
                 <Column key={y}>
                     {x.map(v =>
-                        <li className="item" onClick={() => onPreview(v)} key={v.taskId}>
+                        <li className="item" key={v.taskId}>
                             <Card>
-                                <div className="card-body">
+                                <div className="card-body" onClick={() => onPreview(v)}>
                                     <picture>
                                         <img src={v.results[0].url} alt="" />
                                     </picture>
@@ -295,7 +310,7 @@ export function List() {
                                         <img className="avatar" src={v.avatar || '/avatar/01.jpg'} alt="" />
                                         <span className="phone">{v.mobile}</span>
                                     </div>
-                                    <Icon className="icon" src="/icon/reuse.svg" text="复用创意"></Icon>
+                                    <Icon className="icon" onClick={() => onReuse(v)} src="/icon/reuse.svg" text="复用创意"></Icon>
                                 </div>
                             </Card>
                         </li>

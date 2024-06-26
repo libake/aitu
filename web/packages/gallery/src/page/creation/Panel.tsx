@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import ReactDOM from 'react-dom';
 import styled from "styled-components";
 import { Slider } from 'antd';
@@ -506,9 +506,6 @@ export function Panel(props: IProps) {
     useEffect(() => {
         onMode(0);
         getCategory();
-    }, []);
-
-    useEffect(() => {
         Object.assign(req, props.data);
         setReq({ ...req });
     }, [props.data]);

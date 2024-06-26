@@ -13,6 +13,7 @@ import (
 )
 
 type File struct {
+	Ext []string
 }
 
 // 上传
@@ -86,8 +87,11 @@ func (t *File) checkExt(f *multipart.FileHeader) bool {
 	var flag bool
 
 	fileType := f.Header.Get("Content-Type")
-	ext := [...]string{"image/jpeg", "image/png"}
-	for _, v := range ext {
+	if len(t.Ext) == 0 {
+		t.Ext = []string{"image/jpeg", "image/png"}
+	}
+	// ext := [...]string{"image/jpeg", "image/png"}
+	for _, v := range t.Ext {
 		if v == fileType {
 			flag = true
 		}
@@ -98,7 +102,7 @@ func (t *File) checkExt(f *multipart.FileHeader) bool {
 
 // 校验大小
 func (t *File) checkSize(f *multipart.FileHeader) bool {
-	return f.Size < 204800
+	return f.Size < 2048000
 }
 
 // 下载

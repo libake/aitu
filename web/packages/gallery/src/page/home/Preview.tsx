@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import ReactDOM from "react-dom";
 import styled from "styled-components";
 import { Tooltip } from "antd";
@@ -6,6 +6,8 @@ import { Tooltip } from "antd";
 import { Icon } from "@/common";
 import { dao } from "core";
 import dayjs from "dayjs";
+import { TaskContext } from "@/context";
+import { useNavigate } from "react-router-dom";
 
 const Container = styled.div`
     position: fixed;
@@ -152,6 +154,23 @@ export function Preview(props: IProps) {
         setZoom(zoom);
     }
 
+    const taskContext = useContext(TaskContext);
+    const navigate = useNavigate();
+
+    const onReuse = () => {
+        taskContext.dispatch({ type: 'reuse', payload: props.data });
+        setTimeout(() => {
+            switch(props.data.taskType) {
+                case 'text_to_image':
+                    navigate('/creation');
+                    break;
+                case 'word_art_image':
+                    navigate('/wordart');
+                    break;
+            }
+        });
+    }
+
     useEffect(() => {
         if (props.open) {
             document.body.style.overflow = 'hidden';
@@ -210,7 +229,7 @@ export function Preview(props: IProps) {
                     </a>
                 </div>
                 {/* <button> */}
-                    <Icon className="btn" src="/icon/reuse.svg" text="复用创意" />
+                    <Icon className="btn" onClick={() => onReuse()} src="/icon/reuse.svg" text="复用创意" />
                 {/* </button> */}
             </div>
         </Container>,
