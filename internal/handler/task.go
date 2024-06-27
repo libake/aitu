@@ -281,7 +281,11 @@ func (t *Task) Info(ctx *gin.Context) {
 
 	task.TaskID = param.TaskID
 	task.TaskStatus = t.Output.TaskStatus
-	task.Results = t.Output.Results
+	for _, v := range t.Output.Results {
+		if url, ok := v["url"]; ok {
+			task.Results = append(task.Results, url)
+		}
+	}
 	err = task.Update()
 	if err != nil {
 		ctx.JSON(http.StatusOK, gin.H{

@@ -33,7 +33,7 @@ export class Task {
     parameters?: Parameters;
     taskType: string;
     taskRate: number;
-    results: Array<{ url: string }>;
+    results: Array<string>;
     taskStatus: string;
     other?: any;
     createAt?: string;

@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
 import dayjs from 'dayjs';
-import { TableColumnsType, Button, Form, Input, Select, Space, Table, TablePaginationConfig, Image } from "antd";
+import { TableColumnsType, Button, Form, Input, Select, Table, TablePaginationConfig, Image } from "antd";
 import styled from "styled-components";
 
 import { dao, dto, srv } from "core";
@@ -46,7 +45,7 @@ const columns: TableColumnsType<dao.Task> = [{
             return '';
         }
         let items = r.results.map(m => {
-            return m.url;
+            return m;
         });
         return <Image width={60} src={items[0]} />
     }

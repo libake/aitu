@@ -518,7 +518,7 @@ export function List() {
                         {v.results && v.results.map((d, k) =>
                             <Image key={k} onClick={() => onPreview(v, k)}>
                                 <picture>
-                                    <img src={d.url} alt="" />
+                                    <img src={d} alt="" />
                                 </picture>
                                 <div className="tool" onClick={(e) => {e.stopPropagation();}}>
                                     <div className="tool-group">
@@ -526,7 +526,7 @@ export function List() {
                                         <Icon src="/icon/bad.svg" /> */}
                                     </div>
                                     <div className="tool-group">
-                                        <Icon src="/icon/download.svg" onClick={() => onDownload(d.url)} />
+                                        <Icon src="/icon/download.svg" onClick={() => onDownload(d)} />
                                         {/* <Icon src="/icon/favorite.svg" /> */}
                                     </div>
                                 </div>
