@@ -34,5 +34,5 @@ aliyun: # 通义万相
   api-key: sk-16b63b7ef5f04cd2bd0856bdda66fb13
 
 upload:
-  path: /upload
+  path: /upload/
   domain: https://test.miao333.com/api/upload/upload_file_url

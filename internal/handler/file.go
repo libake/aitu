@@ -9,6 +9,7 @@ import (
 
 	"aitu.cn/util"
 	"github.com/gin-gonic/gin"
+	"github.com/spf13/viper"
 	"google.golang.org/grpc/status"
 )
 
@@ -57,14 +58,14 @@ func (t *File) single(ctx *gin.Context) (dst string, err error) {
 	}
 	now := time.Now()
 	ymd := fmt.Sprintf("%d/%d/%d/", now.Year(), now.Month(), now.Day())
-	fp := "../upload/" + ymd
+	fp := ".." + viper.GetString("upload.path") + ymd
 	os.Mkdir(fp, os.ModePerm)
 	dst = path.Join(fp, f.Filename)
 	err = ctx.SaveUploadedFile(f, dst)
 	if err != nil {
 		err = status.Error(4013, "Save File Fail")
 	}
-	dst = "/upload/" + ymd + f.Filename
+	dst = viper.GetString("upload.path") + ymd + f.Filename
 
 	return
 }
