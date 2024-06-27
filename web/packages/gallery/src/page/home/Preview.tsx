@@ -189,7 +189,7 @@ export function Preview(props: IProps) {
             </div>
             <div className="preview-body">
                     <picture>
-                        {info.results.length > 0 && <img src={info.results[0].url}  style={{transform: `scale(${zoom})`}} alt="" />}
+                        {info.results.length > 0 && <img src={info.results[0]}  style={{transform: `scale(${zoom})`}} alt="" />}
                     </picture>
                     <div className="list" style={{display: zoom != 1 ? 'none' : 'block'}}>
                         <div className="list-item">

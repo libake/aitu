@@ -120,38 +120,28 @@ interface IProps {
 export function Preview(props: IProps) {
     let [info, setInfo] = useState({
         ...new dao.Task(),
-        results: new Array<{url: string, active: boolean}>(),
+        results: new Array<string>(),
+        current: 0,
     });
 
     const onFlip = (step: number) => {
         if (!info.results) {
             return;
         }
-        if (step < 0 && info.results[0].active) {
+        if (step < 0 && info.current == 0) {
             return;
         }
-        if (step > 0 && info.results[info.results.length - 1].active) {
+        if (step > 0 && info.current == (info.results.length - 1)) {
             return;
         }
-        let idx = 0;
-        info.results.forEach((e, i) => {
-            if (e.active) {
-                idx = i + step;
-                e.active = false;
-            }
-        });
-        info.results[idx].active = true;
+        info.current += step;
         setInfo({ ...info });
     }
 
     // 下载
     const onDownload = () => {
         let link = document.createElement('a');
-        info.results.map(e => {
-            if (e.active) {
-                link.href = e.url;
-            }
-        });
+        link.href = info.results[info.current];
         link.click();
     }
 
@@ -162,13 +152,7 @@ export function Preview(props: IProps) {
             document.body.style.overflow = 'auto';
         }
         Object.assign(info, props.data);
-        if (info.results && info.results.length > 0) {
-            info.results = info.results.map(e => {
-                e.active = false;
-                return e;
-            });
-            info.results[props.current].active = true;
-        }
+        info.current = props.current;
         setInfo({ ...info });
     }, [props]);
 
@@ -198,19 +182,19 @@ export function Preview(props: IProps) {
             </div>
             <div className="preview-body">
                 <picture>
-                    {info.results.map(m => m.active && <img src={m.url} key={m.url} style={{transform: `scale(${zoom})`}} />)}
+                    {<img src={info.results[info.current]} style={{transform: `scale(${zoom})`}} />}
                 </picture>
                 <div className="flip">
                     <div
                         className="prev"
-                        style={{cursor: info.results[0]?.active ? 'not-allowed' : 'pointer'}}
+                        style={{cursor: info.current == 0 ? 'not-allowed' : 'pointer'}}
                         onClick={(e) => { e.stopPropagation(); onFlip(-1) }}
                     >
                         <Icon src="/icon/prev.svg" />
                     </div>
                     <div
                         className="next"
-                        style={{cursor: info.results[info.results.length - 1]?.active ? 'not-allowed' : 'pointer'}}
+                        style={{cursor: info.current == (info.results.length - 1) ? 'not-allowed' : 'pointer'}}
                         onClick={(e) => { e.stopPropagation(); onFlip(1) }}
                     >
                         <Icon src="/icon/next.svg" />

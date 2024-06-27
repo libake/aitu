@@ -118,8 +118,8 @@ func (t *User) SignIn(ctx *gin.Context) {
 
 	token = uuid.NewString()
 	user.UpdateAt = time.Now()
-	s, _ := json.Marshal(user)
-	db.NewRedis().HSet("token", token, string(s))
+	bUser, _ := json.Marshal(user)
+	db.NewRedis().HSet("token", token, string(bUser))
 
 	data := make(map[string]interface{})
 	data["info"] = user

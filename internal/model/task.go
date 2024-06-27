@@ -16,7 +16,7 @@ type Task struct {
 	Model      string                 `xorm:"model varchar(64)" json:"model"`
 	Input      map[string]interface{} `xorm:"input json notnull" json:"input"`
 	Parameters map[string]interface{} `xorm:"parameters json notnull default {}" json:"parameters,omitempty"`
-	Results    []map[string]string    `xorm:"results json notnull default []" json:"results,omitempty"`
+	Results    []string               `xorm:"results json notnull default []" json:"results,omitempty"`
 	TaskID     string                 `xorm:"task_id varchar(64)" json:"taskId"`
 	TaskStatus string                 `xorm:"task_status varchar(32)" json:"taskStatus"`
 	TaskType   string                 `xorm:"task_type varchar(128)" json:"taskType"`

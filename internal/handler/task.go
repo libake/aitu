@@ -281,7 +281,11 @@ func (t *Task) Info(ctx *gin.Context) {
 
 	task.TaskID = param.TaskID
 	task.TaskStatus = t.Output.TaskStatus
-	task.Results = t.Output.Results
+	for _, v := range t.Output.Results {
+		if url, ok := v["url"]; ok {
+			task.Results = append(task.Results, url)
+		}
+	}
 	err = task.Update()
 	if err != nil {
 		ctx.JSON(http.StatusOK, gin.H{
@@ -291,11 +295,56 @@ func (t *Task) Info(ctx *gin.Context) {
 		return
 	}
 
+	go t.doImage(task.TaskID, task.Results)
+
 	ctx.JSON(http.StatusOK, gin.H{
 		"code": 1000,
 		"data": task,
 		"desc": "Success",
 	})
+}
+
+func (t *Task) doImage(TaskID string, imageUrl []string) {
+	var (
+		task model.Task
+	)
+
+	url := "https://test.miao333.com/api/upload/upload_file_url"
+	for _, v := range imageUrl {
+		param := struct {
+			Url string `json:"file_url"`
+		}{Url: v}
+		body, _ := json.Marshal(param)
+		req, err := http.NewRequest(http.MethodPost, url, bytes.NewBuffer(body))
+		if err != nil {
+			continue
+		}
+		req.Header.Set("Content-Type", "application/json")
+
+		cli := &http.Client{Timeout: 20 * time.Second}
+		res, err := cli.Do(req)
+		if err != nil {
+			continue
+		}
+		defer res.Body.Close()
+
+		resBody, err := io.ReadAll(res.Body)
+		if err != nil {
+			continue
+		}
+
+		var response struct {
+			Data string `json:"data"`
+		}
+
+		err = json.Unmarshal(resBody, &response)
+		if err != nil {
+			continue
+		}
+		task.Results = append(task.Results, response.Data)
+	}
+	task.TaskID = TaskID
+	task.Update()
 }
 
 // 文本生成图像

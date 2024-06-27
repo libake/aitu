@@ -255,9 +255,9 @@ export function List() {
             task.percent = 0;
             task.list = [];
             task.total = 0;
-            setTask({...task});
+            setTask({ ...task });
             req.currPage = 1;
-            setReq({...req});
+            setReq({ ...req });
         } else {
             task.percent += Math.floor(Math.random() * 20) + 1;
             if (task.percent > 100) {
@@ -341,8 +341,8 @@ export function List() {
         }
         let res = await srv.Task.delete(data);
         if (res.code == 1000) {
-            setTask({...task, editable: false, keys: []});
-            setReq({...req, currPage: 1});
+            setTask({ ...task, editable: false, keys: [] });
+            setReq({ ...req, currPage: 1 });
             message.success('删除成功');
         } else {
             message.error(res.desc);
@@ -350,7 +350,7 @@ export function List() {
     }
 
     const onPreview = (item?: dao.Task, idx?: number) => {
-        task.preview.open = !task.preview.open;
+        task.preview.open = true;
         if (!!item) {
             task.preview.current = idx || 0;
             Object.assign(task.info, item);
@@ -395,7 +395,7 @@ export function List() {
             return;
         }
         req.currPage += 1;
-        setReq({...req});
+        setReq({ ...req });
     }
 
     // 下载
@@ -481,7 +481,7 @@ export function List() {
                         {v.results && v.results.map((d, k) =>
                             <Image key={k} onClick={() => onPreview(v, k)}>
                                 <picture>
-                                    <img src={d.url} alt="" />
+                                    <img src={d} alt="" />
                                 </picture>
                                 <div className="tool" onClick={(e) => { e.stopPropagation(); }}>
                                     <div className="tool-group">
@@ -489,7 +489,7 @@ export function List() {
                                         <Icon src="/icon/bad.svg" /> */}
                                     </div>
                                     <div className="tool-group">
-                                        <Icon src="/icon/download.svg" onClick={() => onDownload(d.url)} />
+                                        <Icon src="/icon/download.svg" onClick={() => onDownload(d)} />
                                         {/* <Icon src="/icon/favorite.svg" /> */}
                                     </div>
                                 </div>
@@ -504,6 +504,11 @@ export function List() {
             </Pagination>
             <Footer className="footer" />
         </div>
-        <Preview open={task.preview.open} current={task.preview.current} data={task.info} onClose={() => onPreview()}></Preview>
+        <Preview
+            open={task.preview.open}
+            current={task.preview.current}
+            data={task.info}
+            onClose={() => setTask({ ...task, preview: { ...task.preview, open: false } })}
+        />
     </Container>
 }
