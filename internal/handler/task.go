@@ -309,7 +309,7 @@ func (t *Task) doImage(TaskID string, imageUrl []string) {
 		task model.Task
 	)
 
-	url := "https://test.miao333.com/api/upload/upload_file_url"
+	url := viper.GetString("upload.domain")
 	for _, v := range imageUrl {
 		param := struct {
 			Url string `json:"file_url"`
