@@ -77,6 +77,7 @@ interface IProps {
         weak: boolean;
     }
     height?: number | string;
+    onChange?: (file: string) => void;
 }
 
 export function Upload(props: IProps) {
@@ -102,11 +103,13 @@ export function Upload(props: IProps) {
         let res = await srv.Common.upload(formData);
         if (res.code == 1000) {
             setFile(res.data);
+            props.onChange && props.onChange(res.data);
         }
     }
 
     const onDrop = () => {
         setFile('');
+        props.onChange && props.onChange('');
     }
 
     return <Container>

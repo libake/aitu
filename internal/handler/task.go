@@ -18,14 +18,23 @@ import (
 )
 
 type Output struct {
-	Results    []map[string]string `json:"results"`
-	TaskID     string              `json:"task_id"`
-	TaskStatus string              `json:"task_status"`
+	Results     []map[string]string `json:"results"`
+	TaskID      string              `json:"task_id"`
+	TaskStatus  string              `json:"task_status"`
+	Code        string              `json:"code"`
+	Message     string              `json:"message"`
+	TaskMetrics struct {
+		TOTAL     int `json:"TOTAL"`
+		SUCCEEDED int `json:"SUCCEEDED"`
+		FAILED    int `json:"FAILED"`
+	} `json:"task_metrics"`
 }
 
 type Task struct {
-	Output Output `json:"output"`
-	Usage  struct {
+	Code    string `json:"code"`
+	Message string `json:"message"`
+	Output  Output `json:"output"`
+	Usage   struct {
 		ImageCount int `json:"image_count"`
 	} `json:"usage"`
 }
@@ -66,6 +75,10 @@ func (t *Task) Create(ctx *gin.Context) {
 	body, _ := json.Marshal(task)
 	err = t.newRequest(url, body, ctx)
 	if err != nil {
+		ctx.JSON(http.StatusOK, gin.H{
+			"code": 3040,
+			"desc": err.Error(),
+		})
 		return
 	}
 	task.TaskID = t.Output.TaskID
@@ -82,7 +95,7 @@ func (t *Task) Create(ctx *gin.Context) {
 
 	ctx.JSON(http.StatusOK, gin.H{
 		"code": 1000,
-		"data": t,
+		"data": task,
 		"desc": "Success",
 	})
 }
@@ -123,6 +136,10 @@ func (t *Task) WordArt(ctx *gin.Context) {
 	body, _ := json.Marshal(task)
 	err = t.newRequest(url, body, ctx)
 	if err != nil {
+		ctx.JSON(http.StatusOK, gin.H{
+			"code": 3040,
+			"desc": err.Error(),
+		})
 		return
 	}
 	task.TaskID = t.Output.TaskID
@@ -139,7 +156,7 @@ func (t *Task) WordArt(ctx *gin.Context) {
 
 	ctx.JSON(http.StatusOK, gin.H{
 		"code": 1000,
-		"data": t,
+		"data": task,
 		"desc": "Success",
 	})
 }
@@ -177,15 +194,12 @@ func (t *Task) newRequest(url string, body []byte, ctx *gin.Context) (err error)
 		return
 	}
 
-	err = json.Unmarshal(resBody, &t)
-	if err != nil {
-		ctx.JSON(http.StatusOK, gin.H{
-			"code": 3040,
-			"desc": "参数解析失败",
-		})
-		return
+	json.Unmarshal(resBody, &t)
+	if t.Output.TaskID == "" {
+		err = errors.New(t.Message)
 	}
-	return nil
+
+	return
 }
 
 func (t *Task) Delete(ctx *gin.Context) {

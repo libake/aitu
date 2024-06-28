@@ -359,27 +359,23 @@ const Card = styled.div`
 interface IProps {
     submit: Function;
     className: string;
-    data?: {
+    data: {
         input: {
             prompt: string,
+            ref_img?: string,
         },
         parameters: {
             n: number,
             size: string,
-        }
+            style?: string,
+        },
+        other?: dao.Template,
     }
 }
 
 export function Panel(props: IProps) {
     let [req, setReq] = useState({
-        input: {
-            prompt: '',
-        },
-        parameters: {
-            n: 1,
-            size: '1024*1024',
-        },
-        taskType: 'text_to_image',
+        ...props.data,
     });
     let [mode, setMode] = useState({
         info: {
@@ -448,6 +444,11 @@ export function Panel(props: IProps) {
     const onTemplate = (item: dao.Template) => {
         Object.assign(template.info, item);
         setTemplate({ ...template });
+        req.other = item;
+        if (!!item.code) {
+            req.parameters.style = item.code;
+        }
+        setReq({ ...req });
     }
 
     const onMode = (i: number) => {
@@ -508,6 +509,9 @@ export function Panel(props: IProps) {
         getCategory();
         Object.assign(req, props.data);
         setReq({ ...req });
+        if (!!props.data.other) {
+            onTemplate(props.data.other);
+        }
     }, [props.data]);
 
     return <Container className={props.className}>
@@ -557,7 +561,7 @@ export function Panel(props: IProps) {
                     </div>
                     <div className="tpl-body" style={{ display: template.collapse ? 'grid' : 'none' }}>
                         {template.list.map((v, i) =>
-                            i < 5 && <Card className={template.info.id == v.id ? ' active' : ''} key={i} onClick={() => onTemplate(v)}>
+                            i < 7 && <Card className={template.info.id == v.id ? ' active' : ''} key={i} onClick={() => onTemplate(v)}>
                                 <picture className="card-body">
                                     <img src={v.outerImage} />
                                 </picture>
@@ -572,7 +576,7 @@ export function Panel(props: IProps) {
                         </Card>
                     </div>
                 </div>
-                <Upload tag={{ text: '参考图', weak: true }} height="160px"></Upload>
+                <Upload onChange={(file: string) => setReq({...req, input: {...req.input, ref_img: file}})} tag={{ text: '参考图', weak: true }} height="160px"></Upload>
                 <h3>图片比例</h3>
                 <div className="size">
                     <div className={`size-item${req.parameters.size == '1024*1024' ? ' active' : ''}`} onClick={() => onSize('1024*1024')}>

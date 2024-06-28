@@ -391,15 +391,7 @@ func (t *User) Info(ctx *gin.Context) {
 		return
 	}
 
-	if req.ID > 0 {
-		// 指定用户
-		user.ID = req.ID
-		err = user.Info()
-		if err != nil {
-			util.Fail(3010, err.Error(), ctx)
-			return
-		}
-	} else {
+	if req.ID == 0 {
 		// 解析 token 取得 id
 		token := ctx.Request.Header.Get("Access-Token")
 		sToken, err := db.NewRedis().HGet("token", token).Result()
@@ -410,7 +402,14 @@ func (t *User) Info(ctx *gin.Context) {
 			})
 			return
 		}
-		json.Unmarshal([]byte(sToken), &user)
+		json.Unmarshal([]byte(sToken), &req)
+	}
+
+	user.ID = req.ID
+	err = user.Info()
+	if err != nil {
+		util.Fail(3010, err.Error(), ctx)
+		return
 	}
 
 	ctx.JSON(http.StatusOK, gin.H{

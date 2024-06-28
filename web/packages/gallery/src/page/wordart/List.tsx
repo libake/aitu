@@ -292,9 +292,7 @@ export function List() {
         let res = await srv.Task.wordArt(data);
         if (res.code == 1000) {
             setTimeout(() => {
-                Object.assign(task.info, res.data.output);
-                task.info.taskId = res.data.output.task_id;
-                task.info.taskStatus = res.data.output.task_status;
+                Object.assign(task.info, res.data);
                 setTask({ ...task });
                 if (task.info.taskStatus == 'PENDING') {
                     pollTask();

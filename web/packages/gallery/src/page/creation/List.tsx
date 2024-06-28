@@ -275,12 +275,13 @@ export function List() {
             model: 'wanx-v1',
             ...v,
         }
+        if (!!data.input.ref_img) {
+            data.input.ref_img = location.origin + data.input.ref_img;
+        }
         let res = await srv.Task.create(data);
         if (res.code == 1000) {
             setTimeout(() => {
-                Object.assign(task.info, res.data.output);
-                task.info.taskId = res.data.output.task_id;
-                task.info.taskStatus = res.data.output.task_status;
+                Object.assign(task.info, res.data);
                 setTask({ ...task });
                 if (task.info.taskStatus == 'PENDING') {
                     pollTask();
@@ -361,12 +362,15 @@ export function List() {
     let [form, setForm] = useState({
         input: {
             prompt: '',
+            ref_img: undefined!,
         },
         parameters: {
             n: 1,
             size: '1024*1024',
+            style: '<auto>',
         },
         taskType: 'text_to_image',
+        other: undefined!,
     });
 
     // 复用创意、再次生成
@@ -377,6 +381,9 @@ export function List() {
             },
             parameters: {
                 ...v.parameters,
+            },
+            other: {
+                ...v.other,
             }
         }
         switch (type) {
