@@ -184,7 +184,7 @@ CREATE TABLE user (
   status smallint not null default 1 COMMENT '0-冻结,1-正常',
   last_time timestamp not null COMMENT '最后登录时间',
   power integer not null default 0 COMMENT '能量值',
-  avatar text not null default '' COMMENT '头像',
+  avatar text COMMENT '头像',
   update_at timestamp not null,
   create_at timestamp not null COMMENT '注册时间'
 )ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT '用户';

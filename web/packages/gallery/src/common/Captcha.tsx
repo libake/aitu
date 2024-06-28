@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import styled from "styled-components";
 
 import { srv } from "core";
+import { phone } from '@/util';
 
 const Container = styled.div`
     display: flex;
@@ -46,6 +47,10 @@ export function Captcha(props: IProps) {
     let interval: NodeJS.Timer;
 
     const sendSms = async () => {
+        if (!phone(props.mobile)) {
+            message.error('请输入正确的手机号');
+            return;
+        }
         let data = {
             mobile: props.mobile,
             scene: props.scene || 0,
@@ -72,7 +77,7 @@ export function Captcha(props: IProps) {
     }
 
     return <Container className={props.className}>
-        <input type="text" onChange={(v) => {props.onChange(v)}} />
+        <input type="text" onChange={(v) => {props.onChange(v)}} placeholder="验证码" />
         <button className="suffix" type="button" onClick={() => sendSms()} disabled={sms.disable}>
             {sms.text}
         </button>

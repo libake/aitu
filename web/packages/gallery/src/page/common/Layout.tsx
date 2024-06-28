@@ -251,7 +251,7 @@ export function Layout() {
                 </div>
                 <form className="box-body">
                     <div className="form-item">
-                        <input value={user.info.account} onChange={(v) => handleChange(v, 'account')} />
+                        <input value={user.info.account} onChange={(v) => handleChange(v, 'account')} placeholder="手机号" />
                     </div>
                     <div className="form-item">
                         <Captcha value={user.info.captcha} mobile={user.info.account} onChange={(v: React.ChangeEvent<HTMLInputElement>) => handleChange(v, 'captcha')} />
