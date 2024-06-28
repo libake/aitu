@@ -23,6 +23,7 @@ type User struct {
 	Avatar   string    `xorm:"avatar text" json:"avatar"`
 	Status   int8      `xorm:"status int default 1" json:"status"`
 	Power    int32     `xorm:"power int default 0" json:"power"`
+	LastTime time.Time `xorm:"last_time timestamp" json:"lastTime"`
 	UpdateAt time.Time `xorm:"update_at timestamp" json:"updateAt"`
 	CreateAt time.Time `xorm:"create_at timestamp" json:"createAt"`
 }
@@ -36,11 +37,13 @@ func (t *User) TableName() string {
 func (t *User) Create() (info User, err error) {
 	info = User{
 		ID:       util.NewMist().Generate(),
+		Nickname: t.Nickname,
 		Email:    t.Email,
 		Mobile:   t.Mobile,
 		Password: t.Password,
 		Power:    20,
 		Status:   1,
+		LastTime: time.Now(),
 		UpdateAt: time.Now(),
 		CreateAt: time.Now(),
 	}
