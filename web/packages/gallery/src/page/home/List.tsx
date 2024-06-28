@@ -81,6 +81,11 @@ const Content = styled.div`
     justify-content: center;
     gap: 16px;
     padding: 16px 0;
+    min-height: calc(100vh - 474px);
+
+    .ant-spin {
+        align-self: center;
+    }
 `
 const Card = styled.div`
     border-radius: 12px;
@@ -290,6 +295,7 @@ export function List() {
             </div>
         </Title>
         <Content>
+            <Spin spinning={recommend.spinning} />
             {recommend.list.map((x, y) =>
                 <Column key={y}>
                     {x.map(v =>
@@ -323,6 +329,5 @@ export function List() {
         </Pagination>
         <Footer />
         <Preview open={recommend.open} data={recommend.info} onClose={() => onPreview()}></Preview>
-        <Spin spinning={recommend.spinning} />
     </Container>
 }

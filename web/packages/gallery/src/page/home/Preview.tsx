@@ -1,7 +1,7 @@
 import { useContext, useEffect, useState } from "react";
 import ReactDOM from "react-dom";
 import styled from "styled-components";
-import { Tooltip } from "antd";
+import { Spin, Tooltip } from "antd";
 
 import { Icon } from "@/common";
 import { dao } from "core";
@@ -41,14 +41,14 @@ const Container = styled.div`
         display: grid;
         grid-template-columns: auto 30vw;
         gap: 24px;
+        height: 100%;
         max-height: 70vh;
         padding: 0 10vw;
         color: #fff;
     }
 
     picture {
-        display: flex;
-        justify-content: flex-end;
+        text-align: end;
 
         img {
             max-width: 50vw;
@@ -124,6 +124,11 @@ const Container = styled.div`
             }
         }
     }
+
+    .ant-spin {
+        justify-self: center;
+        align-self: center;
+    }
 `
 
 interface IProps {
@@ -138,6 +143,7 @@ export function Preview(props: IProps) {
     });
 
     const close = () => {
+        setInfo(new dao.TaskUser());
         props.onClose(false);
     }
 
@@ -171,7 +177,10 @@ export function Preview(props: IProps) {
         });
     }
 
+    let [spinning, setSpinning] = useState(false);
+
     useEffect(() => {
+        setSpinning(true);
         if (props.open) {
             document.body.style.overflow = 'hidden';
         } else {
@@ -180,6 +189,9 @@ export function Preview(props: IProps) {
         Object.assign(info, props.data);
         setInfo({ ...info });
         setZoom(1);
+        setTimeout(() => {
+            setSpinning(false);
+        }, 200);
     }, [props]);
 
     return props.open ? ReactDOM.createPortal(
@@ -188,33 +200,36 @@ export function Preview(props: IProps) {
                 <Icon className="close" onClick={close} src="/icon/close.svg" />
             </div>
             <div className="preview-body">
-                    <picture>
-                        {info.results.length > 0 && <img src={info.results[0]}  style={{transform: `scale(${zoom})`}} alt="" />}
-                    </picture>
-                    <div className="list" style={{display: zoom != 1 ? 'none' : 'block'}}>
-                        <div className="list-item">
-                            <label>创意作者</label>
-                            <span>{info.mobile}</span>
-                        </div>
-                        <div className="list-item">
-                            <label>生成方式</label>
-                            <span>{info.taskType == 'text_to_image' ? '文本生成图像' : '艺术字'}</span>
-                        </div>
-                        {info.taskType == 'text_to_image' &&
-                            <div className="list-item">
-                                <label>创意输入</label>
-                                <span>{info.input.prompt}</span>
-                            </div>
-                        }
-                        <div className="list-item">
-                            <label>图像比例</label>
-                            <span>{info.parameters?.size}</span>
-                        </div>
-                        <div className="list-item">
-                            <label>创作时间</label>
-                            <span>{dayjs(info.createAt).format('YYYY-MM-DD HH:mm:ss')}</span>
-                        </div>
+            <Spin spinning={spinning} />
+            {spinning || <>
+                <picture>
+                    {info.results.length > 0 && <img src={info.results[0]}  style={{transform: `scale(${zoom})`}} alt="" />}
+                </picture>
+                <div className="list" style={{display: zoom != 1 ? 'none' : 'block'}}>
+                    <div className="list-item">
+                        <label>创意作者</label>
+                        <span>{info.mobile}</span>
                     </div>
+                    <div className="list-item">
+                        <label>生成方式</label>
+                        <span>{info.taskType == 'text_to_image' ? '文本生成图像' : '艺术字'}</span>
+                    </div>
+                    {info.taskType == 'text_to_image' &&
+                        <div className="list-item">
+                            <label>创意输入</label>
+                            <span>{info.input.prompt}</span>
+                        </div>
+                    }
+                    <div className="list-item">
+                        <label>图像比例</label>
+                        <span>{info.parameters?.size}</span>
+                    </div>
+                    <div className="list-item">
+                        <label>创作时间</label>
+                        <span>{dayjs(info.createAt).format('YYYY-MM-DD HH:mm:ss')}</span>
+                    </div>
+                </div>
+            </>}
             </div>
             <div className="preview-foot">
                 <div className="tool">
@@ -228,9 +243,7 @@ export function Preview(props: IProps) {
                         <Icon src="/icon/update.svg" />
                     </a>
                 </div>
-                {/* <button> */}
-                    <Icon className="btn" onClick={() => onReuse()} src="/icon/reuse.svg" text="复用创意" />
-                {/* </button> */}
+                <Icon className="btn" onClick={() => onReuse()} src="/icon/reuse.svg" text="复用创意" />
             </div>
         </Container>,
         document.body

@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import ReactDOM from "react-dom";
 import styled from "styled-components";
-import { Tooltip } from "antd";
+import { Spin, Tooltip } from "antd";
 
 import { Icon } from "@/common";
 import { dao } from "core";
@@ -145,7 +145,10 @@ export function Preview(props: IProps) {
         link.click();
     }
 
+    const [spinning, setSpinning] = useState(false);
+
     useEffect(() => {
+        setSpinning(true);
         if (props.open) {
             document.body.style.overflow = 'hidden';
         } else {
@@ -154,6 +157,9 @@ export function Preview(props: IProps) {
         Object.assign(info, props.data);
         info.current = props.current;
         setInfo({ ...info });
+        setTimeout(() => {
+            setSpinning(false);
+        }, 200);
     }, [props]);
 
     const close = () => {
@@ -182,6 +188,8 @@ export function Preview(props: IProps) {
                 <Icon className="close" onClick={close} src="/icon/close.svg" />
             </div>
             <div className="preview-body">
+            <Spin spinning={spinning} />
+            {spinning || <>
                 <picture>
                     {<img src={info.results[info.current]} style={{transform: `scale(${zoom})`}} />}
                 </picture>
@@ -201,6 +209,7 @@ export function Preview(props: IProps) {
                         <Icon src="/icon/next.svg" />
                     </div>
                 </div>
+                </>}
             </div>
             <div className="preview-foot">
                 <div className="tool">
