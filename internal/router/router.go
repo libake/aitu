@@ -8,6 +8,7 @@ import (
 
 func Router(addr string) error {
 	router := gin.Default()
+	router.SetTrustedProxies(nil)
 
 	api := router.Group("/api")
 	{

@@ -8,6 +8,7 @@ import { dao } from "core";
 import dayjs from "dayjs";
 import { TaskContext } from "@/context";
 import { useNavigate } from "react-router-dom";
+import { TaskTypeMap } from "@/constant";
 
 const Container = styled.div`
     position: fixed;
@@ -212,7 +213,7 @@ export function Preview(props: IProps) {
                     </div>
                     <div className="list-item">
                         <label>生成方式</label>
-                        <span>{info.taskType == 'text_to_image' ? '文本生成图像' : '艺术字'}</span>
+                        <span>{TaskTypeMap.get(info.taskType)}</span>
                     </div>
                     {info.taskType == 'text_to_image' &&
                         <div className="list-item">

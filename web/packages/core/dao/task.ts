@@ -32,7 +32,6 @@ export class Task {
     input: Input;
     parameters?: Parameters;
     taskType: string;
-    taskRate: number;
     results: Array<string>;
     taskStatus: string;
     other?: any;
@@ -44,7 +43,6 @@ export class Task {
         this.taskId = '';
         this.input = new Input();
         this.taskType = '';
-        this.taskRate = 0;
         this.results = new Array();
         this.taskStatus = '';
     }

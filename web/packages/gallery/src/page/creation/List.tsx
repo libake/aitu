@@ -256,8 +256,12 @@ export function List() {
             task.list = [];
             task.total = 0;
             setTask({ ...task });
-            req.currPage = 1;
-            setReq({ ...req });
+            if (req.currPage == 1) {
+                getTask();
+            } else {
+                req.currPage = 1;
+                setReq({ ...req });
+            }
         } else {
             task.percent += Math.floor(Math.random() * 20) + 1;
             if (task.percent > 100) {

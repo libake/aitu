@@ -137,6 +137,7 @@ const Card = styled.div`
         }
 
         .icon {
+            cursor: pointer;
             display: grid;
             grid-template-columns: auto 1fr;
             align-items: center;

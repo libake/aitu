@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import ReactDOM from 'react-dom';
 import styled from "styled-components";
 
@@ -447,6 +447,8 @@ export function Panel(props: IProps) {
         setCategory({...category});
     }
 
+    const flag = useRef(true);
+
     const submit = () => {
         if (!!!req.input.text.text_content) {
             message.error('请填写文字内容');
@@ -456,7 +458,13 @@ export function Panel(props: IProps) {
             message.error('请选择文字风格');
             return;
         }
-        props.submit(req);
+        if (flag.current) {
+            flag.current = false;
+            props.submit(req);
+            setTimeout(() => {
+                flag.current = true;
+            }, 1000);
+        }
     }
 
     useEffect(() => {
@@ -510,10 +518,25 @@ export function Panel(props: IProps) {
             </div>
             <h3>生成张数</h3>
             <Slider
-                min={0}
+                min={1}
                 max={4}
                 defaultValue={req.parameters.n}
+                marks={
+                    {
+                        1: { label: '1', style: { color: '#fff' } },
+                        2: { label: '2', style: { color: '#fff' } },
+                        3: { label: '3', style: { color: '#fff' } },
+                        4: { label: '4', style: { color: '#fff' } }
+                    }}
                 onChange={(v) => setReq({ ...req, parameters: { ...req.parameters, n: v } })}
+                styles={{
+                    track: {
+                        background: 'var(--primary-color)',
+                    },
+                    rail: {
+                        background: '#fff',
+                    },
+                }}
             />
         </div>
         <div className="side-foot">
