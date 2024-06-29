@@ -513,7 +513,23 @@ export function Panel(props: IProps) {
                 min={0}
                 max={4}
                 defaultValue={req.parameters.n}
+                marks={
+                    {
+                        0: { label: '0', style: { color: '#fff' } },
+                        1: { label: '1', style: { color: '#fff' } },
+                        2: { label: '2', style: { color: '#fff' } },
+                        3: { label: '3', style: { color: '#fff' } },
+                        4: { label: '4', style: { color: '#fff' } }
+                    }}
                 onChange={(v) => setReq({ ...req, parameters: { ...req.parameters, n: v } })}
+                styles={{
+                    track: {
+                        background: 'var(--primary-color)',
+                    },
+                    rail: {
+                        background: '#fff',
+                    },
+                }}
             />
         </div>
         <div className="side-foot">

@@ -44,7 +44,7 @@ export function Captcha(props: IProps) {
         text: '获取验证码',
         disable: false,
     });
-    let interval: NodeJS.Timer;
+    let interval: NodeJS.Timeout;
 
     const sendSms = async () => {
         if (!phone(props.mobile)) {

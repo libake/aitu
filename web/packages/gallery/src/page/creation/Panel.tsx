@@ -576,7 +576,7 @@ export function Panel(props: IProps) {
                         </Card>
                     </div>
                 </div>
-                <Upload onChange={(file: string) => setReq({...req, input: {...req.input, ref_img: file}})} tag={{ text: '参考图', weak: true }} height="160px"></Upload>
+                <Upload onChange={(file: string) => setReq({ ...req, input: { ...req.input, ref_img: file } })} tag={{ text: '参考图', weak: true }} height="160px"></Upload>
                 <h3>图片比例</h3>
                 <div className="size">
                     <div className={`size-item${req.parameters.size == '1024*1024' ? ' active' : ''}`} onClick={() => onSize('1024*1024')}>
@@ -597,7 +597,23 @@ export function Panel(props: IProps) {
                     min={0}
                     max={4}
                     defaultValue={req.parameters.n}
+                    marks={
+                        {
+                            0: { label: '0', style: { color: '#fff' } },
+                            1: { label: '1', style: { color: '#fff' } },
+                            2: { label: '2', style: { color: '#fff' } },
+                            3: { label: '3', style: { color: '#fff' } },
+                            4: { label: '4', style: { color: '#fff' } }
+                        }}
                     onChange={(v) => setReq({ ...req, parameters: { ...req.parameters, n: v } })}
+                    styles={{
+                        track: {
+                            background: 'var(--primary-color)',
+                        },
+                        rail: {
+                            background: '#fff',
+                        },
+                    }}
                 />
             </>}
             {/* 相似图像生成 */}
