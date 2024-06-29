@@ -3,6 +3,7 @@ import { Button, Drawer, Form, Input, message, Popconfirm, Select, Space, Switch
 import styled from "styled-components";
 
 import { dao, dto, srv } from "core";
+import { SceneMap } from '@/constant';
 
 const Container = styled.div`
     margin: 16px;
@@ -33,6 +34,9 @@ export function List() {
         }, {
             title: '场景',
             dataIndex: 'scene',
+            render: (v: string) => {
+                return SceneMap.get(v);
+            }
         }, {
             title: '状态',
             dataIndex: 'status',
@@ -277,7 +281,6 @@ export function List() {
                 dataSource={category.list}
                 pagination={false}
                 loading={loading}
-                // scroll={{ x: 1500 }}
             />
         </div>
     </Container>

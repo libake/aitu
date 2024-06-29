@@ -1,8 +1,10 @@
 import { useEffect, useState } from "react";
-import { Button, Drawer, Form, Input, message, Popconfirm, Select, Space, Switch, Table, Tooltip, Image } from "antd";
+import { TreeNode } from "antd/es/tree-select";
+import { Button, Drawer, Form, Input, message, Popconfirm, Select, Space, Switch, Table, Tooltip, Image, TreeSelect } from "antd";
 import styled from "styled-components";
 
 import { dao, dto, srv } from "core";
+import { SceneMap } from '@/constant'
 
 const Container = styled.div`
     margin: 16px;
@@ -95,7 +97,7 @@ export function List() {
         } else {
             template.list = [];
         }
-        setTemplate({...template});
+        setTemplate({ ...template });
         setLoading(false);
     }
 
@@ -192,6 +194,7 @@ export function List() {
         let data = {
             currPage: 1,
             pageSize: 1000,
+            tree: true,
         }
         let res = await srv.Category.list(data);
         if (res.code == 1000) {
@@ -255,7 +258,16 @@ export function List() {
                         <Input />
                     </Form.Item>
                     <Form.Item name="categoryId" label="归属分类">
-                        <Select options={category} fieldNames={{ label: 'name', value: 'id' }} allowClear />
+                        <TreeSelect
+                            // treeData={category}
+                            // fieldNames={{ label: 'name', value: 'id' }}
+                            allowClear
+                        >
+                            {category.map((m: dao.Category) => <TreeNode
+                                value={m.id}
+                                title={<><label>{SceneMap.get(m.scene)}：</label><span>{m.name}</span></>} key={m.id}
+                            />)}
+                        </TreeSelect>
                     </Form.Item>
                     <Form.Item name="id" hidden>
                         <Input />
@@ -273,7 +285,7 @@ export function List() {
                 dataSource={template.list}
                 pagination={false}
                 loading={loading}
-                // scroll={{ x: 1500 }}
+            // scroll={{ x: 1500 }}
             />
         </div>
     </Container>

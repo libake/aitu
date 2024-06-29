@@ -213,7 +213,7 @@ export function Layout() {
             <NavRight>
                 {userContext.state.id > 0 ? <>
                     <li>
-                        <Popover className="money" trigger="click">
+                        <Popover className="money" content="一个能量值可生成一张图">
                             <Icon src="/icon/power.svg" />
                             <span>{userContext.state.power}能量值</span>
                         </Popover>
