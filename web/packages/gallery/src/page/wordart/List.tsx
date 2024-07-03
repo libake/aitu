@@ -262,6 +262,10 @@ export function List() {
     });
 
     const pollTask = async () => {
+        if (task.info.taskStatus == 'FAILED') {
+            message.error("生成失败");
+            return;
+        }
         let data = {
             ...task.info,
         }
@@ -282,6 +286,7 @@ export function List() {
             task.percent += Math.floor(Math.random() * 20) + 1;
             if (task.percent > 99) {
                 task.percent = 99;
+                task.info.taskStatus = 'FAILED';
             }
             setTask({ ...task });
             setTimeout(() => {
