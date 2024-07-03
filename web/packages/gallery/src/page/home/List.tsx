@@ -304,7 +304,7 @@ export function List() {
                             <Card>
                                 <div className="card-body" onClick={() => onPreview(v)}>
                                     <picture>
-                                        <img src={v.results[0]} alt="" />
+                                        <img src={v.results && v.results[0]} alt="" />
                                     </picture>
                                     <div className="prompt">
                                         <div className="over-line">
