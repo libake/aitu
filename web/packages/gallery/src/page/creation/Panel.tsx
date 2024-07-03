@@ -1,7 +1,7 @@
 import { useContext, useEffect, useRef, useState } from "react";
 import ReactDOM from 'react-dom';
 import styled from "styled-components";
-import { Slider } from 'antd';
+import { Slider, message } from 'antd';
 
 import { Upload } from "./Upload";
 import { Icon, TextArea } from "@/common";
@@ -503,6 +503,10 @@ export function Panel(props: IProps) {
     const flag = useRef(true);
 
     const submit = () => {
+        if (!!!req.input.prompt) {
+            message.error('请输入生成内容');
+            return;
+        }
         if (flag.current) {
             flag.current = false;
             props.submit(req);

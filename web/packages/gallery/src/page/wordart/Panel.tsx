@@ -413,7 +413,7 @@ export function Panel(props: IProps) {
     const getTemplate = async (categoryId: number) => {
         let data = {
             currPage: 1,
-            pageSize: 100,
+            pageSize: 10,
             queryBy: [
                 {col: 'categoryId', val: categoryId},
             ]

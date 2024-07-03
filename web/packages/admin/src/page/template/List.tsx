@@ -107,10 +107,10 @@ export function List() {
     const disTemplate = (item?: dao.Template) => {
         drawer.open = !drawer.open;
         if (!!item) {
-            drawer.title = '编辑分类';
+            drawer.title = '编辑模板';
             templateForm.setFieldsValue(item);
         } else {
-            drawer.title = '新增分类';
+            drawer.title = '新增模板';
             templateForm.setFieldsValue(new dao.Template());
         }
         setDrawer({ ...drawer });

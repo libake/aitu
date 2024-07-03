@@ -280,7 +280,7 @@ export function List() {
             }
         } else {
             task.percent += Math.floor(Math.random() * 20) + 1;
-            if (task.percent > 100) {
+            if (task.percent > 99) {
                 task.percent = 99;
             }
             setTask({ ...task });
