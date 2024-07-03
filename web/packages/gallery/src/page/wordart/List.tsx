@@ -99,9 +99,8 @@ const Time = styled.div`
     }
 `
 const Head = styled(Time)`
-    .text {
-        flex: 1;
-    }
+    display: grid;
+    grid-template-columns: 1fr 200px;
 
     .text-item {
         display: flex;
@@ -123,7 +122,11 @@ const Head = styled(Time)`
     .tool {
         display: flex;
         align-items: center;
-        gap: 8px;
+        gap: 16px;
+    }
+
+    .icon {
+        cursor: pointer;
     }
 `
 const History = styled.div`
@@ -505,15 +508,16 @@ export function List() {
                             <a onClick={() => onReuse(v, 2)}>
                                 <Icon src="/icon/refresh.svg" text="再次生成" />
                             </a>
-                            {/* <Popconfirm
+                            <Popconfirm
                                 title="确定要删除记录吗？"
                                 description="删除后的记录不可恢复"
                                 onConfirm={() => delTask(v)}
                                 okText="删除"
                                 cancelText="取消"
+                                placement="left"
                             >
-                                <Icon src="/icon/ashbin.svg" />
-                            </Popconfirm> */}
+                                <Icon className="icon" src="/icon/ashbin.svg" />
+                            </Popconfirm>
                         </div>
                     </Head>
                     <Column>

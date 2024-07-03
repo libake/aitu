@@ -1,13 +1,14 @@
 import styled from "styled-components";
 
 const Container = styled.div`
-    color: #fff;
+    color: #52565b;
     background-color: var(--background-color);
+    font-size: 12px;
 
     a {
         display: flex;
         padding: 0 0 16px;
-        color: #fff;
+        color: #52565b;
     }
 
     label {
@@ -24,10 +25,6 @@ const Container = styled.div`
             width: 20px;
         }
     }
-
-    /* .row:nth-child(1) {
-        grid-template-columns: repeat(3, 1fr);
-    } */
 
     .item {
         text-align: left;
@@ -46,23 +43,6 @@ interface IProps {
 export function Footer(props: IProps) {
 
     return <Container className={props.className}>
-        {/* <div className="row">
-                <div className="item">
-                    <label>友情链接</label>
-                    <a href="">aad@service.aliyun.com</a>
-                </div>
-                <div className="item">
-                    <label>联系我们</label>
-                    <a href="">意见反馈</a>
-                    <a href="">联系我们</a>
-                </div>
-                <div className="item">
-                    <label>关于平台</label>
-                    <a href="">用户协议</a>
-                    <a href="">免责声明</a>
-                    <a href="">隐私政策</a>
-                </div>
-            </div> */}
         <div className="row">
             <p>上述图片属人工智能模型生成，不代表我们的态度或观点。我们不对生成内容做任何保证。</p>
             <div className="info">
