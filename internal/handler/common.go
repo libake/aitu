@@ -1,7 +1,13 @@
 package handler
 
 import (
+	"bytes"
+	"encoding/json"
+	"fmt"
+	"io"
+	"math/rand"
 	"net/http"
+	"strconv"
 	"time"
 
 	db "aitu.cn/internal/database"
@@ -14,12 +20,15 @@ type Common struct {
 
 func (c Common) SendSms(ctx *gin.Context) {
 	var (
-		captcha int16 = 4444
-		params  struct {
+		params struct {
 			Mobile string `json:"mobile"`
 			Scene  int    `json:"scene"`
 		}
-		user model.User
+		user   model.User
+		smsReq struct {
+			Code  int64  `json:"code"`
+			Phone string `json:"phone"`
+		}
 	)
 
 	err := ctx.BindJSON(&params)
@@ -42,9 +51,59 @@ func (c Common) SendSms(ctx *gin.Context) {
 			})
 			return
 		}
+
 	}
 
-	err = db.NewRedis().Set(params.Mobile, captcha, 5*time.Minute).Err()
+	tmp := fmt.Sprintf("%4v", rand.New(rand.NewSource(time.Now().UnixNano())).Int31n(10000))
+	smsReq.Code, _ = strconv.ParseInt(tmp, 10, 64)
+	smsReq.Phone = params.Mobile
+	body, _ := json.Marshal(smsReq)
+	url := `https://www.design999.com/home/user/send_sms_ai`
+	req, err := http.NewRequest(http.MethodPost, url, bytes.NewBuffer(body))
+	if err != nil {
+		ctx.JSON(http.StatusOK, gin.H{
+			"code": 2031,
+			"desc": "创建请求失败",
+		})
+		return
+	}
+	req.Header.Set("Content-Type", "application/json")
+
+	cli := &http.Client{Timeout: 5 * time.Second}
+	res, err := cli.Do(req)
+	if err != nil {
+		ctx.JSON(http.StatusOK, gin.H{
+			"code": 2032,
+			"desc": "发送请求失败",
+		})
+		return
+	}
+	defer res.Body.Close()
+
+	resBody, err := io.ReadAll(res.Body)
+	if err != nil {
+		ctx.JSON(http.StatusOK, gin.H{
+			"code": 2033,
+			"desc": "读取响应失败",
+		})
+		return
+	}
+
+	var resStruct struct {
+		Code int16  `json:"code"`
+		Msg  string `json:"msg"`
+	}
+
+	json.Unmarshal(resBody, &resStruct)
+	if resStruct.Code != 1 {
+		ctx.JSON(http.StatusOK, gin.H{
+			"code": 2050,
+			"desc": "短信发送失败",
+		})
+		return
+	}
+
+	err = db.NewRedis().Set(params.Mobile, smsReq.Code, 5*time.Minute).Err()
 	if err != nil {
 		ctx.JSON(http.StatusOK, gin.H{
 			"code": 3062,
@@ -55,7 +114,6 @@ func (c Common) SendSms(ctx *gin.Context) {
 
 	ctx.JSON(http.StatusOK, gin.H{
 		"code": 1000,
-		"data": captcha,
 		"desc": "Success",
 	})
 }

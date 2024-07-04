@@ -251,8 +251,8 @@ func (t *Task) Info(ctx *gin.Context) {
 		})
 		return
 	}
-	body, _ := json.Marshal(param)
 
+	body, _ := json.Marshal(param)
 	url := `https://dashscope.aliyuncs.com/api/v1/tasks/` + param.TaskID
 	req, err := http.NewRequest(http.MethodGet, url, bytes.NewBuffer(body))
 	if err != nil {
