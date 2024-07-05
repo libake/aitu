@@ -10,6 +10,9 @@
 ```base
 cd aitu.cn
 make linux
+
+# 运行
+nohup ./aitu -c config.yaml &
 ```
 
 ## 前端打包

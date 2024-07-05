@@ -310,7 +310,7 @@ const Popup = styled.div`
     .tab-list {
         display: grid;
         grid-template-columns: repeat(4, 80px);
-        grid-template-rows: 100px;
+        grid-auto-rows: 100px;
         gap: 16px;
         padding: 16px;
         min-height: 100%;
@@ -512,8 +512,9 @@ export function Panel(props: IProps) {
             props.submit(req);
             setTimeout(() => {
                 flag.current = true;
-            }, 1000);
-            return;
+            }, 8000);
+        } else {
+            message.warning('请勿频繁点击');
         }
     }
 

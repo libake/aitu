@@ -238,6 +238,7 @@ const Pagination = styled.div`
     align-items: center;
     padding: 0 24px;
     color: var(--text-color);
+    margin: 30px 0;
 
     button {
         background-color: transparent;

@@ -463,7 +463,9 @@ export function Panel(props: IProps) {
             props.submit(req);
             setTimeout(() => {
                 flag.current = true;
-            }, 1000);
+            }, 8000);
+        } else {
+            message.warning('请勿频繁点击');
         }
     }
 
