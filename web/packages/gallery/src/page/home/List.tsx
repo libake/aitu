@@ -159,16 +159,18 @@ const Card = styled.div`
     }
 
     .prompt {
+        display: none;
+        width: 100%;
         max-height: 112px;
         padding: 20px;
         font-weight: 400;
         position: absolute;
         bottom: 0;
         left: 0;
-        background: linear-gradient(0deg,rgba(38,36,76,.7),rgba(38,36,76,0));
         color: #fff;
         z-index: 10;
-        display: none;
+        box-sizing: border-box;
+        background: linear-gradient(0deg,rgba(38,36,76,.7),rgba(38,36,76,0));
 
         .over-line {
             display: -webkit-box;
