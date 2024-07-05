@@ -127,6 +127,19 @@ const Head = styled(Time)`
 
     .icon {
         cursor: pointer;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        width: 16px;
+        height: 16px;
+        overflow: hidden;
+
+        img {
+            position: relative;
+            left: -80px;
+            width: 100%;
+            filter: drop-shadow(#fff 80px 0);
+        }
     }
 `
 const History = styled.div`
@@ -268,7 +281,8 @@ export function List() {
             return;
         }
         let data = {
-            ...task.info,
+            id: task.info.id,
+            taskId: task.info.taskId,
         }
         let res = await srv.Task.info(data);
         if (res.code == 1000) {
@@ -522,7 +536,9 @@ export function List() {
                                 cancelText="取消"
                                 placement="left"
                             >
-                                <Icon className="icon" src="/icon/ashbin.svg" />
+                                <a className="icon">
+                                    <img src="/icon/ashbin.svg" alt="删除" />
+                                </a>
                             </Popconfirm>
                         </div>
                     </Head>

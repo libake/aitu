@@ -24,9 +24,9 @@ type Output struct {
 	Code        string              `json:"code"`
 	Message     string              `json:"message"`
 	TaskMetrics struct {
-		TOTAL     int `json:"TOTAL"`
-		SUCCEEDED int `json:"SUCCEEDED"`
-		FAILED    int `json:"FAILED"`
+		TOTAL     int8 `json:"TOTAL"`
+		SUCCEEDED int8 `json:"SUCCEEDED"`
+		FAILED    int8 `json:"FAILED"`
 	} `json:"task_metrics"`
 }
 
@@ -293,6 +293,16 @@ func (t *Task) Info(ctx *gin.Context) {
 		return
 	}
 
+	user, err := middleware.ParseToken(ctx)
+	if err != nil {
+		ctx.JSON(http.StatusOK, gin.H{
+			"code": 3073,
+			"desc": err.Error(),
+		})
+		return
+	}
+	task.UserID = user.ID
+
 	task.TaskID = param.TaskID
 	task.TaskStatus = t.Output.TaskStatus
 	for _, v := range t.Output.Results {
@@ -300,7 +310,7 @@ func (t *Task) Info(ctx *gin.Context) {
 			task.Results = append(task.Results, url)
 		}
 	}
-	err = task.Update()
+	err = task.UpdateResult(t.Output.TaskMetrics.SUCCEEDED)
 	if err != nil {
 		ctx.JSON(http.StatusOK, gin.H{
 			"code": 3052,
