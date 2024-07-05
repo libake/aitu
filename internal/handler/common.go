@@ -7,7 +7,6 @@ import (
 	"io"
 	"math/rand"
 	"net/http"
-	"strconv"
 	"time"
 
 	db "aitu.cn/internal/database"
@@ -26,7 +25,7 @@ func (c Common) SendSms(ctx *gin.Context) {
 		}
 		user   model.User
 		smsReq struct {
-			Code  int64  `json:"code"`
+			Code  string `json:"code"`
 			Phone string `json:"phone"`
 		}
 	)
@@ -54,8 +53,7 @@ func (c Common) SendSms(ctx *gin.Context) {
 
 	}
 
-	tmp := fmt.Sprintf("%4v", rand.New(rand.NewSource(time.Now().UnixNano())).Int31n(10000))
-	smsReq.Code, _ = strconv.ParseInt(tmp, 10, 64)
+	smsReq.Code = fmt.Sprintf("%4v", rand.New(rand.NewSource(time.Now().UnixNano())).Int31n(10000))
 	smsReq.Phone = params.Mobile
 	body, _ := json.Marshal(smsReq)
 	url := `https://www.design999.com/home/user/send_sms_ai`

@@ -99,6 +99,7 @@ const Container = styled.div`
         padding: 16px;
         background-color: #0f1319;
         border-radius: 12px;
+        margin-bottom: 16px;
 
         .item {
             background-color: #2d3240;
