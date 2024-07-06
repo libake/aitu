@@ -8,7 +8,7 @@ import { Panel } from './Panel';
 import { Preview } from "./Preview";
 import { TaskContext, UserContext } from "@/context";
 import { useNavigate } from "react-router-dom";
-import { Footer } from "../common";
+import { Footer, Login } from "../common";
 import dayjs from "dayjs";
 
 
@@ -460,11 +460,10 @@ export function List() {
     const navigate = useNavigate();
 
     useEffect(() => {
-        if (userContext.state.id > 0) {
-            getTask();
-        } else {
-            navigate('/');
+        if (userContext.state.id == 0) {
+            return;
         }
+        getTask();
         if (taskContext.state.id > 0 && taskContext.state.taskType == 'word_art_image') {
             Object.assign(form, taskContext.state);
             setForm({ ...form });
@@ -474,6 +473,7 @@ export function List() {
     }, [userContext, req]);
 
     return <Container>
+        {userContext.state.id > 0 ? <> 
         <Panel className="side" data={form} submit={(e: any) => addTask(e)}></Panel>
         <div className="main">
             <Title>
@@ -570,5 +570,6 @@ export function List() {
             <Footer className="footer" />
         </div>
         <Preview open={task.preview.open} current={task.preview.current} data={task.info} onClose={() => onPreview()}></Preview>
+        </>: <Login />}
     </Container>
 }

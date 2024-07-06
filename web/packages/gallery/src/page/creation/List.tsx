@@ -1,6 +1,7 @@
 import styled from "styled-components";
 import { useEffect, useState, useContext } from "react";
 import { Popconfirm, Spin, message } from "antd";
+import dayjs from "dayjs";
 
 import { Icon } from "@/common";
 import { dao, srv } from "core";
@@ -8,8 +9,7 @@ import { Panel } from './Panel';
 import { Preview } from "./Preview";
 import { TaskContext, UserContext } from "@/context";
 import { useNavigate } from "react-router-dom";
-import { Footer } from "../common";
-import dayjs from "dayjs";
+import { Footer, Login } from "../common";
 
 
 const Container = styled.div`
@@ -445,11 +445,10 @@ export function List() {
     const navigate = useNavigate();
 
     useEffect(() => {
-        if (userContext.state.id > 0) {
-            getTask();
-        } else {
-            navigate('/');
+        if (userContext.state.id == 0) {
+            return;
         }
+        getTask();
         if (taskContext.state.id > 0 && taskContext.state.taskType == 'text_to_image') {
             Object.assign(form, taskContext.state);
             setForm({ ...form });
@@ -459,6 +458,7 @@ export function List() {
     }, [userContext, req]);
 
     return <Container>
+        {userContext.state.id > 0 ? <>
         <Panel className="side" data={form} submit={(e: any) => addTask(e)}></Panel>
         <div className="main">
             <Title>
@@ -548,5 +548,6 @@ export function List() {
             data={task.info}
             onClose={() => setTask({ ...task, preview: { ...task.preview, open: false } })}
         />
+        </> : <Login />}
     </Container>
 }

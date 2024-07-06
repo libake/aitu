@@ -5,7 +5,7 @@ import { Dropdown, message, Popover, Button } from "antd";
 
 import { srv } from "core";
 import { Icon, Captcha } from "@/common";
-import { TaskProvider, UserContext } from "@/context";
+import { UserContext } from "@/context";
 import { bus } from '@/util/mitt';
 
 
@@ -191,13 +191,9 @@ export function Layout() {
         }
     }
 
-    bus.on('auth', () => {
-        setTimeout(() => {
-            if (userContext.state.id == 0) {
-                user.open = true;
-                setUser({...user});
-            }
-        }, 500);
+    bus.on('login', () => {
+        user.open = true;
+        setUser({...user});
     });
 
     return <>
