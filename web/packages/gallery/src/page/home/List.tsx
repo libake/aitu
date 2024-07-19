@@ -20,7 +20,6 @@ const Title = styled.div`
     align-items: center;
     padding: 16px 0;
     color: #fff;
-    z-index: 100;
     background-color: var(--background-color);
 
     .logo {
@@ -72,7 +71,7 @@ const Title = styled.div`
     }
 
     .primary:hover {
-        background-color: var(--text-color-secondary);
+        background-color: #21ddcf;
     }
 `
 const Content = styled.div`
@@ -120,6 +119,7 @@ const Card = styled.div`
         padding: 12px 20px;
         color: #fff;
         background-color: rgb(120, 99, 94);
+        box-sizing: border-box;
 
         .user {
             display: flex;
@@ -151,8 +151,8 @@ const Card = styled.div`
                 color: #333;
                 background-color: #fff;
 
-                img {
-                    filter: drop-shadow(var(--heading-text-color) 80px 0);
+                img, object {
+                    filter: drop-shadow(#333 80px 0);
                 }
             }
         }
