@@ -1,7 +1,7 @@
 import { useContext, useEffect, useState } from "react";
 import ReactDOM from "react-dom";
 import styled from "styled-components";
-import { Spin, Tooltip } from "antd";
+import { Spin } from "antd";
 
 import { Icon } from "@/common";
 import { dao } from "core";
@@ -203,7 +203,7 @@ export function Preview(props: IProps) {
             <div className="preview-body">
             <Spin spinning={spinning} />
             {spinning || <>
-                <picture>
+                <picture onContextMenu={(e) => e.preventDefault()}>
                     {info.results.length > 0 && <img src={info.results[0]}  style={{transform: `scale(${zoom})`}} alt="" />}
                 </picture>
                 <div className="list" style={{display: zoom != 1 ? 'none' : 'block'}}>

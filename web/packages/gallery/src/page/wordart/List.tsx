@@ -545,7 +545,7 @@ export function List() {
                     <Column>
                         {v.results && v.results.map((d, k) =>
                             <Image key={k} onClick={() => onPreview(v, k)}>
-                                <picture>
+                                <picture onContextMenu={(e) => e.preventDefault()}>
                                     <img src={d} alt="" />
                                 </picture>
                                 <div className="tool" onClick={(e) => {e.stopPropagation();}}>

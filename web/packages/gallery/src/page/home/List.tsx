@@ -304,7 +304,7 @@ export function List() {
                 <Column key={y}>
                     {x.map(v =>
                         <li className="item" key={v.taskId}>
-                            <Card>
+                            <Card onContextMenu={(e) => e.preventDefault()}>
                                 <div className="card-body" onClick={() => onPreview(v)}>
                                     <picture>
                                         <img src={v.results && v.results[0]} alt="" />

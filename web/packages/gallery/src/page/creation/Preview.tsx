@@ -190,7 +190,7 @@ export function Preview(props: IProps) {
             <div className="preview-body">
             <Spin spinning={spinning} />
             {spinning || <>
-                <picture>
+                <picture onContextMenu={(e) => e.preventDefault()}>
                     {<img src={info.results[info.current]} style={{transform: `scale(${zoom})`}} />}
                 </picture>
                 <div className="flip">
