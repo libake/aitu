@@ -1,3 +1,4 @@
+import { useEffect, useState } from "react";
 import styled from "styled-components";
 
 const Container = styled.div`
@@ -24,6 +25,7 @@ type Props = {
 }
 
 export function Icon(props: Props) {
+    let [size, setSize] = useState({width: '16px', height: '16px'});
 
     const handlerClick = (e: any) => {
         if (!props.onClick) {
@@ -32,8 +34,18 @@ export function Icon(props: Props) {
         props.onClick(e);
     }
 
+    useEffect(() => {
+        if (!!props.size) {
+            if (typeof props.size === 'number') {
+                setSize({width: `${props.size}px`, height: `${props.size}px`});
+            } else {
+                setSize({width: props.size, height: props.size});
+            }
+        }
+    }, [props.size]);
+
     return <Container className={props.className} onClick={(e) => {e.stopPropagation;handlerClick(e)}}>
-        <Img data={props.src} style={{width: props.size, height: props.size}}  type="image/svg+xml" />
+        <Img data={props.src} style={{...size}}  type="image/svg+xml" />
         {props.text && <span style={{marginLeft: "8px"}}>{props.text}</span>}
     </Container>
 }

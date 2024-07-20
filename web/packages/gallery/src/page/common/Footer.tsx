@@ -1,3 +1,4 @@
+import { FloatButton } from "antd";
 import styled from "styled-components";
 
 const Container = styled.div`
@@ -52,5 +53,6 @@ export function Footer(props: IProps) {
                 <a href="https://beian.miit.gov.cn/">浙B2-20080101-4</a>
             </div>
         </div>
+        <FloatButton.BackTop visibilityHeight={0} />
     </Container>
 }

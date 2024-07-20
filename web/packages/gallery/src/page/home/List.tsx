@@ -141,6 +141,7 @@ const Card = styled.div`
             display: grid;
             grid-template-columns: auto 1fr;
             align-items: center;
+            width: 74px;
             height: 28px;
             padding: 0 8px;
             font-size: 12px;
@@ -214,7 +215,7 @@ export function List() {
     });
     let [req, setReq] = useState({
         currPage: 1,
-        pageSize: 10,
+        pageSize: 50,
     });
     const color = [
         '#6495ED',
@@ -341,7 +342,7 @@ export function List() {
                                         <img className="avatar" src={v.avatar || '/avatar/01.jpg'} alt="" />
                                         <span className="phone">{v.mobile}</span>
                                     </div>
-                                    <Icon className="icon" onClick={() => onReuse(v)} src="/icon/reuse.svg" text="复用创意"></Icon>
+                                    <Icon className="icon" onClick={() => onReuse(v)} src="/icon/reuse.svg" text="复用创意" />
                                 </div>
                             </Card>
                         </li>
