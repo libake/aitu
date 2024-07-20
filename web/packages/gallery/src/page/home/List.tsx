@@ -216,6 +216,18 @@ export function List() {
         currPage: 1,
         pageSize: 50,
     });
+    const color = [
+        '#6495ED',
+        '#7B68EE',
+        '#BA55D3',
+        '#DB7093',
+        '#FFB6C1',
+        '#48D1CC',
+        '#90EE90',
+        '#EEE8AA',
+        '#E9967A',
+        '#87CEEB'
+    ];
 
     const getRecommend = async () => {
         if (req.currPage == 1) {
@@ -263,7 +275,7 @@ export function List() {
             return;
         }
         req.currPage += 1;
-        setReq({...req});
+        setReq({ ...req });
     }
 
     useEffect(() => {
@@ -276,7 +288,7 @@ export function List() {
     const onReuse = (item: dao.TaskUser) => {
         taskContext.dispatch({ type: 'reuse', payload: item });
         setTimeout(() => {
-            switch(item.taskType) {
+            switch (item.taskType) {
                 case 'text_to_image':
                     navigate('/creation');
                     break;
@@ -315,7 +327,7 @@ export function List() {
                                         </div>
                                     </div>
                                 </div>
-                                <div className="card-foot">
+                                <div className="card-foot" style={{ backgroundColor: color[Math.floor(Math.random() * 10)] }}>
                                     <div className="user">
                                         <img className="avatar" src={v.avatar || '/avatar/01.jpg'} alt="" />
                                         <span className="phone">{v.mobile}</span>
