@@ -103,7 +103,7 @@ const Container = styled.div`
             background-color: var(--primary-color);
             border-radius: 20px;
 
-            img {
+            img, object {
                 filter: drop-shadow(var(--heading-text-color) 80px 0);
             }
         }

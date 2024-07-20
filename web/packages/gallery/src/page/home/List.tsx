@@ -89,7 +89,7 @@ const Content = styled.div`
 const Card = styled.div`
     border-radius: 12px;
     overflow: hidden;
-    width: 300px;
+    max-width: 280px;
     box-sizing: border-box;
 
     &:hover {
@@ -214,7 +214,7 @@ export function List() {
     });
     let [req, setReq] = useState({
         currPage: 1,
-        pageSize: 50,
+        pageSize: 10,
     });
     const color = [
         '#6495ED',
@@ -279,7 +279,16 @@ export function List() {
     }
 
     useEffect(() => {
+        if(window.innerWidth >= 1600) {
+            recommend.column = 5;
+            setRecommend({ ...recommend });
+        }
         getRecommend();
+        window.addEventListener('scroll', () => {
+            if (window.scrollY + window.innerHeight >= document.body.scrollHeight - 100) {
+                onPagination();
+            }
+        });
     }, [req]);
 
     const taskContext = useContext(TaskContext);

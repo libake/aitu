@@ -18,6 +18,7 @@ const Container = styled.div`
     }
 
     textarea {
+        margin-bottom: 30px;
         border: none;
         width: 100%;
         padding: 8px 0;
@@ -25,6 +26,19 @@ const Container = styled.div`
         font-size: 14px;
         color: #fff;
         background-color: transparent;
+
+        ::-webkit-scrollbar {
+            width: 4px;
+            background-color: transparent;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background-color: #3b3e4f;
+        }
+
+        ::-webkit-scrollbar-track-piece {
+            background-color: #1c2029;
+        }
     }
 
     .suffix {
