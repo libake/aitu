@@ -8,7 +8,7 @@ import { Panel } from './Panel';
 import { Preview } from "./Preview";
 import { TaskContext, UserContext } from "@/context";
 import { useNavigate } from "react-router-dom";
-import { Footer, Login } from "../common";
+import { Default, Footer, Login } from "../common";
 import dayjs from "dayjs";
 
 
@@ -476,6 +476,7 @@ export function List() {
         {userContext.state.id > 0 ? <> 
         <Panel className="side" data={form} submit={(e: any) => addTask(e)}></Panel>
         <div className="main">
+            {task.list.length > 0 ? <>
             <Title>
                 <span className="text">支持下载或收藏，可通过管理画作进行删除，欢迎对创作点赞点踩并提出建议，助力模型不断进化。</span>
                 <span className="tool">
@@ -567,6 +568,7 @@ export function List() {
             <Pagination>
                 {(req.currPage * req.pageSize) >= task.total ? <span>已经到底啦</span> : <button onClick={() => onPagination()}>点击查看更多</button>}
             </Pagination>
+            </> : <Default />}
             <Footer className="footer" />
         </div>
         <Preview open={task.preview.open} current={task.preview.current} data={task.info} onClose={() => onPreview()}></Preview>
