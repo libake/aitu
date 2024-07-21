@@ -1,7 +1,7 @@
 import { useContext, useEffect, useState } from "react";
 import ReactDOM from "react-dom";
 import styled from "styled-components";
-import { Spin } from "antd";
+import { Spin, Tooltip } from "antd";
 
 import { Icon } from "@/common";
 import { dao } from "core";
@@ -122,6 +122,28 @@ const Container = styled.div`
 
             a {
                 display: block;
+            }
+        }
+
+        .hide {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: #2d3240;
+
+            img, object {
+                filter: drop-shadow(#fff 80px 0);
+            }
+
+            &.active {
+                background-color: #fff;
+
+                img, object {
+                    filter: drop-shadow(#2d3240 80px 0);
+                }
             }
         }
     }
@@ -245,6 +267,11 @@ export function Preview(props: IProps) {
                     </a>
                 </div>
                 <Icon className="btn" onClick={() => onReuse()} src="/icon/reuse.svg" text="复用创意" />
+                <Tooltip title="隐藏详情">
+                    <a className={`hide${zoom == 1 ? '' : ' active'}`} onClick={() => setZoom(1)}>
+                        <Icon src="/icon/tips.svg"></Icon>
+                    </a>
+                </Tooltip>
             </div>
         </Container>,
         document.body
