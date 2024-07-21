@@ -334,12 +334,16 @@ export function Panel(props: IProps) {
     }
 
     const setInput = (evt: any) => {
-        let tmp = String(evt.target.value);
-        if (tmp.length > 4) {
-            return;
-        }
         req.input.text.text_content = evt.target.value;
         setReq({...req});
+    }
+
+    const checkStr = () => {
+        if (req.input.text.text_content.length > 4) {
+            req.input.text.text_content = req.input.text.text_content.substring(0, 4);
+            setReq({...req});
+            return;
+        }
     }
 
     let [category, setCategory] = useState({
@@ -482,7 +486,7 @@ export function Panel(props: IProps) {
         <div className="side-body">
             <h3>文字内容(1-4个字符)</h3>
             <div className="input-group">
-                <input type="text" value={req.input.text.text_content} onChange={(e) => setInput(e)} placeholder="支持中文、字母、数字" />
+                <input type="text" value={req.input.text.text_content} onChange={(e) => setInput(e)} onBlur={() => checkStr()} placeholder="支持中文、字母、数字" />
                 <span className="suffix">{req.input.text.text_content.length}/4</span>
             </div>
             <h3>文字风格</h3>
