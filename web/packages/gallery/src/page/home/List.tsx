@@ -331,7 +331,7 @@ export function List() {
                                 <div className="card-body" onClick={() => onPreview(v)}>
                                     <picture>
                                     <LazyLoad resize>
-                                        <img src={v.results && v.results[0]} alt="" />
+                                        <img src={v.results && v.results[0]+'!ai_w280'} alt="" />
                                     </LazyLoad>
                                     </picture>
                                     <div className="prompt">

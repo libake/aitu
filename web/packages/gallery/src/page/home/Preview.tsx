@@ -226,7 +226,7 @@ export function Preview(props: IProps) {
             <Spin spinning={spinning} />
             {spinning || <>
                 <picture onContextMenu={(e) => e.preventDefault()}>
-                    {info.results.length > 0 && <img src={info.results[0]}  style={{transform: `scale(${zoom})`}} alt="" />}
+                    {info.results.length > 0 && <img src={info.results[0] + '!ai_water'}  style={{transform: `scale(${zoom})`}} alt="" />}
                 </picture>
                 <div className="list" style={{display: zoom != 1 ? 'none' : 'block'}}>
                     <div className="list-item">
