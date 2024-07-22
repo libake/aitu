@@ -219,16 +219,16 @@ export function List() {
         pageSize: 50,
     });
     const color = [
-        '#6495ED',
-        '#7B68EE',
-        '#BA55D3',
-        '#DB7093',
-        '#FFB6C1',
-        '#48D1CC',
-        '#90EE90',
-        '#EEE8AA',
-        '#E9967A',
-        '#87CEEB'
+        '#7F7844',
+        '#6F4131',
+        '#304156',
+        '#B8A870',
+        '#AF6948',
+        '#695B68',
+        '#2F4342',
+        '#c99e8c',
+        '#465e65',
+        '#DBCBCC'
     ];
 
     const getRecommend = async () => {
