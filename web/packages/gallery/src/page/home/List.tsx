@@ -1,11 +1,12 @@
 import { useContext, useEffect, useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import styled from "styled-components";
+import LazyLoad from 'react-lazyload';
 import { Spin, message } from "antd";
 
 import { dao, srv } from "core";
 import { Icon } from "@/common";
 import { Preview } from './Preview';
-import { Link, useNavigate } from "react-router-dom";
 import { Footer } from "../common";
 import { TaskContext } from "@/context";
 
@@ -329,7 +330,9 @@ export function List() {
                             <Card onContextMenu={(e) => e.preventDefault()}>
                                 <div className="card-body" onClick={() => onPreview(v)}>
                                     <picture>
+                                    <LazyLoad resize>
                                         <img src={v.results && v.results[0]} alt="" />
+                                    </LazyLoad>
                                     </picture>
                                     <div className="prompt">
                                         <div className="over-line">
