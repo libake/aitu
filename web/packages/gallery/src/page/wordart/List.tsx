@@ -18,6 +18,7 @@ const Container = styled.div`
     margin: 52px 0 0;
     min-height: calc(100vh - 52px);
     background-color: var(--background-color);
+    overflow-x: hidden;
 
     .side {
         position: fixed;
