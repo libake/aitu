@@ -103,7 +103,8 @@ const Time = styled.div`
 `
 const Head = styled(Time)`
     display: grid;
-    grid-template-columns: 1fr 200px;
+    // grid-template-columns: 1fr 200px;
+    grid-template-columns: 1200px 200px;
 
     .tool {
         display: flex;
