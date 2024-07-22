@@ -210,7 +210,8 @@ export function Layout() {
                 {userContext.state.id > 0 ? <>
                     <li>
                         <Popover className="money" content="一个能量值可生成一张图">
-                            <Icon src="/icon/power.svg" />
+                            {/* <Icon src="/icon/power.png" /> */}
+                            <img src="/power.png" alt="喵闪AI能量值" style={{ width: "18px", height: "18px", marginTop: "3px" }} />
                             <span>{userContext.state.power}能量值</span>
                         </Popover>
                     </li>
