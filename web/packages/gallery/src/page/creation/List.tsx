@@ -83,15 +83,6 @@ const Time = styled.div`
     .text {
         display: flex;
         align-items: center;
-        gap: 8px;
-
-        p {
-            margin: 0;
-            max-width: calc(100% - 24px);
-            text-overflow: ellipsis;
-            white-space: nowrap;
-            overflow: hidden;
-        }
     }
 
     .line {
@@ -101,9 +92,23 @@ const Time = styled.div`
         background-color: #878aab;
     }
 `
-const Head = styled(Time)`
+const Head = styled.div`
     display: grid;
     grid-template-columns: 1fr 200px;
+    align-items: center;
+    gap: 24px;
+    color: #b5b6b8;
+    font-size: 12px;
+
+    a {
+        color: #b5b6b8;
+    }
+
+    .text {
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        overflow: hidden;
+    }
 
     .tool {
         display: flex;
@@ -493,7 +498,7 @@ export function List() {
                     </Time>
                     <Head style={{ height: "56px" }}>
                         <div className="text">
-                            <p>{v.input.prompt}</p>
+                            {v.input.prompt}
                         </div>
                         <div className="tool">
                             <a onClick={() => onReuse(v, 1)}>
