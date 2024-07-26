@@ -253,6 +253,12 @@ export function Layout() {
         }
     }
 
+    const onCancel = () => {
+        feedback.open = false;
+        feedback.info = new dao.Feedback();
+        setFeedback({ ...feedback });
+    }
+
     return <>
         <Header>
             <NavLeft>
@@ -338,7 +344,7 @@ export function Layout() {
                         />
                     </div>
                     <div className="form-item btn">
-                        <button className="default" type="button" onClick={() => setFeedback({...feedback, open: false})}>取消</button>
+                        <button className="default" type="button" onClick={() => onCancel()}>取消</button>
                         <button className="primary" type="button" onClick={() => onFeedback()}>提交</button>
                     </div>
                 </form>
