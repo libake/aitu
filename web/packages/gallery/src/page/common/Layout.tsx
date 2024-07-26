@@ -246,6 +246,7 @@ export function Layout() {
         let res = await srv.Feedback.create(data);
         if (res.code == 1000) {
             message.success('反馈成功');
+            feedback.info = new dao.Feedback();
             setFeedback({ ...feedback, open: false });
         } else {
             message.error(res.desc);
