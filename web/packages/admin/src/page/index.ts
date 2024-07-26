@@ -1,6 +1,7 @@
 export * from './Layout';
 export * as auth from './auth';
 export * as category from './category';
+export * as feedback from './feedback';
 export * as home from './home';
 export * as node from './node';
 export * as task from './task';

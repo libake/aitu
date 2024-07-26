@@ -4,6 +4,7 @@ import {
     Layout,
     auth,
     category,
+    feedback,
     home,
     node,
     task,
@@ -45,6 +46,15 @@ const routes: RouteObject[] = [
                 {
                     path: '',
                     element: <category.List />
+                },
+            ]
+        }, {
+            path: 'feedback',
+            element: <Outlet />,
+            children: [
+                {
+                    path: '',
+                    element: <feedback.List />
                 },
             ]
         }, {

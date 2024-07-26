@@ -43,7 +43,7 @@ export default ((env: ConfigEnv): UserConfig => {
       https: false,
       proxy: {
         '/api': {
-          target: 'http://localhost:8090',
+          target: 'http://127.0.0.1:8090',
           changeOrigin: true,
           ws: true
         }

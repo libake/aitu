@@ -86,6 +86,13 @@ func Router(addr string) error {
 			common.POST("/recommend", task.Recommend)
 		}
 
+		feedback := api.Group("/feedback", middleware.Token())
+		{
+			var handler handler.Feedback
+			feedback.POST("/create", handler.Create)
+			feedback.POST("/list", handler.List)
+		}
+
 	}
 
 	return router.Run(addr)

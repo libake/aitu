@@ -275,3 +275,14 @@ CREATE TABLE task (
   update_at timestamp not null,
   create_at timestamp not null
 )ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT '任务';
+
+-- 反馈 - feedback
+DROP TABLE IF EXISTS feedback;
+
+CREATE TABLE feedback (
+  id bigint not null AUTO_INCREMENT PRIMARY KEY,
+  content text not null COMMENT '反馈内容',
+  user_id bigint not null default 0 COMMENT '用户ID',
+  update_at timestamp not null,
+  create_at timestamp not null
+)ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT '反馈';

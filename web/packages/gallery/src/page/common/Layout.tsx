@@ -3,7 +3,7 @@ import { Link, NavLink, Outlet } from "react-router-dom";
 import styled from "styled-components";
 import { Dropdown, message, Popover, Button } from "antd";
 
-import { srv } from "core";
+import { dao, srv } from "core";
 import { Icon, Captcha } from "@/common";
 import { UserContext } from "@/context";
 import { bus } from '@/util/mitt';
@@ -93,9 +93,38 @@ const Modal = styled.div`
         color: #fff;
     }
 
+    textarea {
+        width: 520px;
+        min-height: 100px;
+        padding: 16px;
+        border: none;
+        background-color: #080b13;
+        color: var(--text-color);
+        outline: none;
+    }
+
     button {
         width: 100%;
         background-color: var(--primary-color);
+    }
+
+    .btn {
+        display: flex;
+        justify-content: flex-end;
+    }
+
+    .primary, .default {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        width: 118px;
+        border-radius: 20px;
+    }
+
+    .default {
+        border: 1px solid #fff;
+        color: var(--text-color);
+        background-color: transparent;
     }
 
     .box {
@@ -107,7 +136,9 @@ const Modal = styled.div`
     .box-head {
         display: flex;
         justify-content: space-between;
+        align-items: center;
         height: 50px;
+        color: #fff;
 
         .close {
            cursor: pointer; 
@@ -123,6 +154,7 @@ const Modal = styled.div`
     }
 
     .form-item {
+        gap: 16px;
         
         input {
             width: 100%;
@@ -172,14 +204,14 @@ export function Layout() {
                 type: 'login',
                 payload: res.data,
             });
-            setUser({...user, open: false});
+            setUser({ ...user, open: false });
         } else {
             message.error(res.desc);
         }
     }
 
     const handleChange = (val: any, name: string) => {
-        setUser({...user, info: {...user.info, [name]: val.target.value}});
+        setUser({ ...user, info: { ...user.info, [name]: val.target.value } });
     }
 
     const logout = async () => {
@@ -193,8 +225,32 @@ export function Layout() {
 
     bus.on('login', () => {
         user.open = true;
-        setUser({...user});
+        setUser({ ...user });
     });
+
+    const [feedback, setFeedback] = useState({
+        info: {
+            ...new dao.Feedback(),
+        },
+        open: false,
+    })
+
+    const onFeedback = async () => {
+        if (feedback.info.content == '') {
+            message.error('请输入反馈内容');
+            return;
+        }
+        let data = {
+            ...feedback.info
+        }
+        let res = await srv.Feedback.create(data);
+        if (res.code == 1000) {
+            message.success('反馈成功');
+            setFeedback({ ...feedback, open: false });
+        } else {
+            message.error(res.desc);
+        }
+    }
 
     return <>
         <Header>
@@ -219,7 +275,7 @@ export function Layout() {
                         <Dropdown menu={{
                             items: [
                                 {
-                                    label: <Link to="/user/profile">我要反馈</Link>,
+                                    label: <a onClick={() => setFeedback({ ...feedback, open: true })}>我要反馈</a>,
                                     key: '1'
                                 }, {
                                     key: '1 - 2',
@@ -235,7 +291,7 @@ export function Layout() {
                             </a>
                         </Dropdown>
                     </li>
-                </> : <Button ghost onClick={() => setUser({...user, open: true})}>登录/注册</Button>}
+                </> : <Button ghost onClick={() => setUser({ ...user, open: true })}>登录/注册</Button>}
             </NavRight>
         </Header>
         <Outlet />
@@ -244,7 +300,7 @@ export function Layout() {
             <div className="box">
                 <div className="box-head">
                     &nbsp;
-                    <Icon className="close" src="/icon/close-bold.svg" onClick={() => setUser({...user, open: false})} />
+                    <Icon className="close" src="/icon/close-bold.svg" onClick={() => setUser({ ...user, open: false })} />
                 </div>
                 <form className="box-body">
                     <div className="form-item">
@@ -255,7 +311,7 @@ export function Layout() {
                     </div>
                     <div className="form-item">
                         <span className="checkbox">
-                            <input type="checkbox" id="agree" checked={user.agree} onChange={(e) => setUser({...user, agree: !user.agree})} />
+                            <input type="checkbox" id="agree" checked={user.agree} onChange={(e) => setUser({ ...user, agree: !user.agree })} />
                             <label htmlFor="agree">登录即视为您已阅读并同意<Link to="/">服务条款、隐私政策</Link></label>
                         </span>
                     </div>
@@ -264,7 +320,28 @@ export function Layout() {
                     </div>
                 </form>
             </div>
-        </Modal>
-        }
+        </Modal>}
+        {/* 反馈 */}
+        {feedback.open && <Modal>
+            <div className="box">
+                <div className="box-head">
+                    <div>感谢您的反馈！</div>
+                    <Icon className="close" src="/icon/close-bold.svg" onClick={() => setFeedback({ ...feedback, open: false })} />
+                </div>
+                <form className="box-body">
+                    <div className="form-item">
+                        <textarea
+                            value={feedback.info.content}
+                            onChange={(v) => setFeedback({ ...feedback, info: { ...feedback.info, content: v.target.value } })}
+                            placeholder="请输入您的意见或建议"
+                        />
+                    </div>
+                    <div className="form-item btn">
+                        <button className="default" type="button" onClick={() => setFeedback({...feedback, open: false})}>取消</button>
+                        <button className="primary" type="button" onClick={() => onFeedback()}>提交</button>
+                    </div>
+                </form>
+            </div>
+        </Modal>}
     </>
 }
